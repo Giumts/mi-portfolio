@@ -1,98 +1,43 @@
-export default function Home() {
+// src/app/page.js
+export default function Portfolio() {
   return (
-    <main style={{
-      height: '100vh',
-      display: 'flex',
-      flexDirection: 'column',
-      justifyContent: 'center',
-      alignItems: 'center',
-      backgroundColor: '#0a0a0a', // Un negro profundo y elegante
-      color: '#ffffff',
-      fontFamily: 'system-ui, -apple-system, sans-serif',
-      padding: '20px',
-      textAlign: 'center'
-    }}>
-      {/* Círculo decorativo de fondo */}
-      <div style={{
-        position: 'absolute',
-        width: '300px',
-        height: '300px',
-        background: 'radial-gradient(circle, rgba(56,189,248,0.15) 0%, rgba(10,10,10,0) 70%)',
-        zIndex: 0
-      }}></div>
+    <div style={{ backgroundColor: '#f9f9f9', color: '#1a1a1a', minHeight: '100vh', fontFamily: 'serif' }}>
+      
+      {/* Navegación Minimalista */}
+      <nav style={{ display: 'flex', justifyContent: 'space-between', padding: '40px 10% ', fontSize: '0.9rem', textTransform: 'uppercase', letterSpacing: '2px' }}>
+        <span>Giulia — 2024</span>
+        <div>
+          <a href="#work" style={{ marginRight: '20px', textDecoration: 'none', color: 'inherit' }}>Proyectos</a>
+          <a href="#about" style={{ textDecoration: 'none', color: 'inherit' }}>Sobre mí</a>
+        </div>
+      </nav>
 
-      <h1 style={{ 
-        fontSize: 'clamp(2.5rem, 8vw, 4rem)', 
-        fontWeight: '800',
-        marginBottom: '1rem',
-        zIndex: 1
-      }}>
-        Hola, soy <span style={{ 
-          color: '#38bdf8',
-          textShadow: '0 0 20px rgba(56,189,248,0.3)'
-        }}>Giulia</span>
-      </h1>
+      {/* Hero Section (Inspirado en Paulet) */}
+      <header style={{ padding: '100px 10%', textAlign: 'center' }}>
+        <h1 style={{ fontSize: 'clamp(3rem, 10vw, 6rem)', fontWeight: '400', fontStyle: 'italic', marginBottom: '20px' }}>
+          Digital Creator
+        </h1>
+        <p style={{ fontSize: '1.2rem', maxWidth: '600px', margin: '0 auto', fontFamily: 'sans-serif', lineHeight: '1.8', color: '#666' }}>
+          Especializada en diseño minimalista y desarrollo frontend con atención al detalle.
+        </p>
+      </header>
 
-      <p style={{ 
-        fontSize: '1.2rem', 
-        color: '#a1a1aa', 
-        maxWidth: '500px', 
-        lineHeight: '1.6',
-        zIndex: 1,
-        marginBottom: '2.5rem'
-      }}>
-        Bienvenida a mi nuevo portfolio. Soy desarrolladora en formación 
-        creando experiencias digitales modernas con Next.js.
-      </p>
+      {/* Galería de Proyectos (Layout Asimétrico) */}
+      <section id="work" style={{ padding: '50px 10%' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '60px' }}>
+          <div style={{ marginTop: '40px' }}> {/* Unos más arriba que otros */}
+            <div style={{ width: '100%', height: '400px', backgroundColor: '#ddd', marginBottom: '15px' }}></div>
+            <h3>Proyecto Uno</h3>
+            <p style={{ fontFamily: 'sans-serif', fontSize: '0.9rem', color: '#888' }}>Diseño & Branding</p>
+          </div>
+          <div>
+            <div style={{ width: '100%', height: '400px', backgroundColor: '#eee', marginBottom: '15px' }}></div>
+            <h3>Proyecto Dos</h3>
+            <p style={{ fontFamily: 'sans-serif', fontSize: '0.9rem', color: '#888' }}>Desarrollo Web</p>
+          </div>
+        </div>
+      </section>
 
-      <div style={{ 
-        display: 'flex', 
-        gap: '15px',
-        zIndex: 1,
-        flexWrap: 'wrap',
-        justifyContent: 'center'
-      }}>
-        <a 
-          href="https://github.com/Giumts" 
-          target="_blank" 
-          rel="noopener noreferrer"
-          style={{
-            padding: '12px 24px',
-            backgroundColor: '#38bdf8',
-            color: '#0a0a0a',
-            borderRadius: '12px',
-            fontWeight: 'bold',
-            textDecoration: 'none',
-            transition: 'transform 0.2s'
-          }}
-        >
-          Ver mi GitHub jejejejeje
-        </a>
-
-        <a 
-          href="mailto:tu-email@ejemplo.com" 
-          style={{
-            padding: '12px 24px',
-            border: '1px solid #3f3f46',
-            color: '#ffffff',
-            borderRadius: '12px',
-            fontWeight: 'bold',
-            textDecoration: 'none',
-            backgroundColor: 'rgba(255,255,255,0.05)'
-          }}
-        >
-          Contactar
-        </a>
-      </div>
-
-      <footer style={{
-        position: 'absolute',
-        bottom: '30px',
-        fontSize: '0.9rem',
-        color: '#52525b'
-      }}>
-        © {new Date().getFullYear()} — Diseñado por Giulia
-      </footer>
-    </main>
+    </div>
   );
 }
