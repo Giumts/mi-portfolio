@@ -66,7 +66,7 @@ export default function Home() {
             transition: 'transform 0.2s'
           }}
         >
-          Ver mi GitHub
+          Ver mi GitHub jejejejeje
         </a>
 
         <a 
