@@ -2,7 +2,6 @@
 import ImageTrail from "./ImageTrail";
 
 export default function Home() {
-  // Aquí he puesto tus imágenes reales (las BEAUTIFUL_FAILURES)
   const trailImages = [
     "/BEAUTIFUL_FAILURES_AY1.jpg", 
     "/BEAUTIFUL_FAILURES_AY3.jpg",
@@ -48,18 +47,17 @@ export default function Home() {
         Projects
       </div>
 
-      {/* 3. ABOUT DERECHA */}
+      {/* 3. ABOUT DERECHA (Horizontal y decentrado hacia arriba) */}
       <div style={{ 
         ...textStyle, 
-        right: "5vw", 
-        top: "50%", 
-        transform: "translateY(-50%)",
-        writingMode: "vertical-rl"
+        right: "8vw",     // Un poco más separado del borde
+        top: "40%",       // Decentrado (un poco más arriba del centro)
+        transform: "translateY(-50%)"
       }}>
         About
       </div>
 
-      {/* El rastro de imágenes con tus fotos reales */}
+      {/* El rastro de imágenes */}
       <ImageTrail images={trailImages} />
 
     </main>
