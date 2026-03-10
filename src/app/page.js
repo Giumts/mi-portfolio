@@ -25,7 +25,7 @@ export default function Home() {
       {/* Tu imagen en el centro */}
       <div style={{ display: 'flex', justifyContent: 'center' }}>
         <img 
-          src="/window.svg" 
+          src="/BEAUTIFUL_FAILURES_AY3.jpg" 
           alt="Logo" 
           style={{ width: '80px', height: 'auto' }} 
         />
