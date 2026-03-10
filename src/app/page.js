@@ -48,7 +48,7 @@ export default function Home() {
 
       {/* El rastro de imágenes */}
       <ImageTrail>
-        <img src="/window.svg" alt="Trail" style={{ width: "60px", opacity: 0.7 }} />
+        <img src="/BEAUTIFUL_FAILURES_AY3.jpg" alt="Trail" style={{ width: "60px", opacity: 0.7 }} />
       </ImageTrail>
     </main>
   );
