@@ -41,3 +41,56 @@ export default function Home() {
     </main>
   );
 }
+"use client";
+import ImageTrail from "./ImageTrail";
+
+export default function Home() {
+  const trailImages = [
+    "/imagen1.jpg", 
+    "/imagen2.jpg",
+    "/imagen3.jpg",
+    "/imagen4.jpg",
+  ];
+
+  // Estilo base para todos los textos para que sean iguales
+  const textStyle = {
+    position: "absolute",
+    fontSize: "0.8rem", // Un pelín más pequeño para que se vea más fino
+    letterSpacing: "3px",
+    textTransform: "uppercase",
+    fontFamily: "serif",
+    zIndex: 20, // Por encima de todo
+    color: "#1a1a1a",
+    cursor: "pointer" // Para que parezca un botón
+  };
+
+  return (
+    <main style={{ cursor: "crosshair", overflow: "hidden", backgroundColor: "white" }}>
+      
+      {/* 1. NOMBRE ARRIBA (Centro) */}
+      <h1 style={{ ...textStyle, top: "5vh", width: "100%", textAlign: "center" }}>
+        Giulia
+      </h1>
+
+      {/* 2. PROJECTS ABAJO (Centro) */}
+      <div style={{ ...textStyle, bottom: "5vh", width: "100%", textAlign: "center" }}>
+        Projects
+      </div>
+
+      {/* 3. ABOUT DERECHA (Descentrado) */}
+      <div style={{ 
+        ...textStyle, 
+        right: "5vw", 
+        top: "50%", 
+        transform: "translateY(-50%)", // Centrado verticalmente a la derecha
+        writingMode: "vertical-rl" // Opcional: ponerlo en vertical queda muy cool, si no lo quieres, borra esta línea
+      }}>
+        About
+      </div>
+
+      {/* El rastro de imágenes de fondo */}
+      <ImageTrail images={trailImages} />
+
+    </main>
+  );
+}
