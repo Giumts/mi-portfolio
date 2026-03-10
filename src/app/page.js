@@ -9,10 +9,12 @@ export default function Home() {
     }}>
       {/* Aquí va tu imagen */}
       <img 
-        src="/window.svg" 
+        src="/BEAUTIFUL_FAILURES_AY3.jpg" 
         alt="Logo" 
         style={{ width: '100px', height: 'auto' }} 
       />
     </main>
   );
 }
+
+
