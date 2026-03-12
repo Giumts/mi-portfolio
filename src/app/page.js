@@ -52,29 +52,37 @@ export default function Home() {
   };
 
   return (
-    <main style={{ 
-      backgroundColor: "white", 
-      height: "100vh", 
-      width: "100vw", 
-      overflow: "hidden", 
-      position: "relative",
-      cursor: "crosshair" 
-    }}>
+    <main style={{ backgroundColor: "white", height: "100vh", width: "100vw", overflow: "hidden", position: "relative", cursor: "crosshair" }}>
       
-      {/* Inyectamos el cursor de cruz globalmente */}
       <style jsx global>{`
         body, html, * { cursor: crosshair !important; }
       `}</style>
 
       {/* NAVEGACIÓN */}
-      <h1 onClick={() => setView("home")} style={{ ...textStyle, top: "5vh", width: "100%", textAlign: "center" }}>
+      <h1 
+        onClick={() => setView("home")} 
+        style={{ 
+          ...textStyle, 
+          top: "5vh", 
+          width: "100%", 
+          textAlign: "center",
+          textDecoration: view === "home" ? "line-through" : "none" // Tachado si está activo
+        }}
+      >
         Giulia
       </h1>
       
-      <div onClick={() => setView("projects")} style={{ ...textStyle, bottom: "5vh", width: "100%", textAlign: "center" }}>
-        <span style={{ borderBottom: view === "projects" ? "1px solid #1a1a1a" : "none", paddingBottom: "2px" }}>
-          Projects
-        </span>
+      <div 
+        onClick={() => setView("projects")} 
+        style={{ 
+          ...textStyle, 
+          bottom: "5vh", 
+          width: "100%", 
+          textAlign: "center",
+          textDecoration: view === "projects" ? "line-through" : "none" // Tachado si está activo
+        }}
+      >
+        Projects
       </div>
 
       <div style={{ ...textStyle, right: "8vw", top: "40%", transform: "translateY(-50%)" }}>
@@ -111,13 +119,14 @@ export default function Home() {
                     onMouseOver={(e) => (e.currentTarget.style.filter = "grayscale(0%)")}
                     onMouseOut={(e) => (e.currentTarget.style.filter = "grayscale(100%)")}
                   />
-                  <p className="title-text" style={{ 
+                  <p style={{ 
                     marginTop: "8px", 
                     fontSize: "0.5rem", 
                     letterSpacing: "1px", 
                     fontFamily: "serif",
                     textTransform: "uppercase",
-                    textAlign: "center"
+                    textAlign: "center",
+                    color: "#4a4a4a" // Gris más intenso para los títulos
                   }}>
                     {proj.title}
                   </p>
