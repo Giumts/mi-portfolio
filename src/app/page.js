@@ -10,13 +10,9 @@ export default function Home() {
   const [clipPath, setClipPath] = useState("inset(10% 20% 10% 20%)");
   const [headerPos, setHeaderPos] = useState({ x: 0, y: 0 });
   
-  // ESTADOS PARA EL PUNTERO Y EL HOVER
   const [isHovering, setIsHovering] = useState(false);
 
-  // CONFIGURACIÓN DEL MOVIMIENTO ORGÁNICO (SPRING)
-  // Creamos dos valores "muelle" para X e Y.
-  // stiffness: rigidez del muelle (más alto = más rápido)
-  // damping: amortiguación (más bajo = más rebote)
+  // Configuración del movimiento orgánico
   const springConfig = { stiffness: 150, damping: 15 };
   const mouseX = useSpring(0, springConfig);
   const mouseY = useSpring(0, springConfig);
@@ -36,10 +32,8 @@ export default function Home() {
     { id: 10, title: "Final Chapter", img: "/BEAUTIFUL_FAILURES_AY75.jpg", desc: "Conclusión de la serie exploratoria.", gallery: trailImages },
   ];
 
-  // RASTREO DEL MOUSE Y ACTUALIZACIÓN DE LOS VALORES SPRING
   useEffect(() => {
     const handleMouseMove = (e) => {
-      // Actualizamos los valores muelle, no el estado directamente
       mouseX.set(e.clientX);
       mouseY.set(e.clientY);
     };
@@ -89,7 +83,7 @@ export default function Home() {
         ::-webkit-scrollbar { display: none; }
       `}</style>
 
-      {/* TEXTO FLOTANTE CON MOVIMIENTO ORGÁNICO Y LOREM IPSUM */}
+      {/* TEXTO FLOTANTE EN NEGRO Y MINÚSCULAS */}
       <AnimatePresence>
         {isHovering && view === "detail" && (
           <motion.div
@@ -98,28 +92,23 @@ export default function Home() {
             exit={{ opacity: 0 }}
             style={{
               position: "fixed",
-              // Usamos los valores muelle para X e Y
               x: mouseX,
               y: mouseY,
-              // Desplazamos el texto un poco del puntero
-              marginLeft: "20px",
-              marginTop: "20px",
+              marginLeft: "25px",
+              marginTop: "25px",
               zIndex: 9999,
               pointerEvents: "none",
-              fontSize: "1.2rem",
-              fontWeight: "bold",
-              color: "#000",
-              letterSpacing: "1px",
               fontFamily: "serif",
-              // Aseguramos que el texto esté en minúsculas
               textTransform: "lowercase", 
-              maxWidth: "200px" // Para que el lorem ipsum no sea eterno
+              maxWidth: "220px",
+              color: "#000" // Negro para todo el bloque
             }}
           >
-            <p>{selectedProject?.title}</p>
-            {/* Pequeño Lorem Ipsum en minúsculas */}
-            <p style={{ fontSize: "0.6rem", fontWeight: "normal", marginTop: "5px", textTransform: "lowercase", color: "#666" }}>
-              lorem ipsum dolor sit amet, consectetur adipiscing elit. view project details.
+            <p style={{ fontSize: "1.4rem", fontWeight: "bold", lineHeight: "1.1", marginBottom: "8px" }}>
+              {selectedProject?.title}
+            </p>
+            <p style={{ fontSize: "0.7rem", fontWeight: "normal", lineHeight: "1.4", color: "#000" }}>
+              lorem ipsum dolor sit amet, consectetur adipiscing elit. sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
             </p>
           </motion.div>
         )}
@@ -155,7 +144,6 @@ export default function Home() {
               <motion.p style={{ fontSize: "0.6rem", letterSpacing: "2px", marginBottom: "40px", textTransform: "uppercase", color: "#888" }}>{selectedProject.title}</motion.p>
               <motion.img 
                 src={selectedProject.img} 
-                // Activamos el hover para el texto flotante
                 onMouseEnter={() => setIsHovering(true)}
                 onMouseLeave={() => setIsHovering(false)}
                 style={{ width: "18vw", height: "auto", clipPath: clipPath, x: headerPos.x, y: headerPos.y, transition: "clip-path 1.5s ease" }} 
@@ -174,7 +162,6 @@ export default function Home() {
                 }}>
                   <motion.img 
                     src={img} 
-                    // Activamos el hover para el texto flotante
                     onMouseEnter={() => setIsHovering(true)}
                     onMouseLeave={() => setIsHovering(false)}
                     initial={{ opacity: 0, y: 60 }}
@@ -189,19 +176,16 @@ export default function Home() {
           </motion.div>
         )}
 
-        {/* SECCIÓN ABOUT CON EL CONTENIDO ASEGURADO */}
         {view === "about" && (
           <motion.div key="about" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} style={{ display: "flex", justifyContent: "center", alignItems: "center", height: "100vh", width: "100vw", position: "relative" }}>
             <div style={{ ...textStyle, position: "absolute", left: "8vw", top: "50%", transform: "translateY(-50%)", fontSize: "0.7rem", textTransform: "lowercase", width: "auto" }}>
               giulia@example.com
             </div>
-            
             <div style={{ maxWidth: "500px", textAlign: "center", fontFamily: "serif", fontSize: "1.1rem", lineHeight: "1.8", padding: "0 20px" }}>
-              <p>Giulia es una directora creativa y artista visual independiente enfocada en la estética de la imperfección.</p>
+              <p>giulia es una directora creativa y artista visual independiente enfocada en la estética de la imperfección.</p>
               <br />
-              <p>Su trabajo explora la intersección entre el error digital, el diseño editorial y la narrativa visual cruda. A través de "Beautiful Failures", investiga cómo lo descartado y lo imperfecto pueden elevar la narrativa contemporánea.</p>
+              <p>su trabajo explora la intersección entre el error digital, el diseño editorial y la narrativa visual cruda. a través de "beautiful failures", investiga cómo lo descartado y lo imperfecto pueden elevar la narrativa contemporánea.</p>
             </div>
-
             <div style={{ ...textStyle, position: "absolute", right: "8vw", top: "60%", fontSize: "0.7rem", width: "auto" }}>
               +34 000 000 000
             </div>
