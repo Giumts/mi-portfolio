@@ -8,7 +8,6 @@ export default function Home() {
   const [randomPositions, setRandomPositions] = useState([]);
   const [selectedProject, setSelectedProject] = useState(null);
   const [clipPath, setClipPath] = useState("inset(10% 20% 10% 20%)");
-  // Estado para mover la foto pequeña de portada
   const [headerPos, setHeaderPos] = useState({ x: 0, y: 0 });
 
   const trailImages = ["/BEAUTIFUL_FAILURES_AY1.jpg", "/BEAUTIFUL_FAILURES_AY3.jpg", "/BEAUTIFUL_FAILURES_AY15.jpg", "/BEAUTIFUL_FAILURES_AY37.jpg", "/BEAUTIFUL_FAILURES_AY42.jpg", "/BEAUTIFUL_FAILURES_AY49.jpg", "/BEAUTIFUL_FAILURES_AY51.jpg", "/BEAUTIFUL_FAILURES_AY59.jpg", "/BEAUTIFUL_FAILURES_AY71.jpg", "/BEAUTIFUL_FAILURES_AY75.jpg", "/BEAUTIFUL_FAILURES_AY9.jpg"];
@@ -40,16 +39,13 @@ export default function Home() {
   const openProject = (proj) => {
     const r = () => Math.floor(Math.random() * 25);
     setClipPath(`inset(${r()}% ${r()}% ${r()}% ${r()}%)`);
-    
-    // Generar desplazamiento aleatorio para la foto pequeña de entrada
     setHeaderPos({
-      x: Math.floor(Math.random() * 40 - 20) + "vw", // Se mueve de -20 a 20 horizontal
-      y: Math.floor(Math.random() * 20 - 10) + "vh"  // Se mueve de -10 a 10 vertical
+      x: Math.floor(Math.random() * 40 - 20) + "vw",
+      y: Math.floor(Math.random() * 20 - 10) + "vh"
     });
-
     setSelectedProject(proj);
     setView("detail");
-    window.scrollTo(0, 0);
+    window.scrollTo({ top: 0, behavior: 'instant' });
   };
 
   const textStyle = {
@@ -71,7 +67,6 @@ export default function Home() {
         ::-webkit-scrollbar { display: none; }
       `}</style>
 
-      {/* NAVEGACIÓN */}
       <nav>
         <h1 onClick={() => {setView("home"); setSelectedProject(null);}} style={{ ...textStyle, top: "5vh", width: "100%", textAlign: "center", textDecoration: view === "home" ? "line-through" : "none" }}>Giulia</h1>
         <div onClick={() => {setView("projects"); setSelectedProject(null);}} style={{ ...textStyle, bottom: "5vh", width: "100%", textAlign: "center", textDecoration: view === "projects" ? "line-through" : "none" }}>Projects</div>
@@ -98,42 +93,64 @@ export default function Home() {
 
         {view === "detail" && selectedProject && (
           <motion.div key="detail" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} style={{ width: "100vw", backgroundColor: "white" }}>
-            {/* CABECERA: Imagen pequeña con posición aleatoria */}
-            <div style={{ height: "100vh", display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center", overflow: "hidden" }}>
-              <p style={{ fontSize: "0.6rem", letterSpacing: "2px", marginBottom: "30px", textTransform: "uppercase" }}>{selectedProject.title}</p>
+            
+            {/* 1. SECCIÓN DE ENTRADA: Portada pequeña y texto */}
+            <div style={{ height: "100vh", display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center", position: "relative" }}>
+               {/* Título arriba de la imagen */}
+              <motion.p 
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                style={{ fontSize: "0.6rem", letterSpacing: "2px", marginBottom: "40px", textTransform: "uppercase", color: "#888" }}
+              >
+                {selectedProject.title}
+              </motion.p>
+
+              {/* Imagen Pequeña Aleatoria */}
               <motion.img 
                 src={selectedProject.img} 
+                initial={{ scale: 0.9, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1, x: headerPos.x, y: headerPos.y }}
                 style={{ 
-                  width: "20vw", // Tamaño pequeña
+                  width: "18vw", 
                   height: "auto", 
-                  objectFit: "cover", 
                   clipPath: clipPath, 
-                  x: headerPos.x, // Desplazamiento aleatorio X
-                  y: headerPos.y, // Desplazamiento aleatorio Y
-                  transition: "clip-path 1.2s ease" 
+                  transition: "clip-path 1.5s ease" 
                 }} 
               />
-            </div>
-            
-            <div style={{ maxWidth: "400px", margin: "0 auto 20vh auto", textAlign: "center", fontFamily: "serif", fontSize: "0.9rem", lineHeight: "1.8", color: "#1a1a1a" }}>
-              {selectedProject.desc}
+
+              {/* Descripción sutil debajo */}
+              <motion.div 
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 0.5 }}
+                style={{ maxWidth: "300px", marginTop: "60px", textAlign: "center", fontFamily: "serif", fontSize: "0.85rem", fontStyle: "italic", lineHeight: "1.6", color: "#444" }}
+              >
+                {selectedProject.desc}
+              </motion.div>
             </div>
 
-            <div style={{ width: "100%", display: "flex", flexDirection: "column", gap: "20vh", paddingBottom: "30vh" }}>
+            {/* 2. GALERÍA DINÁMICA: Scroll hacia abajo */}
+            <div style={{ width: "100%", display: "flex", flexDirection: "column", gap: "25vh", paddingBottom: "40vh" }}>
               {selectedProject.gallery.map((img, i) => (
                 <div key={i} style={{ 
                   width: "100%", 
                   display: "flex", 
                   justifyContent: i % 2 === 0 ? "flex-start" : "flex-end",
-                  padding: i % 2 === 0 ? "0 0 0 10vw" : "0 10vw 0 0",
+                  padding: i % 2 === 0 ? "0 0 0 12vw" : "0 12vw 0 0",
                   boxSizing: "border-box"
                 }}>
                   <motion.img 
                     src={img} 
-                    initial={{ opacity: 0, y: 40 }}
+                    initial={{ opacity: 0, y: 60 }}
                     whileInView={{ opacity: 1, y: 0 }}
-                    viewport={{ once: true }}
-                    style={{ width: i % 3 === 0 ? "50vw" : "35vw", cursor: "zoom-in" }} 
+                    viewport={{ once: true, margin: "-10%" }}
+                    transition={{ duration: 1, ease: "easeOut" }}
+                    whileHover={{ scale: 1.02 }}
+                    style={{ 
+                      width: i % 3 === 0 ? "45vw" : (i % 2 === 0 ? "30vw" : "38vw"), 
+                      cursor: "crosshair",
+                      filter: "contrast(1.05)"
+                    }} 
                   />
                 </div>
               ))}
