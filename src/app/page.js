@@ -8,15 +8,20 @@ export default function Home() {
   const [randomPositions, setRandomPositions] = useState([]);
   const [selectedProject, setSelectedProject] = useState(null);
   const [clipPath, setClipPath] = useState("inset(10% 20% 10% 20%)");
-  // Nuevo estado para la posición aleatoria de la imagen de cabecera
-  const [headerPos, setHeaderPos] = useState({ top: "0", left: "0" });
 
   const trailImages = ["/BEAUTIFUL_FAILURES_AY1.jpg", "/BEAUTIFUL_FAILURES_AY3.jpg", "/BEAUTIFUL_FAILURES_AY15.jpg", "/BEAUTIFUL_FAILURES_AY37.jpg", "/BEAUTIFUL_FAILURES_AY42.jpg", "/BEAUTIFUL_FAILURES_AY49.jpg", "/BEAUTIFUL_FAILURES_AY51.jpg", "/BEAUTIFUL_FAILURES_AY59.jpg", "/BEAUTIFUL_FAILURES_AY71.jpg", "/BEAUTIFUL_FAILURES_AY75.jpg", "/BEAUTIFUL_FAILURES_AY9.jpg"];
 
   const projects = [
     { id: 1, title: "Beautiful Failures I", img: "/BEAUTIFUL_FAILURES_AY1.jpg", desc: "Una búsqueda de la armonía en el error digital y la composición orgánica.", gallery: trailImages },
     { id: 2, title: "Beautiful Failures II", img: "/BEAUTIFUL_FAILURES_AY3.jpg", desc: "La imperfección como lenguaje visual predominante.", gallery: trailImages },
-    // ... (resto de proyectos iguales)
+    { id: 3, title: "Editorial Study", img: "/BEAUTIFUL_FAILURES_AY15.jpg", desc: "Exploración rítmica del espacio en blanco.", gallery: trailImages },
+    { id: 4, title: "Light & Shadow", img: "/BEAUTIFUL_FAILURES_AY37.jpg", desc: "El contraste extremo define la forma.", gallery: trailImages },
+    { id: 5, title: "Visual Concept", img: "/BEAUTIFUL_FAILURES_AY42.jpg", desc: "Abstracción aplicada al diseño contemporáneo.", gallery: trailImages },
+    { id: 6, title: "Archive 01", img: "/BEAUTIFUL_FAILURES_AY49.jpg", desc: "Fragmentos de un proceso inacabado.", gallery: trailImages },
+    { id: 7, title: "Motion Texture", img: "/BEAUTIFUL_FAILURES_AY51.jpg", desc: "Capturando la esencia del movimiento estático.", gallery: trailImages },
+    { id: 8, title: "Silence", img: "/BEAUTIFUL_FAILURES_AY59.jpg", desc: "Reducción visual al mínimo exponente.", gallery: trailImages },
+    { id: 9, title: "Form Study", img: "/BEAUTIFUL_FAILURES_AY71.jpg", desc: "Anatomía de la forma pura.", gallery: trailImages },
+    { id: 10, title: "Final Chapter", img: "/BEAUTIFUL_FAILURES_AY75.jpg", desc: "Conclusión de la serie exploratoria.", gallery: trailImages },
   ];
 
   useEffect(() => {
@@ -33,13 +38,6 @@ export default function Home() {
   const openProject = (proj) => {
     const r = () => Math.floor(Math.random() * 25);
     setClipPath(`inset(${r()}% ${r()}% ${r()}% ${r()}%)`);
-    
-    // Generar posición aleatoria para la imagen pequeña de cabecera
-    setHeaderPos({
-      marginTop: Math.floor(Math.random() * 10 - 5) + "vh",
-      marginLeft: Math.floor(Math.random() * 20 - 10) + "vw"
-    });
-
     setSelectedProject(proj);
     setView("detail");
     window.scrollTo(0, 0);
@@ -64,6 +62,7 @@ export default function Home() {
         ::-webkit-scrollbar { display: none; }
       `}</style>
 
+      {/* NAVEGACIÓN */}
       <nav>
         <h1 onClick={() => {setView("home"); setSelectedProject(null);}} style={{ ...textStyle, top: "5vh", width: "100%", textAlign: "center", textDecoration: view === "home" ? "line-through" : "none" }}>Giulia</h1>
         <div onClick={() => {setView("projects"); setSelectedProject(null);}} style={{ ...textStyle, bottom: "5vh", width: "100%", textAlign: "center", textDecoration: view === "projects" ? "line-through" : "none" }}>Projects</div>
@@ -90,21 +89,9 @@ export default function Home() {
 
         {view === "detail" && selectedProject && (
           <motion.div key="detail" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} style={{ width: "100vw", backgroundColor: "white" }}>
-            {/* Cabecera con imagen PEQUEÑA y posición ALEATORIA */}
             <div style={{ height: "100vh", display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center" }}>
-              <p style={{ fontSize: "0.6rem", letterSpacing: "2px", marginBottom: "20px", textTransform: "uppercase" }}>{selectedProject.title}</p>
-              <img 
-                src={selectedProject.img} 
-                style={{ 
-                  width: "25vw", // Imagen pequeña
-                  height: "auto", 
-                  objectFit: "cover", 
-                  clipPath: clipPath, 
-                  transition: "all 1s ease",
-                  marginTop: headerPos.marginTop,
-                  marginLeft: headerPos.marginLeft
-                }} 
-              />
+              <p style={{ fontSize: "0.6rem", letterSpacing: "2px", marginBottom: "30px", textTransform: "uppercase" }}>{selectedProject.title}</p>
+              <img src={selectedProject.img} style={{ width: "60vw", height: "60vh", objectFit: "cover", clipPath: clipPath, transition: "clip-path 1.2s ease" }} />
             </div>
             
             <div style={{ maxWidth: "400px", margin: "0 auto 20vh auto", textAlign: "center", fontFamily: "serif", fontSize: "0.9rem", lineHeight: "1.8", color: "#1a1a1a" }}>
@@ -133,7 +120,16 @@ export default function Home() {
           </motion.div>
         )}
 
-        {/* ... (vista About se mantiene igual) */}
+        {view === "about" && (
+          <motion.div key="about" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} style={{ display: "flex", justifyContent: "center", alignItems: "center", height: "100vh", width: "100vw" }}>
+            <div style={{ ...textStyle, position: "absolute", left: "5vw", top: "50%", transform: "translateY(-50%)", fontSize: "0.65rem", textTransform: "lowercase" }}>giulia@example.com</div>
+            <div style={{ maxWidth: "400px", textAlign: "center", fontFamily: "serif", fontSize: "1rem", lineHeight: "1.7" }}>
+              Giulia es una directora creativa y artista visual independiente. Su trabajo explora la intersección entre el error digital, el diseño editorial y la narrativa visual cruda. <br/><br/>
+              A través de "Beautiful Failures", investiga cómo la imperfección puede elevar la estética contemporánea.
+            </div>
+            <div style={{ ...textStyle, position: "absolute", right: "5vw", top: "60%", fontSize: "0.65rem" }}>+34 000 000 000</div>
+          </motion.div>
+        )}
       </AnimatePresence>
     </main>
   );
