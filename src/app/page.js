@@ -16,7 +16,6 @@ export default function Home() {
     "/BEAUTIFUL_FAILURES_AY9.jpg",
   ];
 
-  // Lista de 10 proyectos
   const projects = [
     { id: 1, title: "Beautiful Failures I", img: "/BEAUTIFUL_FAILURES_AY1.jpg" },
     { id: 2, title: "Beautiful Failures II", img: "/BEAUTIFUL_FAILURES_AY3.jpg" },
@@ -33,9 +32,9 @@ export default function Home() {
   useEffect(() => {
     if (view === "projects") {
       const positions = projects.map(() => ({
-        top: Math.floor(Math.random() * 65 + 15) + "vh", // Rango vertical
-        left: Math.floor(Math.random() * 75 + 10) + "vw", // Rango horizontal
-        rotation: Math.floor(Math.random() * 10 - 5) + "deg", // Pequeña rotación aleatoria para naturalidad
+        top: Math.floor(Math.random() * 65 + 15) + "vh",
+        left: Math.floor(Math.random() * 75 + 10) + "vw",
+        rotation: Math.floor(Math.random() * 10 - 5) + "deg",
       }));
       setRandomPositions(positions);
     }
@@ -62,18 +61,22 @@ export default function Home() {
       cursor: "crosshair" 
     }}>
       
+      {/* Inyectamos el cursor de cruz globalmente */}
       <style jsx global>{`
-        body { cursor: crosshair !important; }
-        * { cursor: crosshair !important; }
+        body, html, * { cursor: crosshair !important; }
       `}</style>
 
       {/* NAVEGACIÓN */}
       <h1 onClick={() => setView("home")} style={{ ...textStyle, top: "5vh", width: "100%", textAlign: "center" }}>
         Giulia
       </h1>
-      <div onClick={() => setView("projects")} style={{ ...textStyle, bottom: "5vh", width: "100%", textAlign: "center", textDecoration: view === "projects" ? "underline" : "none" }}>
-        Projects
+      
+      <div onClick={() => setView("projects")} style={{ ...textStyle, bottom: "5vh", width: "100%", textAlign: "center" }}>
+        <span style={{ borderBottom: view === "projects" ? "1px solid #1a1a1a" : "none", paddingBottom: "2px" }}>
+          Projects
+        </span>
       </div>
+
       <div style={{ ...textStyle, right: "8vw", top: "40%", transform: "translateY(-50%)" }}>
         About
       </div>
@@ -96,7 +99,7 @@ export default function Home() {
                   top: randomPositions[index]?.top || "50%", 
                   left: randomPositions[index]?.left || "50%",
                   rotate: randomPositions[index]?.rotation || "0deg",
-                  width: "100px", // Más pequeñas para que quepan 10 bien
+                  width: "100px",
                 }}
               >
                 <div style={{ position: "relative" }}>
@@ -108,28 +111,19 @@ export default function Home() {
                     onMouseOver={(e) => (e.currentTarget.style.filter = "grayscale(0%)")}
                     onMouseOut={(e) => (e.currentTarget.style.filter = "grayscale(100%)")}
                   />
-                  <motion.p 
-                    className="project-title"
-                    style={{ 
-                      marginTop: "10px", 
-                      fontSize: "0.55rem", 
-                      letterSpacing: "1px", 
-                      fontFamily: "serif",
-                      textTransform: "uppercase",
-                      opacity: 0,
-                      transition: "opacity 0.3s",
-                      pointerEvents: "none",
-                      textAlign: "center"
-                    }}
-                  >
+                  <p className="title-text" style={{ 
+                    marginTop: "8px", 
+                    fontSize: "0.5rem", 
+                    letterSpacing: "1px", 
+                    fontFamily: "serif",
+                    textTransform: "uppercase",
+                    textAlign: "center"
+                  }}>
                     {proj.title}
-                  </motion.p>
+                  </p>
                 </div>
               </motion.div>
             ))}
-            <style jsx>{`
-              div:hover > .project-title { opacity: 1 !important; }
-            `}</style>
           </motion.div>
         )}
       </AnimatePresence>
