@@ -1,7 +1,7 @@
 "use client";
 import { useState, useEffect } from "react";
 import ImageTrail from "./ImageTrail";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence, useSpring } from "framer-motion";
 
 export default function Home() {
   const [view, setView] = useState("home");
@@ -10,8 +10,16 @@ export default function Home() {
   const [clipPath, setClipPath] = useState("inset(10% 20% 10% 20%)");
   const [headerPos, setHeaderPos] = useState({ x: 0, y: 0 });
   
-  const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
+  // ESTADOS PARA EL PUNTERO Y EL HOVER
   const [isHovering, setIsHovering] = useState(false);
+
+  // CONFIGURACIÓN DEL MOVIMIENTO ORGÁNICO (SPRING)
+  // Creamos dos valores "muelle" para X e Y.
+  // stiffness: rigidez del muelle (más alto = más rápido)
+  // damping: amortiguación (más bajo = más rebote)
+  const springConfig = { stiffness: 150, damping: 15 };
+  const mouseX = useSpring(0, springConfig);
+  const mouseY = useSpring(0, springConfig);
 
   const trailImages = ["/BEAUTIFUL_FAILURES_AY1.jpg", "/BEAUTIFUL_FAILURES_AY3.jpg", "/BEAUTIFUL_FAILURES_AY15.jpg", "/BEAUTIFUL_FAILURES_AY37.jpg", "/BEAUTIFUL_FAILURES_AY42.jpg", "/BEAUTIFUL_FAILURES_AY49.jpg", "/BEAUTIFUL_FAILURES_AY51.jpg", "/BEAUTIFUL_FAILURES_AY59.jpg", "/BEAUTIFUL_FAILURES_AY71.jpg", "/BEAUTIFUL_FAILURES_AY75.jpg", "/BEAUTIFUL_FAILURES_AY9.jpg"];
 
@@ -28,13 +36,16 @@ export default function Home() {
     { id: 10, title: "Final Chapter", img: "/BEAUTIFUL_FAILURES_AY75.jpg", desc: "Conclusión de la serie exploratoria.", gallery: trailImages },
   ];
 
+  // RASTREO DEL MOUSE Y ACTUALIZACIÓN DE LOS VALORES SPRING
   useEffect(() => {
     const handleMouseMove = (e) => {
-      setMousePos({ x: e.clientX, y: e.clientY });
+      // Actualizamos los valores muelle, no el estado directamente
+      mouseX.set(e.clientX);
+      mouseY.set(e.clientY);
     };
     window.addEventListener("mousemove", handleMouseMove);
     return () => window.removeEventListener("mousemove", handleMouseMove);
-  }, []);
+  }, [mouseX, mouseY]);
 
   useEffect(() => {
     if (view === "projects") {
@@ -78,28 +89,38 @@ export default function Home() {
         ::-webkit-scrollbar { display: none; }
       `}</style>
 
-      {/* TEXTO FLOTANTE MÁS GRANDE Y NEGRO */}
+      {/* TEXTO FLOTANTE CON MOVIMIENTO ORGÁNICO Y LOREM IPSUM */}
       <AnimatePresence>
         {isHovering && view === "detail" && (
           <motion.div
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
+            initial={{ opacity: 0, scale: 0.8 }}
+            animate={{ opacity: 1, scale: 1 }}
             exit={{ opacity: 0 }}
             style={{
               position: "fixed",
-              top: mousePos.y + 20,
-              left: mousePos.x + 20,
+              // Usamos los valores muelle para X e Y
+              x: mouseX,
+              y: mouseY,
+              // Desplazamos el texto un poco del puntero
+              marginLeft: "20px",
+              marginTop: "20px",
               zIndex: 9999,
               pointerEvents: "none",
-              fontSize: "1.2rem", // Texto más grande
+              fontSize: "1.2rem",
               fontWeight: "bold",
-              color: "#000", // Negro sólido
+              color: "#000",
               letterSpacing: "1px",
-              textTransform: "uppercase",
-              fontFamily: "serif"
+              fontFamily: "serif",
+              // Aseguramos que el texto esté en minúsculas
+              textTransform: "lowercase", 
+              maxWidth: "200px" // Para que el lorem ipsum no sea eterno
             }}
           >
-            {selectedProject?.title}
+            <p>{selectedProject?.title}</p>
+            {/* Pequeño Lorem Ipsum en minúsculas */}
+            <p style={{ fontSize: "0.6rem", fontWeight: "normal", marginTop: "5px", textTransform: "lowercase", color: "#666" }}>
+              lorem ipsum dolor sit amet, consectetur adipiscing elit. view project details.
+            </p>
           </motion.div>
         )}
       </AnimatePresence>
@@ -134,6 +155,7 @@ export default function Home() {
               <motion.p style={{ fontSize: "0.6rem", letterSpacing: "2px", marginBottom: "40px", textTransform: "uppercase", color: "#888" }}>{selectedProject.title}</motion.p>
               <motion.img 
                 src={selectedProject.img} 
+                // Activamos el hover para el texto flotante
                 onMouseEnter={() => setIsHovering(true)}
                 onMouseLeave={() => setIsHovering(false)}
                 style={{ width: "18vw", height: "auto", clipPath: clipPath, x: headerPos.x, y: headerPos.y, transition: "clip-path 1.5s ease" }} 
@@ -152,6 +174,7 @@ export default function Home() {
                 }}>
                   <motion.img 
                     src={img} 
+                    // Activamos el hover para el texto flotante
                     onMouseEnter={() => setIsHovering(true)}
                     onMouseLeave={() => setIsHovering(false)}
                     initial={{ opacity: 0, y: 60 }}
@@ -166,7 +189,7 @@ export default function Home() {
           </motion.div>
         )}
 
-        {/* CONTENIDO DEL ABOUT ASEGURADO */}
+        {/* SECCIÓN ABOUT CON EL CONTENIDO ASEGURADO */}
         {view === "about" && (
           <motion.div key="about" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} style={{ display: "flex", justifyContent: "center", alignItems: "center", height: "100vh", width: "100vw", position: "relative" }}>
             <div style={{ ...textStyle, position: "absolute", left: "8vw", top: "50%", transform: "translateY(-50%)", fontSize: "0.7rem", textTransform: "lowercase", width: "auto" }}>
