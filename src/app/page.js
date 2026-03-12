@@ -8,6 +8,8 @@ export default function Home() {
   const [randomPositions, setRandomPositions] = useState([]);
   const [selectedProject, setSelectedProject] = useState(null);
   const [clipPath, setClipPath] = useState("inset(10% 20% 10% 20%)");
+  // Estado para mover la foto pequeña de portada
+  const [headerPos, setHeaderPos] = useState({ x: 0, y: 0 });
 
   const trailImages = ["/BEAUTIFUL_FAILURES_AY1.jpg", "/BEAUTIFUL_FAILURES_AY3.jpg", "/BEAUTIFUL_FAILURES_AY15.jpg", "/BEAUTIFUL_FAILURES_AY37.jpg", "/BEAUTIFUL_FAILURES_AY42.jpg", "/BEAUTIFUL_FAILURES_AY49.jpg", "/BEAUTIFUL_FAILURES_AY51.jpg", "/BEAUTIFUL_FAILURES_AY59.jpg", "/BEAUTIFUL_FAILURES_AY71.jpg", "/BEAUTIFUL_FAILURES_AY75.jpg", "/BEAUTIFUL_FAILURES_AY9.jpg"];
 
@@ -38,6 +40,13 @@ export default function Home() {
   const openProject = (proj) => {
     const r = () => Math.floor(Math.random() * 25);
     setClipPath(`inset(${r()}% ${r()}% ${r()}% ${r()}%)`);
+    
+    // Generar desplazamiento aleatorio para la foto pequeña de entrada
+    setHeaderPos({
+      x: Math.floor(Math.random() * 40 - 20) + "vw", // Se mueve de -20 a 20 horizontal
+      y: Math.floor(Math.random() * 20 - 10) + "vh"  // Se mueve de -10 a 10 vertical
+    });
+
     setSelectedProject(proj);
     setView("detail");
     window.scrollTo(0, 0);
@@ -89,9 +98,21 @@ export default function Home() {
 
         {view === "detail" && selectedProject && (
           <motion.div key="detail" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} style={{ width: "100vw", backgroundColor: "white" }}>
-            <div style={{ height: "100vh", display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center" }}>
+            {/* CABECERA: Imagen pequeña con posición aleatoria */}
+            <div style={{ height: "100vh", display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center", overflow: "hidden" }}>
               <p style={{ fontSize: "0.6rem", letterSpacing: "2px", marginBottom: "30px", textTransform: "uppercase" }}>{selectedProject.title}</p>
-              <img src={selectedProject.img} style={{ width: "60vw", height: "60vh", objectFit: "cover", clipPath: clipPath, transition: "clip-path 1.2s ease" }} />
+              <motion.img 
+                src={selectedProject.img} 
+                style={{ 
+                  width: "20vw", // Tamaño pequeña
+                  height: "auto", 
+                  objectFit: "cover", 
+                  clipPath: clipPath, 
+                  x: headerPos.x, // Desplazamiento aleatorio X
+                  y: headerPos.y, // Desplazamiento aleatorio Y
+                  transition: "clip-path 1.2s ease" 
+                }} 
+              />
             </div>
             
             <div style={{ maxWidth: "400px", margin: "0 auto 20vh auto", textAlign: "center", fontFamily: "serif", fontSize: "0.9rem", lineHeight: "1.8", color: "#1a1a1a" }}>
