@@ -38,7 +38,7 @@ export default function Home() {
       }));
       setRandomPositions(positions);
     }
-  }, [view]);
+  }, [view, projects.length]);
 
   const textStyle = {
     position: "absolute",
@@ -49,6 +49,7 @@ export default function Home() {
     zIndex: 100, 
     color: "#1a1a1a",
     cursor: "crosshair",
+    transition: "all 0.3s ease"
   };
 
   return (
@@ -61,40 +62,41 @@ export default function Home() {
       {/* NAVEGACIÓN */}
       <h1 
         onClick={() => setView("home")} 
-        style={{ 
-          ...textStyle, 
-          top: "5vh", 
-          width: "100%", 
-          textAlign: "center",
-          textDecoration: view === "home" ? "line-through" : "none" // Tachado si está activo
-        }}
+        style={{ ...textStyle, top: "5vh", width: "100%", textAlign: "center", textDecoration: view === "home" ? "line-through" : "none" }}
       >
         Giulia
       </h1>
       
       <div 
         onClick={() => setView("projects")} 
-        style={{ 
-          ...textStyle, 
-          bottom: "5vh", 
-          width: "100%", 
-          textAlign: "center",
-          textDecoration: view === "projects" ? "line-through" : "none" // Tachado si está activo
-        }}
+        style={{ ...textStyle, bottom: "5vh", width: "100%", textAlign: "center", textDecoration: view === "projects" ? "line-through" : "none" }}
       >
         Projects
       </div>
 
-      <div style={{ ...textStyle, right: "8vw", top: "40%", transform: "translateY(-50%)" }}>
+      <div 
+        onClick={() => setView("about")}
+        style={{ 
+          ...textStyle, 
+          right: "8vw", 
+          top: "40%", 
+          transform: "translateY(-50%)",
+          textDecoration: view === "about" ? "line-through" : "none" 
+        }}
+      >
         About
       </div>
 
       <AnimatePresence mode="wait">
-        {view === "home" ? (
+        {/* VISTA HOME */}
+        {view === "home" && (
           <motion.div key="home" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
             <ImageTrail images={trailImages} />
           </motion.div>
-        ) : (
+        )}
+
+        {/* VISTA PROJECTS */}
+        {view === "projects" && (
           <motion.div key="projects" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} style={{ position: "relative", width: "100%", height: "100%" }}>
             {projects.map((proj, index) => (
               <motion.div 
@@ -119,20 +121,54 @@ export default function Home() {
                     onMouseOver={(e) => (e.currentTarget.style.filter = "grayscale(0%)")}
                     onMouseOut={(e) => (e.currentTarget.style.filter = "grayscale(100%)")}
                   />
-                  <p style={{ 
-                    marginTop: "8px", 
-                    fontSize: "0.5rem", 
-                    letterSpacing: "1px", 
-                    fontFamily: "serif",
-                    textTransform: "uppercase",
-                    textAlign: "center",
-                    color: "#4a4a4a" // Gris más intenso para los títulos
-                  }}>
+                  <p style={{ marginTop: "8px", fontSize: "0.5rem", letterSpacing: "1px", fontFamily: "serif", textTransform: "uppercase", textAlign: "center", color: "#4a4a4a" }}>
                     {proj.title}
                   </p>
                 </div>
               </motion.div>
             ))}
+          </motion.div>
+        )}
+
+        {/* VISTA ABOUT */}
+        {view === "about" && (
+          <motion.div 
+            key="about" 
+            initial={{ opacity: 0 }} 
+            animate={{ opacity: 1 }} 
+            exit={{ opacity: 0 }}
+            style={{ 
+              display: "flex", 
+              justifyContent: "center", 
+              alignItems: "center", 
+              height: "100vh", 
+              width: "100vw",
+              padding: "0 10vw"
+            }}
+          >
+            {/* EMAIL (Lado izquierdo) */}
+            <div style={{ ...textStyle, left: "5vw", top: "50%", transform: "translateY(-50%)", fontSize: "0.6rem" }}>
+              giulia@example.com
+            </div>
+
+            {/* DESCRIPCIÓN (Centro) */}
+            <div style={{ 
+              maxWidth: "350px", 
+              textAlign: "center", 
+              fontFamily: "serif", 
+              fontSize: "0.9rem", 
+              lineHeight: "1.6", 
+              color: "#1a1a1a" 
+            }}>
+              Directora creativa y artista visual enfocada en capturar la belleza de lo imperfecto. 
+              Exploro la intersección entre el diseño editorial y la narrativa digital a través de 
+              "Beautiful Failures".
+            </div>
+
+            {/* TELÉFONO (Lado derecho, debajo del botón About) */}
+            <div style={{ ...textStyle, right: "5vw", top: "60%", fontSize: "0.6rem" }}>
+              +34 000 000 000
+            </div>
           </motion.div>
         )}
       </AnimatePresence>
