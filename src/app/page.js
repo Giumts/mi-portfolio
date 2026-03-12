@@ -10,10 +10,12 @@ export default function Home() {
   const [clipPath, setClipPath] = useState("inset(10% 20% 10% 20%)");
   const [headerPos, setHeaderPos] = useState({ x: 0, y: 0 });
   
+  // ESTADOS PARA EL PUNTERO Y EL HOVER
   const [isHovering, setIsHovering] = useState(false);
 
-  // Configuración del movimiento orgánico
-  const springConfig = { stiffness: 150, damping: 15 };
+  // CONFIGURACIÓN DEL MOVIMIENTO ORGÁNICO (SPRING)
+  // stiffness: rigidez del muelle. damping: amortiguación.
+  const springConfig = { stiffness: 180, damping: 20 };
   const mouseX = useSpring(0, springConfig);
   const mouseY = useSpring(0, springConfig);
 
@@ -32,8 +34,10 @@ export default function Home() {
     { id: 10, title: "Final Chapter", img: "/BEAUTIFUL_FAILURES_AY75.jpg", desc: "Conclusión de la serie exploratoria.", gallery: trailImages },
   ];
 
+  // RASTREO DEL MOUSE Y ACTUALIZACIÓN DE LOS VALORES SPRING
   useEffect(() => {
     const handleMouseMove = (e) => {
+      // Actualizamos los valores muelle, no el estado directamente
       mouseX.set(e.clientX);
       mouseY.set(e.clientY);
     };
@@ -83,31 +87,38 @@ export default function Home() {
         ::-webkit-scrollbar { display: none; }
       `}</style>
 
-      {/* TEXTO FLOTANTE EN NEGRO Y MINÚSCULAS */}
+      {/* TEXTO FLOTANTE CON MOVIMIENTO ORGÁNICO Y BORDES (ESTILO PREVISUALIZACIÓN) */}
       <AnimatePresence>
         {isHovering && view === "detail" && (
           <motion.div
-            initial={{ opacity: 0, scale: 0.8 }}
+            initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
             exit={{ opacity: 0 }}
             style={{
               position: "fixed",
               x: mouseX,
               y: mouseY,
-              marginLeft: "25px",
-              marginTop: "25px",
+              // Desplazamos el texto del puntero
+              marginLeft: "30px",
+              marginTop: "30px",
               zIndex: 9999,
               pointerEvents: "none",
               fontFamily: "serif",
+              // Aseguramos que el texto esté en minúsculas
               textTransform: "lowercase", 
-              maxWidth: "220px",
-              color: "#000" // Negro para todo el bloque
+              maxWidth: "250px",
+              // Fondo y borde para el cuadro flotante
+              backgroundColor: "rgba(255,255,255,0.95)",
+              border: "1px solid #000",
+              padding: "15px 20px",
+              boxShadow: "0 5px 15px rgba(0,0,0,0.1)"
             }}
           >
-            <p style={{ fontSize: "1.4rem", fontWeight: "bold", lineHeight: "1.1", marginBottom: "8px" }}>
+            <p style={{ fontSize: "1.4rem", fontWeight: "bold", color: "#000", lineHeight: "1.2", marginBottom: "8px" }}>
               {selectedProject?.title}
             </p>
-            <p style={{ fontSize: "0.7rem", fontWeight: "normal", lineHeight: "1.4", color: "#000" }}>
+            {/* Pequeño Lorem Ipsum en minúsculas y negro sólido */}
+            <p style={{ fontSize: "0.7rem", fontWeight: "normal", color: "#000", lineHeight: "1.5" }}>
               lorem ipsum dolor sit amet, consectetur adipiscing elit. sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
             </p>
           </motion.div>
@@ -144,9 +155,11 @@ export default function Home() {
               <motion.p style={{ fontSize: "0.6rem", letterSpacing: "2px", marginBottom: "40px", textTransform: "uppercase", color: "#888" }}>{selectedProject.title}</motion.p>
               <motion.img 
                 src={selectedProject.img} 
+                // Activamos el hover para el texto flotante
                 onMouseEnter={() => setIsHovering(true)}
                 onMouseLeave={() => setIsHovering(false)}
-                style={{ width: "18vw", height: "auto", clipPath: clipPath, x: headerPos.x, y: headerPos.y, transition: "clip-path 1.5s ease" }} 
+                // Estilo de borde fino (COMO EN LA PREVISUALIZACIÓN)
+                style={{ width: "18vw", height: "auto", objectFit: "cover", border: "1px solid #000", clipPath: clipPath, x: headerPos.x, y: headerPos.y, transition: "clip-path 1.5s ease" }} 
               />
               <motion.div style={{ maxWidth: "300px", marginTop: "60px", textAlign: "center", fontFamily: "serif", fontSize: "0.85rem", fontStyle: "italic", lineHeight: "1.6", color: "#444" }}>{selectedProject.desc}</motion.div>
             </div>
@@ -162,13 +175,15 @@ export default function Home() {
                 }}>
                   <motion.img 
                     src={img} 
+                    // Activamos el hover para el texto flotante
                     onMouseEnter={() => setIsHovering(true)}
                     onMouseLeave={() => setIsHovering(false)}
                     initial={{ opacity: 0, y: 60 }}
                     whileInView={{ opacity: 1, y: 0 }}
                     viewport={{ once: true, margin: "-10%" }}
                     transition={{ duration: 1 }}
-                    style={{ width: i % 3 === 0 ? "45vw" : (i % 2 === 0 ? "30vw" : "38vw") }} 
+                    // Estilo de borde fino (COMO EN LA PREVISUALIZACIÓN)
+                    style={{ width: i % 3 === 0 ? "45vw" : (i % 2 === 0 ? "30vw" : "38vw"), border: "1px solid #000" }} 
                   />
                 </div>
               ))}
@@ -176,6 +191,7 @@ export default function Home() {
           </motion.div>
         )}
 
+        {/* SECCIÓN ABOUT CON EL CONTENIDO ASEGURADO */}
         {view === "about" && (
           <motion.div key="about" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} style={{ display: "flex", justifyContent: "center", alignItems: "center", height: "100vh", width: "100vw", position: "relative" }}>
             <div style={{ ...textStyle, position: "absolute", left: "8vw", top: "50%", transform: "translateY(-50%)", fontSize: "0.7rem", textTransform: "lowercase", width: "auto" }}>
