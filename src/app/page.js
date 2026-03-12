@@ -10,7 +10,6 @@ export default function Home() {
   const [clipPath, setClipPath] = useState("inset(10% 20% 10% 20%)");
   const [headerPos, setHeaderPos] = useState({ x: 0, y: 0 });
   
-  // ESTADOS PARA EL TEXTO QUE SIGUE AL MOUSE
   const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
   const [isHovering, setIsHovering] = useState(false);
 
@@ -29,7 +28,6 @@ export default function Home() {
     { id: 10, title: "Final Chapter", img: "/BEAUTIFUL_FAILURES_AY75.jpg", desc: "Conclusión de la serie exploratoria.", gallery: trailImages },
   ];
 
-  // RASTREO DEL MOUSE
   useEffect(() => {
     const handleMouseMove = (e) => {
       setMousePos({ x: e.clientX, y: e.clientY });
@@ -80,34 +78,34 @@ export default function Home() {
         ::-webkit-scrollbar { display: none; }
       `}</style>
 
-      {/* TEXTO QUE SIGUE AL MOUSE (FLOAT TEXT) */}
+      {/* TEXTO FLOTANTE MÁS GRANDE Y NEGRO */}
       <AnimatePresence>
         {isHovering && view === "detail" && (
           <motion.div
-            initial={{ opacity: 0, scale: 0.8 }}
-            animate={{ opacity: 1, scale: 1 }}
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0 }}
             style={{
               position: "fixed",
-              top: mousePos.y + 15,
-              left: mousePos.x + 15,
+              top: mousePos.y + 20,
+              left: mousePos.x + 20,
               zIndex: 9999,
-              pointerEvents: "none", // Para que no bloquee el click
-              fontSize: "0.5rem",
-              letterSpacing: "2px",
+              pointerEvents: "none",
+              fontSize: "1.2rem", // Texto más grande
+              fontWeight: "bold",
+              color: "#000", // Negro sólido
+              letterSpacing: "1px",
               textTransform: "uppercase",
-              backgroundColor: "rgba(255,255,255,0.8)",
-              padding: "4px 8px",
               fontFamily: "serif"
             }}
           >
-            {selectedProject?.title} — View
+            {selectedProject?.title}
           </motion.div>
         )}
       </AnimatePresence>
 
       <nav>
-        <h1 onClick={() => {setView("home"); setSelectedProject(null);}} style={{ ...textStyle, top: "5vh", width: "100%", textAlign: "center", textDecoration: view === "home" ? "line-through" : "none" }}>Giulia</h1>
+        <div onClick={() => {setView("home"); setSelectedProject(null);}} style={{ ...textStyle, top: "5vh", width: "100%", textAlign: "center", textDecoration: view === "home" ? "line-through" : "none" }}>Giulia</div>
         <div onClick={() => {setView("projects"); setSelectedProject(null);}} style={{ ...textStyle, bottom: "5vh", width: "100%", textAlign: "center", textDecoration: view === "projects" ? "line-through" : "none" }}>Projects</div>
         <div onClick={() => {setView("about"); setSelectedProject(null);}} style={{ ...textStyle, right: "8vw", top: "40%", transform: "translateY(-50%)", textDecoration: view === "about" ? "line-through" : "none" }}>About</div>
       </nav>
@@ -132,8 +130,6 @@ export default function Home() {
 
         {view === "detail" && selectedProject && (
           <motion.div key="detail" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} style={{ width: "100vw", backgroundColor: "white" }}>
-            
-            {/* PORTADA DETALLE */}
             <div style={{ height: "100vh", display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center", position: "relative" }}>
               <motion.p style={{ fontSize: "0.6rem", letterSpacing: "2px", marginBottom: "40px", textTransform: "uppercase", color: "#888" }}>{selectedProject.title}</motion.p>
               <motion.img 
@@ -145,7 +141,6 @@ export default function Home() {
               <motion.div style={{ maxWidth: "300px", marginTop: "60px", textAlign: "center", fontFamily: "serif", fontSize: "0.85rem", fontStyle: "italic", lineHeight: "1.6", color: "#444" }}>{selectedProject.desc}</motion.div>
             </div>
 
-            {/* GALERÍA CON TEXTO FLOTANTE */}
             <div style={{ width: "100%", display: "flex", flexDirection: "column", gap: "25vh", paddingBottom: "40vh" }}>
               {selectedProject.gallery.map((img, i) => (
                 <div key={i} style={{ 
@@ -163,9 +158,7 @@ export default function Home() {
                     whileInView={{ opacity: 1, y: 0 }}
                     viewport={{ once: true, margin: "-10%" }}
                     transition={{ duration: 1 }}
-                    style={{ 
-                      width: i % 3 === 0 ? "45vw" : (i % 2 === 0 ? "30vw" : "38vw"), 
-                    }} 
+                    style={{ width: i % 3 === 0 ? "45vw" : (i % 2 === 0 ? "30vw" : "38vw") }} 
                   />
                 </div>
               ))}
@@ -173,7 +166,24 @@ export default function Home() {
           </motion.div>
         )}
 
-        {/* ... About ... */}
+        {/* CONTENIDO DEL ABOUT ASEGURADO */}
+        {view === "about" && (
+          <motion.div key="about" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} style={{ display: "flex", justifyContent: "center", alignItems: "center", height: "100vh", width: "100vw", position: "relative" }}>
+            <div style={{ ...textStyle, position: "absolute", left: "8vw", top: "50%", transform: "translateY(-50%)", fontSize: "0.7rem", textTransform: "lowercase", width: "auto" }}>
+              giulia@example.com
+            </div>
+            
+            <div style={{ maxWidth: "500px", textAlign: "center", fontFamily: "serif", fontSize: "1.1rem", lineHeight: "1.8", padding: "0 20px" }}>
+              <p>Giulia es una directora creativa y artista visual independiente enfocada en la estética de la imperfección.</p>
+              <br />
+              <p>Su trabajo explora la intersección entre el error digital, el diseño editorial y la narrativa visual cruda. A través de "Beautiful Failures", investiga cómo lo descartado y lo imperfecto pueden elevar la narrativa contemporánea.</p>
+            </div>
+
+            <div style={{ ...textStyle, position: "absolute", right: "8vw", top: "60%", fontSize: "0.7rem", width: "auto" }}>
+              +34 000 000 000
+            </div>
+          </motion.div>
+        )}
       </AnimatePresence>
     </main>
   );
