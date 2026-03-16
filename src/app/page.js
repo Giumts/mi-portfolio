@@ -10,12 +10,19 @@ export default function Home() {
   const [clipPath, setClipPath] = useState("inset(10% 20% 10% 20%)");
   const [isHovering, setIsHovering] = useState(false);
 
-  // Muelle para el custom cursor (más rápido y reactivo)
+  // Configuración del muelle para el movimiento del cursor
   const springConfig = { stiffness: 250, damping: 25 };
   const mouseX = useSpring(0, springConfig);
   const mouseY = useSpring(0, springConfig);
 
-  const trailImages = ["/BEAUTIFUL_FAILURES_AY1.jpg", "/BEAUTIFUL_FAILURES_AY3.jpg", "/BEAUTIFUL_FAILURES_AY15.jpg", "/BEAUTIFUL_FAILURES_AY37.jpg", "/BEAUTIFUL_FAILURES_AY42.jpg", "/BEAUTIFUL_FAILURES_AY49.jpg", "/BEAUTIFUL_FAILURES_AY51.jpg", "/BEAUTIFUL_FAILURES_AY59.jpg", "/BEAUTIFUL_FAILURES_AY71.jpg", "/BEAUTIFUL_FAILURES_AY75.jpg", "/BEAUTIFUL_FAILURES_AY9.jpg"];
+  const trailImages = [
+    "/BEAUTIFUL_FAILURES_AY1.jpg", "/BEAUTIFUL_FAILURES_AY3.jpg", 
+    "/BEAUTIFUL_FAILURES_AY15.jpg", "/BEAUTIFUL_FAILURES_AY37.jpg", 
+    "/BEAUTIFUL_FAILURES_AY42.jpg", "/BEAUTIFUL_FAILURES_AY49.jpg", 
+    "/BEAUTIFUL_FAILURES_AY51.jpg", "/BEAUTIFUL_FAILURES_AY59.jpg", 
+    "/BEAUTIFUL_FAILURES_AY71.jpg", "/BEAUTIFUL_FAILURES_AY75.jpg", 
+    "/BEAUTIFUL_FAILURES_AY9.jpg"
+  ];
 
   const projects = [
     { id: 1, title: "24 seconds", img: "/fotos_portadas/Portada_24seconds.jpg", desc: "una búsqueda de la armonía en el error digital y la composición orgánica.", gallery: trailImages },
@@ -49,14 +56,11 @@ export default function Home() {
   }, [view]);
 
   const openProject = (proj) => {
-    const r = () => Math.floor(Math.random() * 25);
-    setClipPath(`inset(${r()}% ${r()}% ${r()}% ${r()}%)`);
     setSelectedProject(proj);
     setView("detail");
     window.scrollTo({ top: 0, behavior: 'instant' });
   };
 
-  // ESTILO DE TEXTO PARA NAV (ALTE HAAS)
   const navTextStyle = {
     position: "fixed",
     fontSize: "0.85rem",
@@ -84,7 +88,7 @@ export default function Home() {
         ::-webkit-scrollbar { display: none; }
       `}</style>
 
-      {/* CURSOR FLOTANTE (SOLO EN DETAIL) */}
+      {/* CURSOR FLOTANTE EN DETALLE */}
       <AnimatePresence>
         {isHovering && view === "detail" && (
           <motion.div
@@ -111,10 +115,8 @@ export default function Home() {
         )}
       </AnimatePresence>
 
-      {/* NAV RESTAURADA (CENTRAL EN HOME, ESQUINAS EN DETAIL) */}
       <nav>
         {view === "home" ? (
-          // HOME CENTRAL (CON SERIF)
           <AnimatePresence>
             <motion.h1 
               onClick={() => {setView("home"); setSelectedProject(null);}} 
@@ -130,7 +132,6 @@ export default function Home() {
               style={{ position: "fixed", right: "8vw", top: "40%", transform: "translateY(-50%)", fontSize: "0.8rem", letterSpacing: "3px", textTransform: "uppercase", fontFamily: "serif", zIndex: 1000, color: "#1a1a1a", cursor: "crosshair" }}>about</motion.div>
           </AnimatePresence>
         ) : (
-          // DETAIL/PROJECTS/ABOUT EN ESQUINAS (CON ALTE HAAS)
           <>
             <div onClick={() => {setView("home"); setSelectedProject(null);}} style={{ ...navTextStyle, top: "4vh", left: "4vw", textDecoration: view === "home" ? "line-through" : "none" }}>giulia</div>
             <div onClick={() => {setView("projects"); setSelectedProject(null);}} style={{ ...navTextStyle, bottom: "4vh", left: "4vw", textDecoration: view === "projects" ? "line-through" : "none" }}>projects</div>
@@ -159,31 +160,24 @@ export default function Home() {
 
         {view === "detail" && selectedProject && (
           <motion.div key="detail" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} style={{ width: "100vw", fontFamily: "'Alte Haas Grotesk', sans-serif" }}>
-            
-            {/* SECCIÓN DINÁMICA DE DETALLE */}
             <div style={{ display: "flex", flexDirection: "row", minHeight: "200vh", padding: "0 4vw" }}>
-              
-              {/* LADO IZQUIERDO: STICKY INFO */}
               <div style={{ width: "30vw", height: "100vh", position: "sticky", top: 0, display: "flex", flexDirection: "column", justifyContent: "center" }}>
                 <h1 style={{ fontSize: "3vw", fontWeight: "bold", textTransform: "lowercase", lineHeight: "1", marginBottom: "2rem", color: "#000" }}>{selectedProject.title}</h1>
                 <p style={{ fontSize: "1rem", maxWidth: "20vw", lineHeight: "1.4", color: "#333" }}>{selectedProject.desc}</p>
               </div>
-
-              {/* LADO DERECHO: GALERÍA ASIMÉTRICA */}
               <div style={{ width: "70vw", paddingTop: "25vh", display: "flex", flexDirection: "column", gap: "30vh" }}>
-                {selectedProject.gallery.map((img, i) => {
+                {[selectedProject.img, ...selectedProject.gallery].map((img, i) => {
                   const isFullScreen = (i + 1) % 3 === 0;
                   const isRight = i % 2 === 0;
-
                   return (
                     <motion.div 
                       key={i} 
                       initial={{ opacity: 0, y: 50 }}
                       whileInView={{ opacity: 1, y: 0 }}
-                      viewport={{ once: true }}
+                      viewport={{ once: true, margin: "-10%" }}
                       transition={{ duration: 0.8 }}
                       style={{ 
-                        width: isFullScreen ? "92vw" : "35vw",
+                        width: isFullScreen ? "92vw" : "38vw",
                         alignSelf: isFullScreen ? "center" : (isRight ? "flex-end" : "flex-start"),
                         marginLeft: isFullScreen ? "-26vw" : "0", 
                         zIndex: isFullScreen ? 10 : 1
@@ -193,20 +187,14 @@ export default function Home() {
                         src={img} 
                         onMouseEnter={() => setIsHovering(true)}
                         onMouseLeave={() => setIsHovering(false)}
-                        style={{ 
-                          width: "100%", 
-                          height: isFullScreen ? "80vh" : "auto", 
-                          objectFit: "cover",
-                          filter: "grayscale(10%)"
-                        }} 
+                        style={{ width: "100%", height: isFullScreen ? "85vh" : "auto", objectFit: "cover" }} 
                       />
                     </motion.div>
                   );
                 })}
               </div>
             </div>
-
-            <div style={{ height: "50vh" }} />
+            <div style={{ height: "60vh" }} />
           </motion.div>
         )}
 
