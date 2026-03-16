@@ -28,8 +28,8 @@ export default function Home() {
     { id: 6, title: "Archive 01", img: "/fotos_portadas/Portada_rise up.jpg", desc: "Fragmentos de un proceso inacabado.", gallery: trailImages },
     { id: 7, title: "Motion Texture", img: "/fotos_portadas/Portada_San sadurni.jpg", desc: "Capturando la esencia del movimiento estático.", gallery: trailImages },
     { id: 8, title: "Silence", img: "/fotos_portadas/Portada_vora.jpg", desc: "Reducción visual al mínimo exponente.", gallery: trailImages },
-    { id: 9, title: "Form Study", img: "/BEAUTIFUL_FAILURES_AY71.jpg", desc: "Anatomía de la forma pura.", gallery: trailImages },
-    { id: 10, title: "Final Chapter", img: "/BEAUTIFUL_FAILURES_AY75.jpg", desc: "Conclusión de la serie exploratoria.", gallery: trailImages },
+    { id: 9, title: "Form Study", img: "/fotos_portadas/Portada_vora.jpg", desc: "Anatomía de la forma pura.", gallery: trailImages },
+    { id: 10, title: "Final Chapter", img: "/fotos_portadas/Portada_vora.jpg", desc: "Conclusión de la serie exploratoria.", gallery: trailImages },
   ];
 
   useEffect(() => {
