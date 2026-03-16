@@ -9,10 +9,8 @@ export default function Home() {
   const [selectedProject, setSelectedProject] = useState(null);
   const [clipPath, setClipPath] = useState("inset(10% 20% 10% 20%)");
   const [headerPos, setHeaderPos] = useState({ x: 0, y: 0 });
-  
   const [isHovering, setIsHovering] = useState(false);
 
-  // Mantenemos el movimiento suave (muelle) porque es muy orgánico
   const springConfig = { stiffness: 150, damping: 20 };
   const mouseX = useSpring(0, springConfig);
   const mouseY = useSpring(0, springConfig);
@@ -20,16 +18,14 @@ export default function Home() {
   const trailImages = ["/BEAUTIFUL_FAILURES_AY1.jpg", "/BEAUTIFUL_FAILURES_AY3.jpg", "/BEAUTIFUL_FAILURES_AY15.jpg", "/BEAUTIFUL_FAILURES_AY37.jpg", "/BEAUTIFUL_FAILURES_AY42.jpg", "/BEAUTIFUL_FAILURES_AY49.jpg", "/BEAUTIFUL_FAILURES_AY51.jpg", "/BEAUTIFUL_FAILURES_AY59.jpg", "/BEAUTIFUL_FAILURES_AY71.jpg", "/BEAUTIFUL_FAILURES_AY75.jpg", "/BEAUTIFUL_FAILURES_AY9.jpg"];
 
   const projects = [
-    { id: 1, title: "24 seconds", img: "/fotos_portadas/Portada_24seconds.jpg", desc: "Una búsqueda de la armonía en el error digital y la composición orgánica.", gallery: trailImages },
-    { id: 2, title: "Aria Libera", img: "/fotos_portadas/Portada_Aria libera.jpg", desc: "La imperfección como lenguaje visual predominante.", gallery: trailImages },
-    { id: 3, title: "Beautiful failures", img: "/fotos_portadas/Portada_Beautiful failures.jpg", desc: "Exploración rítmica del espacio en blanco.", gallery: trailImages },
-    { id: 4, title: "LedsC4", img: "/fotos_portadas/Portada_Ledsc4.jpg", desc: "El contraste extremo define la forma.", gallery: trailImages },
-    { id: 5, title: "Now you see me Moria", img: "/fotos_portadas/Portada_Now you see me moria.jpg", desc: "Abstracción aplicada al diseño contemporáneo.", gallery: trailImages },
-    { id: 6, title: "Rise Up", img: "/fotos_portadas/Portada_rise up.jpg", desc: "Fragmentos de un proceso inacabado.", gallery: trailImages },
-    { id: 7, title: "San Sadurnì", img: "/fotos_portadas/Portada_San sadurni.jpg", desc: "Capturando la esencia del movimiento estático.", gallery: trailImages },
-    { id: 8, title: "Vora", img: "/fotos_portadas/Portada_vora.jpg", desc: "Reducción visual al mínimo exponente.", gallery: trailImages },
-    { id: 9, title: "Form Study", img: "/fotos_portadas/Portada_vora.jpg", desc: "Anatomía de la forma pura.", gallery: trailImages },
-    { id: 10, title: "Final Chapter", img: "/fotos_portadas/Portada_vora.jpg", desc: "Conclusión de la serie exploratoria.", gallery: trailImages },
+    { id: 1, title: "24 seconds", img: "/fotos_portadas/Portada_24seconds.jpg", desc: "una búsqueda de la armonía en el error digital y la composición orgánica.", gallery: trailImages },
+    { id: 2, title: "Aria Libera", img: "/fotos_portadas/Portada_Aria libera.jpg", desc: "la imperfección como lenguaje visual predominante.", gallery: trailImages },
+    { id: 3, title: "Beautiful failures", img: "/fotos_portadas/Portada_Beautiful failures.jpg", desc: "exploración rítmica del espacio en blanco.", gallery: trailImages },
+    { id: 4, title: "LedsC4", img: "/fotos_portadas/Portada_Ledsc4.jpg", desc: "el contraste extremo define la forma.", gallery: trailImages },
+    { id: 5, title: "Now you see me Moria", img: "/fotos_portadas/Portada_Now you see me moria.jpg", desc: "abstracción aplicada al diseño contemporáneo.", gallery: trailImages },
+    { id: 6, title: "Rise Up", img: "/fotos_portadas/Portada_rise up.JPG", desc: "fragmentos de un proceso inacabado.", gallery: trailImages },
+    { id: 7, title: "San Sadurnì", img: "/fotos_portadas/Portada_San sadurni.jpg", desc: "capturando la esencia del movimiento estático.", gallery: trailImages },
+    { id: 8, title: "Vora", img: "/fotos_portadas/Portada_vora.jpg", desc: "reducción visual al mínimo exponente.", gallery: trailImages },
   ];
 
   useEffect(() => {
@@ -55,10 +51,7 @@ export default function Home() {
   const openProject = (proj) => {
     const r = () => Math.floor(Math.random() * 25);
     setClipPath(`inset(${r()}% ${r()}% ${r()}% ${r()}%)`);
-    setHeaderPos({
-      x: Math.floor(Math.random() * 40 - 20) + "vw",
-      y: Math.floor(Math.random() * 20 - 10) + "vh"
-    });
+    setHeaderPos({ x: 0, y: 0 });
     setSelectedProject(proj);
     setView("detail");
     window.scrollTo({ top: 0, behavior: 'instant' });
@@ -66,24 +59,32 @@ export default function Home() {
 
   const textStyle = {
     position: "fixed",
-    fontSize: "0.8rem",
-    letterSpacing: "3px",
-    textTransform: "uppercase",
-    fontFamily: "serif",
+    fontSize: "0.85rem",
+    letterSpacing: "1px",
+    textTransform: "lowercase",
+    fontFamily: "'Alte Haas Grotesk', sans-serif",
     zIndex: 1000, 
-    color: "#1a1a1a",
-    cursor: "crosshair",
+    color: "#000",
   };
 
   return (
-    <main style={{ backgroundColor: "white", minHeight: "100vh", width: "100vw", position: "relative", cursor: "crosshair" }}>
+    <main style={{ backgroundColor: "white", minHeight: "100vh", width: "100vw", position: "relative", fontFamily: "'Alte Haas Grotesk', sans-serif" }}>
       
       <style jsx global>{`
-        body, html, * { cursor: crosshair !important; margin: 0; padding: 0; }
+        @font-face {
+          font-family: 'Alte Haas Grotesk';
+          src: url('/fonts/AlteHaasGroteskRegular.ttf') format('truetype');
+        }
+        body, html, * { 
+          cursor: crosshair !important; 
+          margin: 0; 
+          padding: 0; 
+          font-family: 'Alte Haas Grotesk', sans-serif;
+        }
         ::-webkit-scrollbar { display: none; }
       `}</style>
 
-      {/* TEXTO FLOTANTE LIMPIO (SIN CUADROS NI BORDES) */}
+      {/* CURSOR FLOTANTE */}
       <AnimatePresence>
         {isHovering && view === "detail" && (
           <motion.div
@@ -98,26 +99,20 @@ export default function Home() {
               marginTop: "20px",
               zIndex: 9999,
               pointerEvents: "none",
-              fontFamily: "serif",
-              textTransform: "lowercase", 
-              maxWidth: "200px",
-              color: "#000" // Negro sólido
+              color: "#000"
             }}
           >
-            <p style={{ fontSize: "1.4rem", fontWeight: "bold", lineHeight: "1.1" }}>
+            <p style={{ fontSize: "2rem", fontWeight: "bold", lineHeight: "0.9", textTransform: "lowercase" }}>
               {selectedProject?.title}
-            </p>
-            <p style={{ fontSize: "0.7rem", marginTop: "5px", lineHeight: "1.4" }}>
-              lorem ipsum dolor sit amet, consectetur adipiscing elit. view details.
             </p>
           </motion.div>
         )}
       </AnimatePresence>
 
       <nav>
-        <div onClick={() => {setView("home"); setSelectedProject(null);}} style={{ ...textStyle, top: "5vh", width: "100%", textAlign: "center", textDecoration: view === "home" ? "line-through" : "none" }}>Giulia</div>
-        <div onClick={() => {setView("projects"); setSelectedProject(null);}} style={{ ...textStyle, bottom: "5vh", width: "100%", textAlign: "center", textDecoration: view === "projects" ? "line-through" : "none" }}>Projects</div>
-        <div onClick={() => {setView("about"); setSelectedProject(null);}} style={{ ...textStyle, right: "8vw", top: "40%", transform: "translateY(-50%)", textDecoration: view === "about" ? "line-through" : "none" }}>About</div>
+        <div onClick={() => {setView("home"); setSelectedProject(null);}} style={{ ...textStyle, top: "4vh", left: "4vw", textDecoration: view === "home" ? "line-through" : "none" }}>giulia</div>
+        <div onClick={() => {setView("projects"); setSelectedProject(null);}} style={{ ...textStyle, bottom: "4vh", left: "4vw", textDecoration: view === "projects" ? "line-through" : "none" }}>projects</div>
+        <div onClick={() => {setView("about"); setSelectedProject(null);}} style={{ ...textStyle, bottom: "4vh", right: "4vw", textDecoration: view === "about" ? "line-through" : "none" }}>about</div>
       </nav>
 
       <AnimatePresence mode="wait">
@@ -128,66 +123,79 @@ export default function Home() {
         )}
 
         {view === "projects" && (
-          <motion.div key="projects" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} style={{ position: "relative", width: "100vw", height: "100vh", overflow: "hidden" }}>
+          <motion.div key="projects" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} style={{ position: "relative", width: "100vw", height: "100vh" }}>
             {projects.map((proj, index) => (
-              <motion.div key={proj.id} onClick={() => openProject(proj)} style={{ position: "absolute", top: randomPositions[index]?.top, left: randomPositions[index]?.left, rotate: randomPositions[index]?.rotation, width: "110px", textAlign: "center" }}>
-                <motion.img src={proj.img} whileHover={{ scale: 1.1 }} style={{ width: "100%", filter: "grayscale(100%)" }} onMouseOver={e => e.currentTarget.style.filter="grayscale(0%)"} onMouseOut={e => e.currentTarget.style.filter="grayscale(100%)"} />
-                <p style={{ marginTop: "8px", fontSize: "0.55rem", color: "#4a4a4a", textTransform: "uppercase" }}>{proj.title}</p>
+              <motion.div key={proj.id} onClick={() => openProject(proj)} style={{ position: "absolute", top: randomPositions[index]?.top, left: randomPositions[index]?.left, rotate: randomPositions[index]?.rotation, width: "140px", textAlign: "left" }}>
+                <motion.img src={proj.img} whileHover={{ scale: 1.05 }} style={{ width: "100%", filter: "grayscale(100%)" }} onMouseOver={e => e.currentTarget.style.filter="grayscale(0%)"} onMouseOut={e => e.currentTarget.style.filter="grayscale(100%)"} />
+                <p style={{ marginTop: "8px", fontSize: "0.7rem", color: "#000", textTransform: "lowercase" }}>{proj.title}</p>
               </motion.div>
             ))}
           </motion.div>
         )}
 
         {view === "detail" && selectedProject && (
-          <motion.div key="detail" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} style={{ width: "100vw", backgroundColor: "white" }}>
-            <div style={{ height: "100vh", display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center", position: "relative" }}>
-              <motion.p style={{ fontSize: "0.6rem", letterSpacing: "2px", marginBottom: "40px", textTransform: "uppercase", color: "#888" }}>{selectedProject.title}</motion.p>
-              <motion.img 
-                src={selectedProject.img} 
-                onMouseEnter={() => setIsHovering(true)}
-                onMouseLeave={() => setIsHovering(false)}
-                style={{ width: "18vw", height: "auto", clipPath: clipPath, x: headerPos.x, y: headerPos.y, transition: "clip-path 1.5s ease" }} 
-              />
-              <motion.div style={{ maxWidth: "300px", marginTop: "60px", textAlign: "center", fontFamily: "serif", fontSize: "0.85rem", fontStyle: "italic", lineHeight: "1.6", color: "#444" }}>{selectedProject.desc}</motion.div>
+          <motion.div key="detail" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} style={{ width: "100vw" }}>
+            
+            {/* SECCIÓN DINÁMICA DE DETALLE */}
+            <div style={{ display: "flex", flexDirection: "row", minHeight: "200vh", padding: "0 4vw" }}>
+              
+              {/* LADO IZQUIERDO: STICKY INFO */}
+              <div style={{ width: "30vw", height: "100vh", position: "sticky", top: 0, display: "flex", flexDirection: "column", justifyContent: "center" }}>
+                <h1 style={{ fontSize: "3vw", fontWeight: "bold", textTransform: "lowercase", lineHeight: "1", marginBottom: "2rem" }}>{selectedProject.title}</h1>
+                <p style={{ fontSize: "1rem", maxWidth: "20vw", lineHeight: "1.4", color: "#333" }}>{selectedProject.desc}</p>
+              </div>
+
+              {/* LADO DERECHO: GALERÍA ASIMÉTRICA */}
+              <div style={{ width: "70vw", paddingTop: "25vh", display: "flex", flexDirection: "column", gap: "30vh" }}>
+                {selectedProject.gallery.map((img, i) => {
+                  // Lógica de Layout
+                  const isFullScreen = (i + 1) % 3 === 0;
+                  const isRight = i % 2 === 0;
+
+                  return (
+                    <motion.div 
+                      key={i} 
+                      initial={{ opacity: 0, y: 50 }}
+                      whileInView={{ opacity: 1, y: 0 }}
+                      viewport={{ once: true }}
+                      transition={{ duration: 0.8 }}
+                      style={{ 
+                        width: isFullScreen ? "92vw" : "35vw",
+                        alignSelf: isFullScreen ? "center" : (isRight ? "flex-end" : "flex-start"),
+                        marginLeft: isFullScreen ? "-26vw" : "0", // Compensa el layout para centrar el full screen
+                        zIndex: isFullScreen ? 10 : 1
+                      }}
+                    >
+                      <motion.img 
+                        src={img} 
+                        onMouseEnter={() => setIsHovering(true)}
+                        onMouseLeave={() => setIsHovering(false)}
+                        style={{ 
+                          width: "100%", 
+                          height: isFullScreen ? "80vh" : "auto", 
+                          objectFit: "cover",
+                          filter: "grayscale(10%)"
+                        }} 
+                      />
+                    </motion.div>
+                  );
+                })}
+              </div>
             </div>
 
-            <div style={{ width: "100%", display: "flex", flexDirection: "column", gap: "25vh", paddingBottom: "40vh" }}>
-              {selectedProject.gallery.map((img, i) => (
-                <div key={i} style={{ 
-                  width: "100%", 
-                  display: "flex", 
-                  justifyContent: i % 2 === 0 ? "flex-start" : "flex-end",
-                  padding: i % 2 === 0 ? "0 0 0 12vw" : "0 12vw 0 0",
-                  boxSizing: "border-box"
-                }}>
-                  <motion.img 
-                    src={img} 
-                    onMouseEnter={() => setIsHovering(true)}
-                    onMouseLeave={() => setIsHovering(false)}
-                    initial={{ opacity: 0, y: 60 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    viewport={{ once: true, margin: "-10%" }}
-                    transition={{ duration: 1 }}
-                    style={{ width: i % 3 === 0 ? "45vw" : (i % 2 === 0 ? "30vw" : "38vw") }} 
-                  />
-                </div>
-              ))}
-            </div>
+            {/* ESPACIO FINAL PARA RESPIRAR */}
+            <div style={{ height: "50vh" }} />
           </motion.div>
         )}
 
         {view === "about" && (
-          <motion.div key="about" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} style={{ display: "flex", justifyContent: "center", alignItems: "center", height: "100vh", width: "100vw", position: "relative" }}>
-            <div style={{ ...textStyle, position: "absolute", left: "8vw", top: "50%", transform: "translateY(-50%)", fontSize: "0.7rem", textTransform: "lowercase", width: "auto" }}>
-              giulia@example.com
-            </div>
-            <div style={{ maxWidth: "500px", textAlign: "center", fontFamily: "serif", fontSize: "1.1rem", lineHeight: "1.8", padding: "0 20px" }}>
-              <p>giulia es una directora creativa y artista visual independiente enfocada en la estética de la imperfección.</p>
-              <br />
-              <p>su trabajo explora la intersección entre el error digital, el diseño editorial y la narrativa visual cruda. a través de "beautiful failures", investiga cómo lo descartado y lo imperfecto pueden elevar la narrativa contemporánea.</p>
-            </div>
-            <div style={{ ...textStyle, position: "absolute", right: "8vw", top: "60%", fontSize: "0.7rem", width: "auto" }}>
-              +34 000 000 000
+          <motion.div key="about" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} style={{ display: "flex", justifyContent: "center", alignItems: "center", height: "100vh", width: "100vw" }}>
+            <div style={{ maxWidth: "600px", textAlign: "left", padding: "0 4vw" }}>
+              <p style={{ fontSize: "2.5rem", lineHeight: "1.1", marginBottom: "2rem", fontWeight: "bold" }}>giulia es una directora creativa enfocada en la estética de la imperfección.</p>
+              <div style={{ fontSize: "1.1rem", lineHeight: "1.5", display: "flex", gap: "4rem" }}>
+                <p>giulia@example.com</p>
+                <p>+34 000 000 000</p>
+              </div>
             </div>
           </motion.div>
         )}
