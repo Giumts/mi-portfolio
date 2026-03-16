@@ -156,28 +156,26 @@ export default function Home() {
         {view === "detail" && selectedProject && (
           <motion.div key="detail" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} style={{ width: "100vw", position: "relative" }}>
             
-            {/* INFO TÉCNICA (ARRIBA A LA DERECHA - MINIMAL) */}
+            {/* INFO TÉCNICA (UNA SOLA LÍNEA HORIZONTAL - ARRIBA A LA DERECHA) */}
             <motion.div 
-              initial={{ opacity: 0, y: -10 }} 
-              animate={{ opacity: 1, y: 0 }} 
+              initial={{ opacity: 0 }} 
+              animate={{ opacity: 1 }} 
               style={{
                 position: "fixed", 
                 top: "4vh", 
                 right: "4vw", 
-                textAlign: "right",
                 fontFamily: "'Roundo Bold', sans-serif",
-                fontSize: "1.1rem", // Más pequeño que el título
+                fontSize: "0.85rem",
                 textTransform: "lowercase",
                 color: "#000",
                 zIndex: 1000,
                 display: "flex",
-                flexDirection: "column",
-                gap: "0.2rem"
+                gap: "2rem" // Espacio entre los elementos
               }}
             >
-              <p>{selectedProject.info.date}</p>
-              <p>{selectedProject.info.location}</p>
-              <p>{selectedProject.info.role}</p>
+              <span>{selectedProject.info.date}</span>
+              <span>{selectedProject.info.location}</span>
+              <span>{selectedProject.info.role}</span>
             </motion.div>
 
             <div style={{ display: "flex", flexDirection: "row", minHeight: "200vh", padding: "0 4vw" }}>
