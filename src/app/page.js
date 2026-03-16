@@ -52,13 +52,12 @@ export default function Home() {
     window.scrollTo({ top: 0, behavior: 'instant' });
   };
 
-  // ESTILO PARA NAV Y TEXTOS FINOS
   const lightTextStyle = {
     fontFamily: "'Roundo ExtraLight', sans-serif",
     fontSize: "0.85rem",
-    letterSpacing: "0.5px",
+    letterSpacing: "0.05em",
     textTransform: "lowercase",
-    color: "#000",
+    color: "#000", // Negro puro
   };
 
   return (
@@ -68,6 +67,7 @@ export default function Home() {
         @font-face {
           font-family: 'Roundo Bold';
           src: url('/fonts/Roundo-Bold.otf') format('opentype');
+          font-weight: bold;
         }
         @font-face {
           font-family: 'Roundo ExtraLight';
@@ -78,27 +78,23 @@ export default function Home() {
           cursor: crosshair !important; 
           margin: 0; 
           padding: 0; 
+          color: #000; /* Forzamos negro global */
         }
         ::-webkit-scrollbar { display: none; }
       `}</style>
 
-      {/* CURSOR FLOTANTE (BOLD) */}
+      {/* CURSOR FLOTANTE */}
       <AnimatePresence>
         {isHovering && view === "detail" && (
           <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
+            initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
             style={{
-              position: "fixed",
-              x: mouseX, y: mouseY,
-              marginLeft: "20px", marginTop: "20px",
-              zIndex: 9999,
-              pointerEvents: "none",
+              position: "fixed", x: mouseX, y: mouseY,
+              marginLeft: "25px", marginTop: "25px",
+              zIndex: 9999, pointerEvents: "none",
               fontFamily: "'Roundo Bold', sans-serif",
-              fontSize: "2.5rem",
-              textTransform: "lowercase",
-              color: "#000"
+              fontSize: "3rem", lineHeight: "0.8",
+              textTransform: "lowercase", color: "#000"
             }}
           >
             {selectedProject?.title}
@@ -106,21 +102,22 @@ export default function Home() {
         )}
       </AnimatePresence>
 
+      {/* NAVEGACIÓN */}
       <nav>
         {view === "home" ? (
           <AnimatePresence>
             <motion.h1 
               onClick={() => {setView("home"); setSelectedProject(null);}} 
               initial={{ opacity: 0 }} animate={{ opacity: 1 }}
-              style={{ position: "fixed", top: "5vh", width: "100%", textAlign: "center", textDecoration: "line-through", fontSize: "0.8rem", letterSpacing: "3px", textTransform: "uppercase", fontFamily: "'Roundo ExtraLight', sans-serif", zIndex: 1000 }}>giulia</motion.h1>
+              style={{ position: "fixed", top: "5vh", width: "100%", textAlign: "center", textDecoration: "line-through", fontSize: "0.75rem", letterSpacing: "3px", textTransform: "uppercase", fontFamily: "'Roundo ExtraLight', sans-serif", zIndex: 1000, color: "#000" }}>giulia</motion.h1>
             <motion.div 
               onClick={() => {setView("projects"); setSelectedProject(null);}} 
               initial={{ opacity: 0 }} animate={{ opacity: 1 }}
-              style={{ position: "fixed", bottom: "5vh", width: "100%", textAlign: "center", fontSize: "0.8rem", letterSpacing: "3px", textTransform: "uppercase", fontFamily: "'Roundo ExtraLight', sans-serif", zIndex: 1000 }}>projects</motion.div>
+              style={{ position: "fixed", bottom: "5vh", width: "100%", textAlign: "center", fontSize: "0.75rem", letterSpacing: "3px", textTransform: "uppercase", fontFamily: "'Roundo ExtraLight', sans-serif", zIndex: 1000, color: "#000" }}>projects</motion.div>
             <motion.div 
               onClick={() => {setView("about"); setSelectedProject(null);}} 
               initial={{ opacity: 0 }} animate={{ opacity: 1 }}
-              style={{ position: "fixed", right: "8vw", top: "40%", transform: "translateY(-50%)", fontSize: "0.8rem", letterSpacing: "3px", textTransform: "uppercase", fontFamily: "'Roundo ExtraLight', sans-serif", zIndex: 1000 }}>about</motion.div>
+              style={{ position: "fixed", right: "8vw", top: "40%", transform: "translateY(-50%)", fontSize: "0.75rem", letterSpacing: "3px", textTransform: "uppercase", fontFamily: "'Roundo ExtraLight', sans-serif", zIndex: 1000, color: "#000" }}>about</motion.div>
           </AnimatePresence>
         ) : (
           <>
@@ -143,7 +140,7 @@ export default function Home() {
             {projects.map((proj, index) => (
               <motion.div key={proj.id} onClick={() => openProject(proj)} style={{ position: "absolute", top: randomPositions[index]?.top, left: randomPositions[index]?.left, rotate: randomPositions[index]?.rotation, width: "140px" }}>
                 <motion.img src={proj.img} whileHover={{ scale: 1.05 }} style={{ width: "100%", filter: "grayscale(100%)" }} onMouseOver={e => e.currentTarget.style.filter="grayscale(0%)"} onMouseOut={e => e.currentTarget.style.filter="grayscale(100%)"} />
-                <p style={{ ...lightTextStyle, marginTop: "8px" }}>{proj.title}</p>
+                <p style={{ ...lightTextStyle, marginTop: "10px", fontSize: "0.7rem" }}>{proj.title}</p>
               </motion.div>
             ))}
           </motion.div>
@@ -152,42 +149,38 @@ export default function Home() {
         {view === "detail" && selectedProject && (
           <motion.div key="detail" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} style={{ width: "100vw" }}>
             <div style={{ display: "flex", flexDirection: "row", minHeight: "200vh", padding: "0 4vw" }}>
-              {/* LADO IZQUIERDO: STICKY INFO */}
-              <div style={{ width: "30vw", height: "100vh", position: "sticky", top: 0, display: "flex", flexDirection: "column", justifyContent: "center" }}>
-                <h1 style={{ fontFamily: "'Roundo Bold', sans-serif", fontSize: "4vw", textTransform: "lowercase", lineHeight: "0.9", marginBottom: "2rem" }}>{selectedProject.title}</h1>
-                <p style={{ ...lightTextStyle, fontSize: "1.1rem", maxWidth: "22vw", lineHeight: "1.5" }}>{selectedProject.desc}</p>
+              <div style={{ width: "35vw", height: "100vh", position: "sticky", top: 0, display: "flex", flexDirection: "column", justifyContent: "center" }}>
+                <h1 style={{ fontFamily: "'Roundo Bold', sans-serif", fontSize: "4.5vw", textTransform: "lowercase", lineHeight: "0.85", marginBottom: "2.5rem", color: "#000" }}>{selectedProject.title}</h1>
+                <p style={{ ...lightTextStyle, fontSize: "1.1rem", maxWidth: "24vw", lineHeight: "1.4", color: "#000" }}>{selectedProject.desc}</p>
               </div>
-
-              {/* LADO DERECHO: GALERÍA */}
-              <div style={{ width: "70vw", paddingTop: "25vh", display: "flex", flexDirection: "column", gap: "30vh" }}>
-                {[selectedProject.img, ...selectedProject.gallery].map((img, i) => {
-                  const isFullScreen = (i + 1) % 3 === 0;
-                  return (
-                    <motion.div 
-                      key={i} initial={{ opacity: 0, y: 50 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}
-                      style={{ 
-                        width: isFullScreen ? "92vw" : "38vw",
-                        alignSelf: isFullScreen ? "center" : (i % 2 === 0 ? "flex-end" : "flex-start"),
-                        marginLeft: isFullScreen ? "-26vw" : "0"
-                      }}
-                    >
-                      <motion.img 
-                        src={img} onMouseEnter={() => setIsHovering(true)} onMouseLeave={() => setIsHovering(false)}
-                        style={{ width: "100%", height: isFullScreen ? "85vh" : "auto", objectFit: "cover" }} 
-                      />
-                    </motion.div>
-                  );
-                })}
+              <div style={{ width: "65vw", paddingTop: "25vh", display: "flex", flexDirection: "column", gap: "35vh" }}>
+                {[selectedProject.img, ...selectedProject.gallery].map((img, i) => (
+                  <motion.div 
+                    key={i} initial={{ opacity: 0, y: 50 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, margin: "-10%" }}
+                    style={{ 
+                      width: (i + 1) % 3 === 0 ? "90vw" : "38vw",
+                      alignSelf: (i + 1) % 3 === 0 ? "center" : (i % 2 === 0 ? "flex-end" : "flex-start"),
+                      marginLeft: (i + 1) % 3 === 0 ? "-30vw" : "0",
+                      zIndex: (i + 1) % 3 === 0 ? 10 : 1
+                    }}
+                  >
+                    <motion.img 
+                      src={img} onMouseEnter={() => setIsHovering(true)} onMouseLeave={() => setIsHovering(false)}
+                      style={{ width: "100%", height: (i + 1) % 3 === 0 ? "85vh" : "auto", objectFit: "cover" }} 
+                    />
+                  </motion.div>
+                ))}
               </div>
             </div>
+            <div style={{ height: "60vh" }} />
           </motion.div>
         )}
 
         {view === "about" && (
           <motion.div key="about" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} style={{ display: "flex", justifyContent: "center", alignItems: "center", height: "100vh", width: "100vw" }}>
-            <div style={{ maxWidth: "700px", padding: "0 4vw" }}>
-              <p style={{ fontFamily: "'Roundo Bold', sans-serif", fontSize: "3.5rem", lineHeight: "0.9", marginBottom: "2.5rem" }}>giulia es una directora creativa enfocada en la estética de la imperfección.</p>
-              <div style={{ ...lightTextStyle, fontSize: "1.2rem", display: "flex", gap: "4rem" }}>
+            <div style={{ maxWidth: "800px", padding: "0 4vw" }}>
+              <p style={{ fontFamily: "'Roundo Bold', sans-serif", fontSize: "4rem", lineHeight: "0.85", marginBottom: "3rem", color: "#000" }}>giulia es una directora creativa enfocada en la estética de la imperfección.</p>
+              <div style={{ ...lightTextStyle, fontSize: "1.3rem", display: "flex", gap: "5rem", color: "#000" }}>
                 <p>giulia@example.com</p>
                 <p>+34 000 000 000</p>
               </div>
