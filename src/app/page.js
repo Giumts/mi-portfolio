@@ -154,7 +154,32 @@ export default function Home() {
         )}
 
         {view === "detail" && selectedProject && (
-          <motion.div key="detail" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} style={{ width: "100vw" }}>
+          <motion.div key="detail" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} style={{ width: "100vw", position: "relative" }}>
+            
+            {/* INFO TÉCNICA (ARRIBA A LA DERECHA - MINIMAL) */}
+            <motion.div 
+              initial={{ opacity: 0, y: -10 }} 
+              animate={{ opacity: 1, y: 0 }} 
+              style={{
+                position: "fixed", 
+                top: "4vh", 
+                right: "4vw", 
+                textAlign: "right",
+                fontFamily: "'Roundo Bold', sans-serif",
+                fontSize: "1.1rem", // Más pequeño que el título
+                textTransform: "lowercase",
+                color: "#000",
+                zIndex: 1000,
+                display: "flex",
+                flexDirection: "column",
+                gap: "0.2rem"
+              }}
+            >
+              <p>{selectedProject.info.date}</p>
+              <p>{selectedProject.info.location}</p>
+              <p>{selectedProject.info.role}</p>
+            </motion.div>
+
             <div style={{ display: "flex", flexDirection: "row", minHeight: "200vh", padding: "0 4vw" }}>
               
               {/* LADO IZQUIERDO: STICKY INFO PRINCIPAL */}
@@ -163,33 +188,15 @@ export default function Home() {
                 <p style={{ ...lightTextStyle, fontSize: "1.1rem", maxWidth: "24vw", lineHeight: "1.4" }}>{selectedProject.desc}</p>
               </div>
 
-              {/* COLUMNA CENTRAL: INFO TÉCNICA (STICKY) */}
-              <div style={{ width: "15vw", height: "100vh", position: "sticky", top: 0, display: "flex", flexDirection: "column", justifyContent: "center" }}>
-                <div style={{ ...lightTextStyle, fontSize: "0.65rem", display: "flex", flexDirection: "column", gap: "1.5rem", borderLeft: "1px solid #000", paddingLeft: "1rem" }}>
-                  <div>
-                    <p style={{ opacity: 0.4, marginBottom: "0.2rem" }}>date</p>
-                    <p>{selectedProject.info.date}</p>
-                  </div>
-                  <div>
-                    <p style={{ opacity: 0.4, marginBottom: "0.2rem" }}>location</p>
-                    <p>{selectedProject.info.location}</p>
-                  </div>
-                  <div>
-                    <p style={{ opacity: 0.4, marginBottom: "0.2rem" }}>role</p>
-                    <p>{selectedProject.info.role}</p>
-                  </div>
-                </div>
-              </div>
-
               {/* LADO DERECHO: GALERÍA ASIMÉTRICA */}
-              <div style={{ width: "50vw", paddingTop: "25vh", display: "flex", flexDirection: "column", gap: "35vh" }}>
+              <div style={{ width: "65vw", paddingTop: "25vh", display: "flex", flexDirection: "column", gap: "35vh" }}>
                 {[selectedProject.img, ...selectedProject.gallery].map((img, i) => (
                   <motion.div 
                     key={i} initial={{ opacity: 0, y: 50 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, margin: "-10%" }}
                     style={{ 
-                      width: (i + 1) % 3 === 0 ? "85vw" : "42vw",
+                      width: (i + 1) % 3 === 0 ? "85vw" : "40vw",
                       alignSelf: (i % 2 === 0 ? "flex-end" : "flex-start"),
-                      marginLeft: (i + 1) % 3 === 0 ? "-48vw" : "0",
+                      marginLeft: (i + 1) % 3 === 0 ? "-30vw" : "0",
                       zIndex: (i + 1) % 3 === 0 ? 10 : 1
                     }}
                   >
