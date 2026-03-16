@@ -66,7 +66,7 @@ export default function Home() {
     fontSize: "0.85rem",
     letterSpacing: "1px",
     textTransform: "lowercase",
-    fontFamily: "'Alte Haas Grotesk', sans-serif",
+    fontFamily: "'ChronicleDisp-XLight', sans-serif",
     zIndex: 1000, 
     color: "#000",
     cursor: "crosshair",
@@ -77,8 +77,8 @@ export default function Home() {
       
       <style jsx global>{`
         @font-face {
-          font-family: 'Alte Haas Grotesk';
-          src: url('/fonts/AlteHaasGroteskRegular.ttf') format('truetype');
+          font-family: 'ChronicleDisp-XLight';
+          src: url('/fonts/ChronicleDisp-XLight.otf') format('truetype');
         }
         body, html, * { 
           cursor: crosshair !important; 
