@@ -15,15 +15,16 @@ export default function Home() {
 
   const trailImages = ["/BEAUTIFUL_FAILURES_AY1.jpg", "/BEAUTIFUL_FAILURES_AY3.jpg", "/BEAUTIFUL_FAILURES_AY15.jpg", "/BEAUTIFUL_FAILURES_AY37.jpg", "/BEAUTIFUL_FAILURES_AY42.jpg", "/BEAUTIFUL_FAILURES_AY49.jpg", "/BEAUTIFUL_FAILURES_AY51.jpg", "/BEAUTIFUL_FAILURES_AY59.jpg", "/BEAUTIFUL_FAILURES_AY71.jpg", "/BEAUTIFUL_FAILURES_AY75.jpg", "/BEAUTIFUL_FAILURES_AY9.jpg"];
 
+  // Configuración de proyectos con sus metadatos técnicos
   const projects = [
-    { id: 1, title: "24 seconds", img: "/fotos_portadas/Portada_24seconds.jpg", desc: "una búsqueda de la armonía en el error digital y la composición orgánica.", gallery: trailImages },
-    { id: 2, title: "Aria Libera", img: "/fotos_portadas/Portada_Aria libera.jpg", desc: "la imperfección como lenguaje visual predominante.", gallery: trailImages },
-    { id: 3, title: "Beautiful failures", img: "/fotos_portadas/Portada_Beautiful failures.jpg", desc: "exploración rítmica del espacio en blanco.", gallery: trailImages },
-    { id: 4, title: "LedsC4", img: "/fotos_portadas/Portada_Ledsc4.jpg", desc: "el contraste extremo define la forma.", gallery: trailImages },
-    { id: 5, title: "Now you see me Moria", img: "/fotos_portadas/Portada_Now you see me moria.jpg", desc: "abstracción aplicada al diseño contemporáneo.", gallery: trailImages },
-    { id: 6, title: "Rise Up", img: "/fotos_portadas/Portada_rise up.JPG", desc: "fragmentos de un proceso inacabado.", gallery: trailImages },
-    { id: 7, title: "San Sadurnì", img: "/fotos_portadas/Portada_San sadurni.jpg", desc: "capturando la esencia del movimiento estático.", gallery: trailImages },
-    { id: 8, title: "Vora", img: "/fotos_portadas/Portada_vora.jpg", desc: "reducción visual al mínimo exponente.", gallery: trailImages },
+    { id: 1, title: "24 seconds", img: "/fotos_portadas/Portada_24seconds.jpg", desc: "una búsqueda de la armonía en el error digital y la composición orgánica.", info: { date: "2024", location: "barcelona", role: "creative direction" }, gallery: trailImages },
+    { id: 2, title: "aria libera", img: "/fotos_portadas/Portada_Aria libera.jpg", desc: "la imperfección como lenguaje visual predominante.", info: { date: "2023", location: "milan", role: "art direction" }, gallery: trailImages },
+    { id: 3, title: "beautiful failures", img: "/fotos_portadas/Portada_Beautiful failures.jpg", desc: "exploración rítmica del espacio en blanco.", info: { date: "2024", location: "madrid", role: "visual design" }, gallery: trailImages },
+    { id: 4, title: "ledsc4", img: "/fotos_portadas/Portada_Ledsc4.jpg", desc: "el contraste extremo define la forma.", info: { date: "2022", location: "london", role: "creative lead" }, gallery: trailImages },
+    { id: 5, title: "now you see me moria", img: "/fotos_portadas/Portada_Now you see me moria.jpg", desc: "abstracción aplicada al diseño contemporáneo.", info: { date: "2023", location: "berlin", role: "photography" }, gallery: trailImages },
+    { id: 6, title: "rise up", img: "/fotos_portadas/Portada_rise up.JPG", desc: "fragmentos de un proceso inacabado.", info: { date: "2024", location: "paris", role: "concept" }, gallery: trailImages },
+    { id: 7, title: "san sadurnì", img: "/fotos_portadas/Portada_San sadurni.jpg", desc: "capturando la esencia del movimiento estático.", info: { date: "2023", location: "barcelona", role: "production" }, gallery: trailImages },
+    { id: 8, title: "vora", img: "/fotos_portadas/Portada_vora.jpg", desc: "reducción visual al mínimo exponente.", info: { date: "2024", location: "remote", role: "ui design" }, gallery: trailImages },
   ];
 
   useEffect(() => {
@@ -57,7 +58,7 @@ export default function Home() {
     fontSize: "0.85rem",
     letterSpacing: "0.05em",
     textTransform: "lowercase",
-    color: "#000", // Negro puro
+    color: "#000",
   };
 
   return (
@@ -78,7 +79,7 @@ export default function Home() {
           cursor: crosshair !important; 
           margin: 0; 
           padding: 0; 
-          color: #000; /* Forzamos negro global */
+          color: #000;
         }
         ::-webkit-scrollbar { display: none; }
       `}</style>
@@ -109,15 +110,15 @@ export default function Home() {
             <motion.h1 
               onClick={() => {setView("home"); setSelectedProject(null);}} 
               initial={{ opacity: 0 }} animate={{ opacity: 1 }}
-              style={{ position: "fixed", top: "5vh", width: "100%", textAlign: "center", textDecoration: "line-through", fontSize: "0.75rem", letterSpacing: "3px", textTransform: "uppercase", fontFamily: "'Roundo ExtraLight', sans-serif", zIndex: 1000, color: "#000" }}>giulia</motion.h1>
+              style={{ position: "fixed", top: "5vh", width: "100%", textAlign: "center", textDecoration: "line-through", fontSize: "0.75rem", letterSpacing: "3px", textTransform: "uppercase", fontFamily: "'Roundo ExtraLight', sans-serif", zIndex: 1000 }}>giulia</motion.h1>
             <motion.div 
               onClick={() => {setView("projects"); setSelectedProject(null);}} 
               initial={{ opacity: 0 }} animate={{ opacity: 1 }}
-              style={{ position: "fixed", bottom: "5vh", width: "100%", textAlign: "center", fontSize: "0.75rem", letterSpacing: "3px", textTransform: "uppercase", fontFamily: "'Roundo ExtraLight', sans-serif", zIndex: 1000, color: "#000" }}>projects</motion.div>
+              style={{ position: "fixed", bottom: "5vh", width: "100%", textAlign: "center", fontSize: "0.75rem", letterSpacing: "3px", textTransform: "uppercase", fontFamily: "'Roundo ExtraLight', sans-serif", zIndex: 1000 }}>projects</motion.div>
             <motion.div 
               onClick={() => {setView("about"); setSelectedProject(null);}} 
               initial={{ opacity: 0 }} animate={{ opacity: 1 }}
-              style={{ position: "fixed", right: "8vw", top: "40%", transform: "translateY(-50%)", fontSize: "0.75rem", letterSpacing: "3px", textTransform: "uppercase", fontFamily: "'Roundo ExtraLight', sans-serif", zIndex: 1000, color: "#000" }}>about</motion.div>
+              style={{ position: "fixed", right: "8vw", top: "40%", transform: "translateY(-50%)", fontSize: "0.75rem", letterSpacing: "3px", textTransform: "uppercase", fontFamily: "'Roundo ExtraLight', sans-serif", zIndex: 1000 }}>about</motion.div>
           </AnimatePresence>
         ) : (
           <>
@@ -149,18 +150,40 @@ export default function Home() {
         {view === "detail" && selectedProject && (
           <motion.div key="detail" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} style={{ width: "100vw" }}>
             <div style={{ display: "flex", flexDirection: "row", minHeight: "200vh", padding: "0 4vw" }}>
+              
+              {/* LADO IZQUIERDO: STICKY INFO PRINCIPAL */}
               <div style={{ width: "35vw", height: "100vh", position: "sticky", top: 0, display: "flex", flexDirection: "column", justifyContent: "center" }}>
-                <h1 style={{ fontFamily: "'Roundo Bold', sans-serif", fontSize: "4.5vw", textTransform: "lowercase", lineHeight: "0.85", marginBottom: "2.5rem", color: "#000" }}>{selectedProject.title}</h1>
-                <p style={{ ...lightTextStyle, fontSize: "1.1rem", maxWidth: "24vw", lineHeight: "1.4", color: "#000" }}>{selectedProject.desc}</p>
+                <h1 style={{ fontFamily: "'Roundo Bold', sans-serif", fontSize: "4.5vw", textTransform: "lowercase", lineHeight: "0.85", marginBottom: "2.5rem" }}>{selectedProject.title}</h1>
+                <p style={{ ...lightTextStyle, fontSize: "1.1rem", maxWidth: "24vw", lineHeight: "1.4" }}>{selectedProject.desc}</p>
               </div>
-              <div style={{ width: "65vw", paddingTop: "25vh", display: "flex", flexDirection: "column", gap: "35vh" }}>
+
+              {/* COLUMNA DERECHA: INFO TÉCNICA (STICKY) */}
+              <div style={{ width: "15vw", height: "100vh", position: "sticky", top: 0, display: "flex", flexDirection: "column", justifyContent: "center" }}>
+                <div style={{ ...lightTextStyle, fontSize: "0.65rem", display: "flex", flexDirection: "column", gap: "1.5rem", borderLeft: "1px solid #000", paddingLeft: "1rem" }}>
+                  <div>
+                    <p style={{ opacity: 0.4, marginBottom: "0.2rem" }}>date</p>
+                    <p>{selectedProject.info.date}</p>
+                  </div>
+                  <div>
+                    <p style={{ opacity: 0.4, marginBottom: "0.2rem" }}>location</p>
+                    <p>{selectedProject.info.location}</p>
+                  </div>
+                  <div>
+                    <p style={{ opacity: 0.4, marginBottom: "0.2rem" }}>role</p>
+                    <p>{selectedProject.info.role}</p>
+                  </div>
+                </div>
+              </div>
+
+              {/* GALERÍA ASIMÉTRICA */}
+              <div style={{ width: "50vw", paddingTop: "25vh", display: "flex", flexDirection: "column", gap: "35vh" }}>
                 {[selectedProject.img, ...selectedProject.gallery].map((img, i) => (
                   <motion.div 
                     key={i} initial={{ opacity: 0, y: 50 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, margin: "-10%" }}
                     style={{ 
-                      width: (i + 1) % 3 === 0 ? "90vw" : "38vw",
-                      alignSelf: (i + 1) % 3 === 0 ? "center" : (i % 2 === 0 ? "flex-end" : "flex-start"),
-                      marginLeft: (i + 1) % 3 === 0 ? "-30vw" : "0",
+                      width: (i + 1) % 3 === 0 ? "85vw" : "40vw",
+                      alignSelf: (i % 2 === 0 ? "flex-end" : "flex-start"),
+                      marginLeft: (i + 1) % 3 === 0 ? "-45vw" : "0",
                       zIndex: (i + 1) % 3 === 0 ? 10 : 1
                     }}
                   >
@@ -179,8 +202,8 @@ export default function Home() {
         {view === "about" && (
           <motion.div key="about" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} style={{ display: "flex", justifyContent: "center", alignItems: "center", height: "100vh", width: "100vw" }}>
             <div style={{ maxWidth: "800px", padding: "0 4vw" }}>
-              <p style={{ fontFamily: "'Roundo Bold', sans-serif", fontSize: "4rem", lineHeight: "0.85", marginBottom: "3rem", color: "#000" }}>giulia es una directora creativa enfocada en la estética de la imperfección.</p>
-              <div style={{ ...lightTextStyle, fontSize: "1.3rem", display: "flex", gap: "5rem", color: "#000" }}>
+              <p style={{ fontFamily: "'Roundo Bold', sans-serif", fontSize: "4rem", lineHeight: "0.85", marginBottom: "3rem" }}>giulia es una directora creativa enfocada en la estética de la imperfección.</p>
+              <div style={{ ...lightTextStyle, fontSize: "1.3rem", display: "flex", gap: "5rem" }}>
                 <p>giulia@example.com</p>
                 <p>+34 000 000 000</p>
               </div>
