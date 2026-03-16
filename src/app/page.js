@@ -13,9 +13,15 @@ export default function Home() {
   const mouseX = useSpring(0, springConfig);
   const mouseY = useSpring(0, springConfig);
 
-  const trailImages = ["/BEAUTIFUL_FAILURES_AY1.jpg", "/BEAUTIFUL_FAILURES_AY3.jpg", "/BEAUTIFUL_FAILURES_AY15.jpg", "/BEAUTIFUL_FAILURES_AY37.jpg", "/BEAUTIFUL_FAILURES_AY42.jpg", "/BEAUTIFUL_FAILURES_AY49.jpg", "/BEAUTIFUL_FAILURES_AY51.jpg", "/BEAUTIFUL_FAILURES_AY59.jpg", "/BEAUTIFUL_FAILURES_AY71.jpg", "/BEAUTIFUL_FAILURES_AY75.jpg", "/BEAUTIFUL_FAILURES_AY9.jpg"];
+  const trailImages = [
+    "/BEAUTIFUL_FAILURES_AY1.jpg", "/BEAUTIFUL_FAILURES_AY3.jpg", 
+    "/BEAUTIFUL_FAILURES_AY15.jpg", "/BEAUTIFUL_FAILURES_AY37.jpg", 
+    "/BEAUTIFUL_FAILURES_AY42.jpg", "/BEAUTIFUL_FAILURES_AY49.jpg", 
+    "/BEAUTIFUL_FAILURES_AY51.jpg", "/BEAUTIFUL_FAILURES_AY59.jpg", 
+    "/BEAUTIFUL_FAILURES_AY71.jpg", "/BEAUTIFUL_FAILURES_AY75.jpg", 
+    "/BEAUTIFUL_FAILURES_AY9.jpg"
+  ];
 
-  // Configuración de proyectos con sus metadatos técnicos
   const projects = [
     { id: 1, title: "24 seconds", img: "/fotos_portadas/Portada_24seconds.jpg", desc: "una búsqueda de la armonía en el error digital y la composición orgánica.", info: { date: "2024", location: "barcelona", role: "creative direction" }, gallery: trailImages },
     { id: 2, title: "aria libera", img: "/fotos_portadas/Portada_Aria libera.jpg", desc: "la imperfección como lenguaje visual predominante.", info: { date: "2023", location: "milan", role: "art direction" }, gallery: trailImages },
@@ -73,8 +79,8 @@ export default function Home() {
         @font-face {
           font-family: 'Roundo ExtraLight';
           src: url('/fonts/Roundo-ExtraLight.otf') format('opentype');
+          font-weight: 200;
         }
-        
         body, html, * { 
           cursor: crosshair !important; 
           margin: 0; 
@@ -157,7 +163,7 @@ export default function Home() {
                 <p style={{ ...lightTextStyle, fontSize: "1.1rem", maxWidth: "24vw", lineHeight: "1.4" }}>{selectedProject.desc}</p>
               </div>
 
-              {/* COLUMNA DERECHA: INFO TÉCNICA (STICKY) */}
+              {/* COLUMNA CENTRAL: INFO TÉCNICA (STICKY) */}
               <div style={{ width: "15vw", height: "100vh", position: "sticky", top: 0, display: "flex", flexDirection: "column", justifyContent: "center" }}>
                 <div style={{ ...lightTextStyle, fontSize: "0.65rem", display: "flex", flexDirection: "column", gap: "1.5rem", borderLeft: "1px solid #000", paddingLeft: "1rem" }}>
                   <div>
@@ -175,15 +181,15 @@ export default function Home() {
                 </div>
               </div>
 
-              {/* GALERÍA ASIMÉTRICA */}
+              {/* LADO DERECHO: GALERÍA ASIMÉTRICA */}
               <div style={{ width: "50vw", paddingTop: "25vh", display: "flex", flexDirection: "column", gap: "35vh" }}>
                 {[selectedProject.img, ...selectedProject.gallery].map((img, i) => (
                   <motion.div 
                     key={i} initial={{ opacity: 0, y: 50 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, margin: "-10%" }}
                     style={{ 
-                      width: (i + 1) % 3 === 0 ? "85vw" : "40vw",
+                      width: (i + 1) % 3 === 0 ? "85vw" : "42vw",
                       alignSelf: (i % 2 === 0 ? "flex-end" : "flex-start"),
-                      marginLeft: (i + 1) % 3 === 0 ? "-45vw" : "0",
+                      marginLeft: (i + 1) % 3 === 0 ? "-48vw" : "0",
                       zIndex: (i + 1) % 3 === 0 ? 10 : 1
                     }}
                   >
