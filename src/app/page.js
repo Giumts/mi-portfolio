@@ -8,10 +8,10 @@ export default function Home() {
   const [randomPositions, setRandomPositions] = useState([]);
   const [selectedProject, setSelectedProject] = useState(null);
   const [clipPath, setClipPath] = useState("inset(10% 20% 10% 20%)");
-  const [headerPos, setHeaderPos] = useState({ x: 0, y: 0 });
   const [isHovering, setIsHovering] = useState(false);
 
-  const springConfig = { stiffness: 150, damping: 20 };
+  // Muelle para el custom cursor (más rápido y reactivo)
+  const springConfig = { stiffness: 250, damping: 25 };
   const mouseX = useSpring(0, springConfig);
   const mouseY = useSpring(0, springConfig);
 
@@ -51,13 +51,13 @@ export default function Home() {
   const openProject = (proj) => {
     const r = () => Math.floor(Math.random() * 25);
     setClipPath(`inset(${r()}% ${r()}% ${r()}% ${r()}%)`);
-    setHeaderPos({ x: 0, y: 0 });
     setSelectedProject(proj);
     setView("detail");
     window.scrollTo({ top: 0, behavior: 'instant' });
   };
 
-  const textStyle = {
+  // ESTILO DE TEXTO PARA NAV (ALTE HAAS)
+  const navTextStyle = {
     position: "fixed",
     fontSize: "0.85rem",
     letterSpacing: "1px",
@@ -65,10 +65,11 @@ export default function Home() {
     fontFamily: "'Alte Haas Grotesk', sans-serif",
     zIndex: 1000, 
     color: "#000",
+    cursor: "crosshair",
   };
 
   return (
-    <main style={{ backgroundColor: "white", minHeight: "100vh", width: "100vw", position: "relative", fontFamily: "'Alte Haas Grotesk', sans-serif" }}>
+    <main style={{ backgroundColor: "white", minHeight: "100vh", width: "100vw", position: "relative" }}>
       
       <style jsx global>{`
         @font-face {
@@ -79,12 +80,11 @@ export default function Home() {
           cursor: crosshair !important; 
           margin: 0; 
           padding: 0; 
-          font-family: 'Alte Haas Grotesk', sans-serif;
         }
         ::-webkit-scrollbar { display: none; }
       `}</style>
 
-      {/* CURSOR FLOTANTE */}
+      {/* CURSOR FLOTANTE (SOLO EN DETAIL) */}
       <AnimatePresence>
         {isHovering && view === "detail" && (
           <motion.div
@@ -99,20 +99,44 @@ export default function Home() {
               marginTop: "20px",
               zIndex: 9999,
               pointerEvents: "none",
-              color: "#000"
+              color: "#000",
+              fontFamily: "'Alte Haas Grotesk', sans-serif",
+              textTransform: "lowercase"
             }}
           >
-            <p style={{ fontSize: "2rem", fontWeight: "bold", lineHeight: "0.9", textTransform: "lowercase" }}>
+            <p style={{ fontSize: "2rem", fontWeight: "bold", lineHeight: "0.9" }}>
               {selectedProject?.title}
             </p>
           </motion.div>
         )}
       </AnimatePresence>
 
+      {/* NAV RESTAURADA (CENTRAL EN HOME, ESQUINAS EN DETAIL) */}
       <nav>
-        <div onClick={() => {setView("home"); setSelectedProject(null);}} style={{ ...textStyle, top: "4vh", left: "4vw", textDecoration: view === "home" ? "line-through" : "none" }}>giulia</div>
-        <div onClick={() => {setView("projects"); setSelectedProject(null);}} style={{ ...textStyle, bottom: "4vh", left: "4vw", textDecoration: view === "projects" ? "line-through" : "none" }}>projects</div>
-        <div onClick={() => {setView("about"); setSelectedProject(null);}} style={{ ...textStyle, bottom: "4vh", right: "4vw", textDecoration: view === "about" ? "line-through" : "none" }}>about</div>
+        {view === "home" ? (
+          // HOME CENTRAL (CON SERIF)
+          <AnimatePresence>
+            <motion.h1 
+              onClick={() => {setView("home"); setSelectedProject(null);}} 
+              initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+              style={{ position: "fixed", top: "5vh", width: "100%", textAlign: "center", textDecoration: "line-through", fontSize: "0.8rem", letterSpacing: "3px", textTransform: "uppercase", fontFamily: "serif", zIndex: 1000, color: "#1a1a1a", cursor: "crosshair" }}>giulia</motion.h1>
+            <motion.div 
+              onClick={() => {setView("projects"); setSelectedProject(null);}} 
+              initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+              style={{ position: "fixed", bottom: "5vh", width: "100%", textAlign: "center", fontSize: "0.8rem", letterSpacing: "3px", textTransform: "uppercase", fontFamily: "serif", zIndex: 1000, color: "#1a1a1a", cursor: "crosshair" }}>projects</motion.div>
+            <motion.div 
+              onClick={() => {setView("about"); setSelectedProject(null);}} 
+              initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+              style={{ position: "fixed", right: "8vw", top: "40%", transform: "translateY(-50%)", fontSize: "0.8rem", letterSpacing: "3px", textTransform: "uppercase", fontFamily: "serif", zIndex: 1000, color: "#1a1a1a", cursor: "crosshair" }}>about</motion.div>
+          </AnimatePresence>
+        ) : (
+          // DETAIL/PROJECTS/ABOUT EN ESQUINAS (CON ALTE HAAS)
+          <>
+            <div onClick={() => {setView("home"); setSelectedProject(null);}} style={{ ...navTextStyle, top: "4vh", left: "4vw", textDecoration: view === "home" ? "line-through" : "none" }}>giulia</div>
+            <div onClick={() => {setView("projects"); setSelectedProject(null);}} style={{ ...navTextStyle, bottom: "4vh", left: "4vw", textDecoration: view === "projects" ? "line-through" : "none" }}>projects</div>
+            <div onClick={() => {setView("about"); setSelectedProject(null);}} style={{ ...navTextStyle, bottom: "4vh", right: "4vw", textDecoration: view === "about" ? "line-through" : "none" }}>about</div>
+          </>
+        )}
       </nav>
 
       <AnimatePresence mode="wait">
@@ -123,7 +147,7 @@ export default function Home() {
         )}
 
         {view === "projects" && (
-          <motion.div key="projects" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} style={{ position: "relative", width: "100vw", height: "100vh" }}>
+          <motion.div key="projects" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} style={{ position: "relative", width: "100vw", height: "100vh", fontFamily: "'Alte Haas Grotesk', sans-serif" }}>
             {projects.map((proj, index) => (
               <motion.div key={proj.id} onClick={() => openProject(proj)} style={{ position: "absolute", top: randomPositions[index]?.top, left: randomPositions[index]?.left, rotate: randomPositions[index]?.rotation, width: "140px", textAlign: "left" }}>
                 <motion.img src={proj.img} whileHover={{ scale: 1.05 }} style={{ width: "100%", filter: "grayscale(100%)" }} onMouseOver={e => e.currentTarget.style.filter="grayscale(0%)"} onMouseOut={e => e.currentTarget.style.filter="grayscale(100%)"} />
@@ -134,21 +158,20 @@ export default function Home() {
         )}
 
         {view === "detail" && selectedProject && (
-          <motion.div key="detail" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} style={{ width: "100vw" }}>
+          <motion.div key="detail" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} style={{ width: "100vw", fontFamily: "'Alte Haas Grotesk', sans-serif" }}>
             
             {/* SECCIÓN DINÁMICA DE DETALLE */}
             <div style={{ display: "flex", flexDirection: "row", minHeight: "200vh", padding: "0 4vw" }}>
               
               {/* LADO IZQUIERDO: STICKY INFO */}
               <div style={{ width: "30vw", height: "100vh", position: "sticky", top: 0, display: "flex", flexDirection: "column", justifyContent: "center" }}>
-                <h1 style={{ fontSize: "3vw", fontWeight: "bold", textTransform: "lowercase", lineHeight: "1", marginBottom: "2rem" }}>{selectedProject.title}</h1>
+                <h1 style={{ fontSize: "3vw", fontWeight: "bold", textTransform: "lowercase", lineHeight: "1", marginBottom: "2rem", color: "#000" }}>{selectedProject.title}</h1>
                 <p style={{ fontSize: "1rem", maxWidth: "20vw", lineHeight: "1.4", color: "#333" }}>{selectedProject.desc}</p>
               </div>
 
               {/* LADO DERECHO: GALERÍA ASIMÉTRICA */}
               <div style={{ width: "70vw", paddingTop: "25vh", display: "flex", flexDirection: "column", gap: "30vh" }}>
                 {selectedProject.gallery.map((img, i) => {
-                  // Lógica de Layout
                   const isFullScreen = (i + 1) % 3 === 0;
                   const isRight = i % 2 === 0;
 
@@ -162,7 +185,7 @@ export default function Home() {
                       style={{ 
                         width: isFullScreen ? "92vw" : "35vw",
                         alignSelf: isFullScreen ? "center" : (isRight ? "flex-end" : "flex-start"),
-                        marginLeft: isFullScreen ? "-26vw" : "0", // Compensa el layout para centrar el full screen
+                        marginLeft: isFullScreen ? "-26vw" : "0", 
                         zIndex: isFullScreen ? 10 : 1
                       }}
                     >
@@ -183,16 +206,15 @@ export default function Home() {
               </div>
             </div>
 
-            {/* ESPACIO FINAL PARA RESPIRAR */}
             <div style={{ height: "50vh" }} />
           </motion.div>
         )}
 
         {view === "about" && (
-          <motion.div key="about" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} style={{ display: "flex", justifyContent: "center", alignItems: "center", height: "100vh", width: "100vw" }}>
+          <motion.div key="about" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} style={{ display: "flex", justifyContent: "center", alignItems: "center", height: "100vh", width: "100vw", fontFamily: "'Alte Haas Grotesk', sans-serif" }}>
             <div style={{ maxWidth: "600px", textAlign: "left", padding: "0 4vw" }}>
-              <p style={{ fontSize: "2.5rem", lineHeight: "1.1", marginBottom: "2rem", fontWeight: "bold" }}>giulia es una directora creativa enfocada en la estética de la imperfección.</p>
-              <div style={{ fontSize: "1.1rem", lineHeight: "1.5", display: "flex", gap: "4rem" }}>
+              <p style={{ fontSize: "2.5rem", lineHeight: "1.1", marginBottom: "2rem", fontWeight: "bold", color: "#000" }}>giulia es una directora creativa enfocada en la estética de la imperfección.</p>
+              <div style={{ fontSize: "1.1rem", lineHeight: "1.5", display: "flex", gap: "4rem", color: "#000" }}>
                 <p>giulia@example.com</p>
                 <p>+34 000 000 000</p>
               </div>
