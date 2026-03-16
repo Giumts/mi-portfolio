@@ -104,7 +104,7 @@ export default function Home() {
               zIndex: 9999,
               pointerEvents: "none",
               color: "#000",
-              fontFamily: "'Alte Haas Grotesk', sans-serif",
+              fontFamily: "'fonts/ChronicleDisp-XLight', sans-serif",
               textTransform: "lowercase"
             }}
           >
