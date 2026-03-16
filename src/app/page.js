@@ -20,14 +20,14 @@ export default function Home() {
   const trailImages = ["/BEAUTIFUL_FAILURES_AY1.jpg", "/BEAUTIFUL_FAILURES_AY3.jpg", "/BEAUTIFUL_FAILURES_AY15.jpg", "/BEAUTIFUL_FAILURES_AY37.jpg", "/BEAUTIFUL_FAILURES_AY42.jpg", "/BEAUTIFUL_FAILURES_AY49.jpg", "/BEAUTIFUL_FAILURES_AY51.jpg", "/BEAUTIFUL_FAILURES_AY59.jpg", "/BEAUTIFUL_FAILURES_AY71.jpg", "/BEAUTIFUL_FAILURES_AY75.jpg", "/BEAUTIFUL_FAILURES_AY9.jpg"];
 
   const projects = [
-    { id: 1, title: "Beautiful Failures I", img: "/fotos_portadas/Portada_24seconds.jpg", desc: "Una búsqueda de la armonía en el error digital y la composición orgánica.", gallery: trailImages },
-    { id: 2, title: "Beautiful Failures II", img: "/fotos_portadas/Portada_Aria libera.jpg", desc: "La imperfección como lenguaje visual predominante.", gallery: trailImages },
-    { id: 3, title: "Editorial Study", img: "/fotos_portadas/Portada_Beautiful failures.jpg", desc: "Exploración rítmica del espacio en blanco.", gallery: trailImages },
-    { id: 4, title: "Light & Shadow", img: "/fotos_portadas/Portada_Ledsc4.jpg", desc: "El contraste extremo define la forma.", gallery: trailImages },
-    { id: 5, title: "Visual Concept", img: "/fotos_portadas/Portada_Now you see me moria.jpg", desc: "Abstracción aplicada al diseño contemporáneo.", gallery: trailImages },
-    { id: 6, title: "Archive 01", img: "/fotos_portadas/Portada_rise up.jpg", desc: "Fragmentos de un proceso inacabado.", gallery: trailImages },
-    { id: 7, title: "Motion Texture", img: "/fotos_portadas/Portada_San sadurni.jpg", desc: "Capturando la esencia del movimiento estático.", gallery: trailImages },
-    { id: 8, title: "Silence", img: "/fotos_portadas/Portada_vora.jpg", desc: "Reducción visual al mínimo exponente.", gallery: trailImages },
+    { id: 1, title: "24 seconds", img: "/fotos_portadas/Portada_24seconds.jpg", desc: "Una búsqueda de la armonía en el error digital y la composición orgánica.", gallery: trailImages },
+    { id: 2, title: "Aria Libera", img: "/fotos_portadas/Portada_Aria libera.jpg", desc: "La imperfección como lenguaje visual predominante.", gallery: trailImages },
+    { id: 3, title: "Beautiful failures", img: "/fotos_portadas/Portada_Beautiful failures.jpg", desc: "Exploración rítmica del espacio en blanco.", gallery: trailImages },
+    { id: 4, title: "LedsC4", img: "/fotos_portadas/Portada_Ledsc4.jpg", desc: "El contraste extremo define la forma.", gallery: trailImages },
+    { id: 5, title: "Now you see me Moria", img: "/fotos_portadas/Portada_Now you see me moria.jpg", desc: "Abstracción aplicada al diseño contemporáneo.", gallery: trailImages },
+    { id: 6, title: "Rise Up", img: "/fotos_portadas/Portada_rise up.jpg", desc: "Fragmentos de un proceso inacabado.", gallery: trailImages },
+    { id: 7, title: "San Sadurnì", img: "/fotos_portadas/Portada_San sadurni.jpg", desc: "Capturando la esencia del movimiento estático.", gallery: trailImages },
+    { id: 8, title: "Vora", img: "/fotos_portadas/Portada_vora.jpg", desc: "Reducción visual al mínimo exponente.", gallery: trailImages },
     { id: 9, title: "Form Study", img: "/fotos_portadas/Portada_vora.jpg", desc: "Anatomía de la forma pura.", gallery: trailImages },
     { id: 10, title: "Final Chapter", img: "/fotos_portadas/Portada_vora.jpg", desc: "Conclusión de la serie exploratoria.", gallery: trailImages },
   ];
