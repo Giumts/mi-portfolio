@@ -177,7 +177,7 @@ export default function Home() {
               {/* LADO DERECHO SCROLLABLE */}
               <div style={{ width: "65vw", paddingTop: "25vh", paddingBottom: "25vh", display: "flex", flexDirection: "column", gap: "30vh" }}>
                 {[selectedProject.img, ...selectedProject.gallery].map((img, i) => {
-                  const hasCaption = i === 0 || i === 2 || i === 5; // Imágenes seleccionadas para el texto
+                  const hasCaption = i === 0 || i === 2 || i === 5;
                   const captionText = i === 0 
                     ? `fragmento visual nº 1 / textura y error.` 
                     : i === 2 
@@ -187,7 +187,7 @@ export default function Home() {
                   return (
                     <motion.div 
                       key={i} 
-                      className="detail-image-container" // Para identificar el hover
+                      className="detail-image-container"
                       initial={{ opacity: 0, y: 30 }} 
                       whileInView={{ opacity: 1, y: 0 }} 
                       viewport={{ once: true }} 
@@ -195,44 +195,41 @@ export default function Home() {
                       style={{ 
                         width: (i + 1) % 3 === 0 ? "100%" : "70%", 
                         alignSelf: i % 2 === 0 ? "flex-end" : "flex-start",
-                        position: "relative" // Necesario para el texto flotante
+                        position: "relative"
                       }}
                     >
                       <img src={img} style={{ width: "100%", height: "auto", display: "block" }} />
                       
-                      {/* TEXTO FLOTANTE AL HOVER */}
                       {hasCaption && (
-                        <div style={{
+                        <div className="hover-caption" style={{
                           position: "absolute",
-                          bottom: "-40px", // Justo debajo de la imagen
+                          bottom: "-40px",
                           right: (i % 2 === 0 ? "0" : "auto"),
                           left: (i % 2 === 0 ? "auto" : "0"),
                           fontFamily: fontTitle,
                           fontSize: "0.7rem",
                           color: "#000",
-                          backgroundColor: "rgba(255,255,255,0.8)", // Fondo sutil para legibilidad
-                          padding: "5px",
-                          opacity: 0, // Oculto por defecto
+                          opacity: 0,
                           transition: "opacity 0.3s ease",
                           zIndex: 10,
-                          pointerEvents: "none" // Para no interferir con el scroll
+                          pointerEvents: "none",
+                          textAlign: (i % 2 === 0 ? "right" : "left")
                         }}>
-                          <div style={{ textTransform: "lowercase", opacity: 0.6 }}>{selectedProject.title}</div>
+                          <div style={{ textTransform: "lowercase", opacity: 0.5 }}>{selectedProject.title}</div>
                           <div>{captionText}</div>
                         </div>
                       )}
-
-                      <style jsx>{`
-                        .detail-image-container:hover div {
-                          opacity: 1 !important; // Muestra el texto al hover
-                        }
-                      `}</style>
-
                     </motion.div>
                   );
                 })}
               </div>
             </div>
+
+            <style jsx>{`
+              :global(.detail-image-container:hover .hover-caption) {
+                opacity: 1 !important;
+              }
+            `}</style>
           </motion.div>
         )}
       </AnimatePresence>
