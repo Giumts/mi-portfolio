@@ -10,17 +10,12 @@ export default function Home() {
   const [hoveredIndex, setHoveredIndex] = useState(null); 
   const containerRef = useRef(null);
 
+  // ... (Tus estados de posiciones se mantienen igual)
   const [navPositions, setNavPositions] = useState({
     giulia: { top: "15vh", left: "40vw", rotate: "-2deg" },
     projects: { top: "75vh", left: "15vw", rotate: "4deg" },
     about: { top: "45vh", right: "12vw", rotate: "-3deg" }
   });
-  
-  const [aboutPositions, setAboutPositions] = useState({
-    email: { top: "15vh", left: "10vw", rotate: "5deg" },
-    phone: { bottom: "15vh", right: "10vw", rotate: "-8deg" }
-  });
-
   const [detailInfoPositions, setDetailInfoPositions] = useState({
     date: { top: "4vh", right: "15vw", rotate: "0deg" },
     location: { top: "6vh", right: "8vw", rotate: "2deg" },
@@ -29,7 +24,8 @@ export default function Home() {
 
   const [selectedProject, setSelectedProject] = useState(null);
 
-  const springConfig = { stiffness: 250, damping: 30 };
+  // Configuración de movimiento del cursor
+  const springConfig = { stiffness: 200, damping: 25 };
   const mouseX = useSpring(0, springConfig);
   const mouseY = useSpring(0, springConfig);
 
@@ -37,15 +33,7 @@ export default function Home() {
   const fontTitle = "'Monor', monospace";
   const fontBody = "'Roundo', sans-serif";
 
-  // Galería de ejemplo con subtítulos personalizados
-  const customGallery = [
-    { url: "/BEAUTIFUL_FAILURES_AY1.jpg", caption: "detalles técnicos" },
-    { url: "/BEAUTIFUL_FAILURES_AY3.jpg", caption: "composición rítmica" },
-    { url: "/BEAUTIFUL_FAILURES_AY15.jpg", caption: "estudio de color" },
-    { url: "/BEAUTIFUL_FAILURES_AY37.jpg", caption: "proceso abierto" },
-    { url: "/BEAUTIFUL_FAILURES_AY42.jpg", caption: "texturas digitales" }
-  ];
-
+  // DATOS: Ahora cada imagen tiene su propio "caption" personalizado
   const projects = [
     { 
       id: 1, 
@@ -53,17 +41,14 @@ export default function Home() {
       img: "/fotos_portadas/Portada_24seconds.jpg", 
       desc: "una búsqueda de la armonía en el error digital y la composición orgánica.", 
       info: { date: "2024", location: "barcelona", role: "creative direction" }, 
-      gallery: customGallery 
+      gallery: [
+        { url: "/BEAUTIFUL_FAILURES_AY1.jpg", caption: "fragmento 01" },
+        { url: "/BEAUTIFUL_FAILURES_AY3.jpg", caption: "error controlado" },
+        { url: "/BEAUTIFUL_FAILURES_AY15.jpg", caption: "textura orgánica" },
+        { url: "/BEAUTIFUL_FAILURES_AY37.jpg", caption: "offset visual" },
+      ]
     },
-    { 
-      id: 2, 
-      title: "aria libera", 
-      img: "/fotos_portadas/Portada_Aria libera.jpg", 
-      desc: "la imperfección como lenguaje visual predominante.", 
-      info: { date: "2023", location: "milan", role: "art direction" }, 
-      gallery: customGallery 
-    },
-    // Añade el resto de tus proyectos aquí con la misma estructura de gallery
+    // ... otros proyectos
   ];
 
   useEffect(() => {
@@ -75,45 +60,14 @@ export default function Home() {
     return () => window.removeEventListener("mousemove", handleMouseMove);
   }, [mouseX, mouseY]);
 
+  // (useEffect de cambio de vista omitido para brevedad, mantenlo igual)
   useEffect(() => {
-    if (view === "home") {
-      setNavPositions({
-        giulia: { top: "15vh", left: "40vw", rotate: "-2deg" },
-        projects: { top: "75vh", left: "15vw", rotate: "4deg" },
-        about: { top: "45vh", right: "12vw", rotate: "-3deg" }
-      });
-    }
-    
-    if (view === "about") {
-      setAboutPositions({
-        email: { 
-          top: Math.floor(Math.random() * 20 + 10) + "vh", 
-          left: Math.floor(Math.random() * 50 + 5) + "vw", 
-          rotate: Math.floor(Math.random() * 20 - 10) + "deg" 
-        },
-        phone: { 
-          bottom: Math.floor(Math.random() * 20 + 10) + "vh", 
-          right: Math.floor(Math.random() * 50 + 5) + "vw", 
-          rotate: Math.floor(Math.random() * 20 - 10) + "deg" 
-        }
-      });
-    }
-
     if (view === "detail") {
       setDetailInfoPositions({
         date: { top: Math.floor(Math.random() * 5 + 3) + "vh", right: "18vw", rotate: Math.floor(Math.random() * 10 - 5) + "deg" },
         location: { top: Math.floor(Math.random() * 5 + 3) + "vh", right: "11vw", rotate: Math.floor(Math.random() * 10 - 5) + "deg" },
         role: { top: Math.floor(Math.random() * 5 + 3) + "vh", right: "4vw", rotate: Math.floor(Math.random() * 10 - 5) + "deg" }
       });
-    }
-
-    if (view === "projects") {
-      const positions = projects.map(() => ({
-        top: Math.floor(Math.random() * 60 + 15) + "vh",
-        left: Math.floor(Math.random() * 70 + 10) + "vw",
-        rotation: Math.floor(Math.random() * 10 - 5) + "deg",
-      }));
-      setProjectPositions(positions);
     }
   }, [view]);
 
@@ -136,65 +90,61 @@ export default function Home() {
         ::-webkit-scrollbar { display: none; }
       `}</style>
 
-      {/* NAVEGACIÓN GLOBAL */}
+      {/* NAVEGACIÓN (Giulia, Projects, About) */}
       <nav>
-        <AnimatePresence>
-          {view === "home" ? (
-            <>
-              <motion.h1 onClick={() => setView("home")} initial={{ opacity: 0 }} animate={{ opacity: 1, ...navPositions.giulia }} style={{ position: "fixed", fontFamily: fontTitle, fontSize: "0.9rem", textDecoration: "line-through", zIndex: 1000, cursor: "pointer" }}>giulia</motion.h1>
-              <motion.div onClick={() => setView("projects")} initial={{ opacity: 0 }} animate={{ opacity: 1, ...navPositions.projects }} whileHover={{ color: kleinBlue }} style={{ position: "fixed", fontFamily: fontTitle, fontSize: "0.8rem", zIndex: 1000, cursor: "pointer" }}>projects</motion.div>
-              <motion.div onClick={() => setView("about")} initial={{ opacity: 0 }} animate={{ opacity: 1, ...navPositions.about }} whileHover={{ color: kleinBlue }} style={{ position: "fixed", fontFamily: fontTitle, fontSize: "0.8rem", zIndex: 1000, cursor: "pointer" }}>about</motion.div>
-            </>
-          ) : (
-            <div style={{ fontFamily: fontTitle, fontSize: "0.8rem", textTransform: "lowercase" }}>
-              <div onClick={() => {setView("home"); setSelectedProject(null);}} style={{ position: "fixed", top: "4vh", left: "4vw", zIndex: 1000, cursor: "pointer", textDecoration: view === "home" ? "line-through" : "none" }}>giulia</div>
-              <div onClick={() => {setView("projects"); setSelectedProject(null);}} style={{ position: "fixed", bottom: "4vh", left: "4vw", zIndex: 1000, cursor: "pointer", textDecoration: view === "projects" ? "line-through" : "none" }}>projects</div>
-              <div onClick={() => {setView("about"); setSelectedProject(null);}} style={{ position: "fixed", bottom: "4vh", right: "4vw", zIndex: 1000, cursor: "pointer", textDecoration: view === "about" ? "line-through" : "none" }}>about</div>
-            </div>
-          )}
-        </AnimatePresence>
+        {/* ... (Tu componente nav actual) ... */}
       </nav>
 
-      {/* TEXTO DINÁMICO CURSOR (Detail) */}
+      {/* CURSOR DINÁMICO: Texto que acompaña a la cruz */}
       {view === "detail" && selectedProject && (
         <motion.div
           style={{
             position: "fixed", left: 0, top: 0, x: mouseX, y: mouseY,
             pointerEvents: "none", zIndex: 9999, padding: "12px",
             fontFamily: fontTitle, fontSize: "0.6rem", color: kleinBlue,
-            textTransform: "lowercase"
+            textTransform: "lowercase", display: "flex", alignItems: "center"
           }}
         >
-          {hoveredIndex !== null 
-            ? (selectedProject.gallery[hoveredIndex]?.caption || "detalle") 
-            : selectedProject.title}
+          <AnimatePresence mode="wait">
+            <motion.span
+              key={hoveredIndex !== null ? `cap-${hoveredIndex}` : 'title'}
+              initial={{ opacity: 0, x: -5 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: 5 }}
+              transition={{ duration: 0.2 }}
+            >
+              {hoveredIndex !== null 
+                ? selectedProject.gallery[hoveredIndex]?.caption 
+                : selectedProject.title}
+            </motion.span>
+          </AnimatePresence>
         </motion.div>
       )}
 
       <AnimatePresence mode="wait">
-        {/* ... (Home, Projects, About se mantienen igual) ... */}
-        {view === "home" && ( <motion.div key="home" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} style={{height: "100vh"}}><ImageTrail images={customGallery.map(g => g.url)} /></motion.div> )}
-        
-        {/* VIEW: PROJECTS (Omitido para brevedad, sigue igual que antes) */}
+        {/* VISTAS: HOME / PROJECTS / ABOUT */}
+        {/* ... (Omitidas para centrar la atención en Detail) ... */}
 
         {/* VIEW: DETAIL */}
         {view === "detail" && selectedProject && (
           <motion.div key="detail" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} style={{ backgroundColor: "white", minHeight: "100vh" }}>
             <Crosshair color={kleinBlue} />
             
-            {/* Header info random */}
+            {/* Header info (Date, Location, Role) */}
             <div style={{ position: "fixed", width: "100vw", height: "15vh", top: 0, left: 0, zIndex: 1000, pointerEvents: "none" }}>
-              <motion.div animate={{ ...detailInfoPositions.date }} style={{ position: "absolute", fontFamily: fontTitle, fontSize: "0.7rem", color: "#000" }}> <span style={{ opacity: 0.4 }}>year </span>{selectedProject.info.date} </motion.div>
-              <motion.div animate={{ ...detailInfoPositions.location }} style={{ position: "absolute", fontFamily: fontTitle, fontSize: "0.7rem", color: "#000" }}> <span style={{ opacity: 0.4 }}>loc </span>{selectedProject.info.location} </motion.div>
-              <motion.div animate={{ ...detailInfoPositions.role }} style={{ position: "absolute", fontFamily: fontTitle, fontSize: "0.7rem", color: "#000" }}> <span style={{ opacity: 0.4 }}>role </span>{selectedProject.info.role} </motion.div>
+              <motion.div animate={{ ...detailInfoPositions.date }} style={{ position: "absolute", fontFamily: fontTitle, fontSize: "0.7rem" }}> <span style={{ opacity: 0.4 }}>year </span>{selectedProject.info.date} </motion.div>
+              <motion.div animate={{ ...detailInfoPositions.location }} style={{ position: "absolute", fontFamily: fontTitle, fontSize: "0.7rem" }}> <span style={{ opacity: 0.4 }}>loc </span>{selectedProject.info.location} </motion.div>
+              <motion.div animate={{ ...detailInfoPositions.role }} style={{ position: "absolute", fontFamily: fontTitle, fontSize: "0.7rem" }}> <span style={{ opacity: 0.4 }}>role </span>{selectedProject.info.role} </motion.div>
             </div>
 
             <div style={{ display: "flex", padding: "0 4vw" }}>
+              {/* Columna Izquierda: Info fija */}
               <div style={{ width: "35vw", height: "100vh", position: "sticky", top: 0, display: "flex", flexDirection: "column", justifyContent: "center", paddingRight: "4vw" }}>
                 <h1 style={{ fontFamily: fontTitle, fontSize: "4.5vw", color: kleinBlue, lineHeight: "0.9", marginBottom: "2rem" }}>{selectedProject.title}</h1>
                 <p style={{ fontFamily: fontBody, fontSize: "0.9rem", maxWidth: "24vw", lineHeight: "1.6" }}>{selectedProject.desc}</p>
               </div>
 
+              {/* Columna Derecha: Galería Scrollable */}
               <div style={{ width: "65vw", paddingTop: "25vh", paddingBottom: "25vh", display: "flex", flexDirection: "column", gap: "30vh" }}>
                 {selectedProject.gallery.map((item, i) => (
                   <motion.div 
@@ -203,14 +153,13 @@ export default function Home() {
                     onMouseLeave={() => setHoveredIndex(null)}
                     initial={{ opacity: 0, y: 30 }} 
                     whileInView={{ opacity: 1, y: 0 }} 
-                    viewport={{ once: true }} 
-                    transition={{ duration: 0.8 }} 
+                    viewport={{ once: true, margin: "-10%" }} 
                     style={{ 
-                        width: (i + 1) % 3 === 0 ? "100%" : "70%", 
+                        width: (i + 1) % 3 === 0 ? "100%" : "75%", 
                         alignSelf: i % 2 === 0 ? "flex-end" : "flex-start",
                     }}
                   >
-                    <img src={item.url} style={{ width: "100%", height: "auto", display: "block" }} />
+                    <img src={item.url} style={{ width: "100%", height: "auto", display: "block" }} alt={item.caption} />
                   </motion.div>
                 ))}
               </div>
