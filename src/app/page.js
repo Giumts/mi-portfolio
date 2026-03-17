@@ -7,12 +7,11 @@ export default function Home() {
   const [view, setView] = useState("home");
   const [projectPositions, setProjectPositions] = useState([]);
   const [navPositions, setNavPositions] = useState({
-    giulia: { top: "10vh", left: "45vw", rotate: "0deg" },
-    projects: { top: "80vh", left: "10vw", rotate: "0deg" },
-    about: { top: "50vh", right: "10vw", rotate: "0deg" }
+    giulia: { top: "15vh", left: "40vw", rotate: "-2deg" },
+    projects: { top: "75vh", left: "15vw", rotate: "4deg" },
+    about: { top: "45vh", right: "12vw", rotate: "-3deg" }
   });
   
-  // Estado para posiciones aleatorias en la página About
   const [aboutPositions, setAboutPositions] = useState({
     email: { top: "20vh", left: "15vw", rotate: "5deg" },
     phone: { bottom: "15vh", right: "20vw", rotate: "-8deg" }
@@ -61,25 +60,16 @@ export default function Home() {
   useEffect(() => {
     if (view === "home") {
       setNavPositions({
-        giulia: { top: "15vh", left: "40vw", rotate: "-2deg" },
-        projects: { top: "75vh", left: "15vw", rotate: "4deg" },
-        about: { top: "45vh", right: "12vw", rotate: "-3deg" }
+        giulia: { top: Math.floor(Math.random() * 20 + 10) + "vh", left: Math.floor(Math.random() * 50 + 20) + "vw", rotate: Math.floor(Math.random() * 10 - 5) + "deg" },
+        projects: { top: Math.floor(Math.random() * 20 + 65) + "vh", left: Math.floor(Math.random() * 30 + 5) + "vw", rotate: Math.floor(Math.random() * 14 - 7) + "deg" },
+        about: { top: Math.floor(Math.random() * 30 + 35) + "vh", right: Math.floor(Math.random() * 15 + 5) + "vw", rotate: Math.floor(Math.random() * 10 - 5) + "deg" }
       });
     }
 
-    // Generar posiciones random para el contacto en About
     if (view === "about") {
       setAboutPositions({
-        email: { 
-          top: Math.floor(Math.random() * 20 + 5) + "vh", 
-          left: Math.floor(Math.random() * 60 + 5) + "vw",
-          rotate: Math.floor(Math.random() * 20 - 10) + "deg"
-        },
-        phone: { 
-          bottom: Math.floor(Math.random() * 20 + 5) + "vh", 
-          right: Math.floor(Math.random() * 60 + 5) + "vw",
-          rotate: Math.floor(Math.random() * 20 - 10) + "deg"
-        }
+        email: { top: Math.floor(Math.random() * 20 + 5) + "vh", left: Math.floor(Math.random() * 60 + 5) + "vw", rotate: Math.floor(Math.random() * 20 - 10) + "deg" },
+        phone: { bottom: Math.floor(Math.random() * 20 + 5) + "vh", right: Math.floor(Math.random() * 60 + 5) + "vw", rotate: Math.floor(Math.random() * 20 - 10) + "deg" }
       });
     }
 
@@ -126,7 +116,12 @@ export default function Home() {
               <motion.div onClick={() => setView("about")} initial={{ opacity: 0 }} animate={{ opacity: 1, ...navPositions.about }} whileHover={{ color: kleinBlue }} style={{ position: "fixed", fontFamily: fontTitle, fontSize: "0.8rem", zIndex: 1000, cursor: "pointer" }}>about</motion.div>
             </>
           ) : (
-            <div style={{ fontFamily: fontBody, fontSize: "0.8rem", textTransform: "lowercase" }}>
+            /* Navegación para About, Projects y Detail */
+            <div style={{ 
+              fontFamily: (view === "about" ? fontTitle : fontBody), 
+              fontSize: "0.8rem", 
+              textTransform: "lowercase" 
+            }}>
               <div onClick={() => {setView("home"); setSelectedProject(null);}} style={{ position: "fixed", top: "4vh", left: "4vw", zIndex: 1000, cursor: "pointer", textDecoration: view === "home" ? "line-through" : "none" }}>giulia</div>
               <div onClick={() => {setView("projects"); setSelectedProject(null);}} style={{ position: "fixed", bottom: "4vh", left: "4vw", zIndex: 1000, cursor: "pointer", textDecoration: view === "projects" ? "line-through" : "none" }}>projects</div>
               <div onClick={() => {setView("about"); setSelectedProject(null);}} style={{ position: "fixed", bottom: "4vh", right: "4vw", zIndex: 1000, cursor: "pointer", textDecoration: view === "about" ? "line-through" : "none" }}>about</div>
@@ -135,7 +130,6 @@ export default function Home() {
         </AnimatePresence>
       </nav>
 
-      {/* CONTENIDO */}
       <AnimatePresence mode="wait">
         {view === "home" && (
           <motion.div key="home" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} style={{height: "100vh"}}>
@@ -156,8 +150,6 @@ export default function Home() {
 
         {view === "about" && (
           <motion.div key="about" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} style={{ width: "100vw", height: "100vh", position: "relative" }}>
-            
-            {/* Email y Phone Aleatorios (MONOR AZUL KLEIN) */}
             <motion.p animate={{ ...aboutPositions.email }} style={{ position: "absolute", fontFamily: fontTitle, fontSize: "0.8rem", color: kleinBlue }}>
               giulia@example.com
             </motion.p>
@@ -165,11 +157,7 @@ export default function Home() {
               +34 000 000 000
             </motion.p>
 
-            {/* Texto descriptivo: 3 párrafos pequeños en el centro (ROUNDO NEGRO) */}
-            <div style={{ 
-              display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center", 
-              height: "100vh", gap: "2rem", padding: "0 20vw", textAlign: "center" 
-            }}>
+            <div style={{ display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center", height: "100vh", gap: "2rem", padding: "0 20vw", textAlign: "center" }}>
               <p style={{ fontFamily: fontBody, fontSize: "0.75rem", maxWidth: "300px", lineHeight: "1.5" }}>
                 giulia es una directora creativa con base en barcelona, enfocada en la intersección entre el diseño digital y la imperfección orgánica.
               </p>
@@ -183,7 +171,6 @@ export default function Home() {
           </motion.div>
         )}
 
-        {/* VISTA DETALLE PROYECTO... (Se mantiene igual que antes) */}
         {view === "detail" && selectedProject && (
           <motion.div key="detail" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
              <div style={{ position: "fixed", top: "4vh", right: "4vw", fontFamily: fontTitle, fontSize: "0.9rem", color: kleinBlue, zIndex: 1000, display: "flex", gap: "3rem" }}>
