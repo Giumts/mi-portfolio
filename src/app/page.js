@@ -7,6 +7,7 @@ import { motion, AnimatePresence, useSpring } from "framer-motion";
 export default function Home() {
   const [view, setView] = useState("home");
   const [projectPositions, setProjectPositions] = useState([]);
+  const [hoveredIndex, setHoveredIndex] = useState(null); // Nuevo: para rastrear el hover en imágenes
   const containerRef = useRef(null);
 
   const [navPositions, setNavPositions] = useState({
@@ -28,7 +29,7 @@ export default function Home() {
 
   const [selectedProject, setSelectedProject] = useState(null);
 
-  const springConfig = { stiffness: 150, damping: 20 };
+  const springConfig = { stiffness: 250, damping: 30 }; // Un poco más rápido para el texto
   const mouseX = useSpring(0, springConfig);
   const mouseY = useSpring(0, springConfig);
 
@@ -145,6 +146,28 @@ export default function Home() {
         </AnimatePresence>
       </nav>
 
+      {/* TEXTO FLOTANTE QUE SIGUE AL CURSOR (Solo en Detail) */}
+      {view === "detail" && hoveredIndex !== null && (
+        <motion.div
+          style={{
+            position: "fixed",
+            left: 0,
+            top: 0,
+            x: mouseX,
+            y: mouseY,
+            pointerEvents: "none",
+            zIndex: 9999,
+            padding: "10px",
+            fontFamily: fontTitle,
+            fontSize: "0.6rem",
+            color: kleinBlue,
+            textTransform: "lowercase"
+          }}
+        >
+          view_img_{hoveredIndex.toString().padStart(2, '0')}
+        </motion.div>
+      )}
+
       <AnimatePresence mode="wait">
         {/* VIEW: HOME */}
         {view === "home" && (
@@ -185,7 +208,6 @@ export default function Home() {
           <motion.div key="detail" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} style={{ backgroundColor: "white", minHeight: "100vh" }}>
             <Crosshair color={kleinBlue} />
             
-            {/* INFO FLOTANTE SUPERIOR RANDOM */}
             <div style={{ position: "fixed", width: "100vw", height: "15vh", top: 0, left: 0, zIndex: 1000, pointerEvents: "none" }}>
               <motion.div animate={{ ...detailInfoPositions.date }} style={{ position: "absolute", fontFamily: fontTitle, fontSize: "0.7rem", color: "#000" }}>
                 <span style={{ opacity: 0.4 }}>year </span>{selectedProject.info.date}
@@ -199,17 +221,17 @@ export default function Home() {
             </div>
 
             <div style={{ display: "flex", padding: "0 4vw" }}>
-              {/* LADO IZQUIERDO FIJO */}
               <div style={{ width: "35vw", height: "100vh", position: "sticky", top: 0, display: "flex", flexDirection: "column", justifyContent: "center", paddingRight: "4vw" }}>
                 <h1 style={{ fontFamily: fontTitle, fontSize: "4.5vw", color: kleinBlue, lineHeight: "0.9", marginBottom: "2rem" }}>{selectedProject.title}</h1>
                 <p style={{ fontFamily: fontBody, fontSize: "0.9rem", maxWidth: "24vw", lineHeight: "1.6" }}>{selectedProject.desc}</p>
               </div>
 
-              {/* LADO DERECHO SCROLLABLE - Imágenes Limpias */}
               <div style={{ width: "65vw", paddingTop: "25vh", paddingBottom: "25vh", display: "flex", flexDirection: "column", gap: "30vh" }}>
                 {[selectedProject.img, ...selectedProject.gallery].map((img, i) => (
                   <motion.div 
                     key={i} 
+                    onMouseEnter={() => setHoveredIndex(i)} // Al entrar, activamos el texto flotante
+                    onMouseLeave={() => setHoveredIndex(null)} // Al salir, lo ocultamos
                     initial={{ opacity: 0, y: 30 }} 
                     whileInView={{ opacity: 1, y: 0 }} 
                     viewport={{ once: true }} 
