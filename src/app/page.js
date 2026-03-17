@@ -10,16 +10,22 @@ export default function Home() {
   const [hoveredIndex, setHoveredIndex] = useState(null); 
   const containerRef = useRef(null);
 
-  // Estados para las posiciones random de la info superior en detalle
+  const [navPositions, setNavPositions] = useState({
+    giulia: { top: "15vh", left: "40vw", rotate: "-2deg" },
+    projects: { top: "75vh", left: "15vw", rotate: "4deg" },
+    about: { top: "45vh", right: "12vw", rotate: "-3deg" }
+  });
+  
+  const [aboutPositions, setAboutPositions] = useState({
+    email: { top: "15vh", left: "10vw", rotate: "5deg" },
+    phone: { bottom: "15vh", right: "10vw", rotate: "-8deg" }
+  });
+
   const [detailInfoPositions, setDetailInfoPositions] = useState({
     date: { top: "4vh", right: "15vw", rotate: "0deg" },
     location: { top: "6vh", right: "8vw", rotate: "2deg" },
     role: { top: "4vh", right: "4vw", rotate: "-1deg" }
   });
-
-  // Otros estados de posición (About, Nav) - Omitidos por brevedad, mantenlos igual
-  const [navPositions, setNavPositions] = useState({ giulia: {}, projects: {}, about: {} });
-  const [aboutPositions, setAboutPositions] = useState({ email: {}, phone: {} });
 
   const [selectedProject, setSelectedProject] = useState(null);
 
@@ -31,22 +37,27 @@ export default function Home() {
   const fontTitle = "'Monor', monospace";
   const fontBody = "'Roundo', sans-serif";
 
-  // --- ESTRUCTURA DE GALERÍA BASE (Muestra) ---
-  const customGallery = [
+  // Galería compartida para el ejemplo (sustituir por las reales)
+  const trailImages = [
     { url: "/BEAUTIFUL_FAILURES_AY1.jpg", text: "error de sistema" },
     { url: "/BEAUTIFUL_FAILURES_AY3.jpg", text: "composición rítmica" },
     { url: "/BEAUTIFUL_FAILURES_AY15.jpg", text: "textura digital" },
     { url: "/BEAUTIFUL_FAILURES_AY37.jpg", text: "proceso abierto" },
-    { url: "/BEAUTIFUL_FAILURES_AY42.jpg", text: "interferencia visual" }
+    { url: "/BEAUTIFUL_FAILURES_AY42.jpg", text: "interferencia" },
+    { url: "/BEAUTIFUL_FAILURES_AY49.jpg", text: "abstracción" },
+    { url: "/BEAUTIFUL_FAILURES_AY51.jpg", text: "luz y ruido" },
+    { url: "/BEAUTIFUL_FAILURES_AY59.jpg", text: "fragmentos" },
+    { url: "/BEAUTIFUL_FAILURES_AY71.jpg", text: "espacio negativo" },
+    { url: "/BEAUTIFUL_FAILURES_AY75.jpg", text: "estática visual" },
+    { url: "/BEAUTIFUL_FAILURES_AY9.jpg", text: "final inacabado" }
   ];
 
-  // --- LISTADO COMPLETO DE PROYECTOS ---
   const projects = [
     { 
       id: 1, title: "24 seconds", img: "/fotos_portadas/Portada_24 seconds.jpg", 
       desc: "una búsqueda de la armonía en el error digital y la composición orgánica.", 
       info: { date: "2024", location: "barcelona", role: "creative direction" }, 
-      gallery: customGallery,
+      gallery: trailImages,
       extraTexts: [
         "la fragmentación del tiempo se convierte en una herramienta de diseño, donde cada segundo cuenta una historia de distorsión.",
         "exploramos cómo el código puede fallar de manera estética, creando patrones que el ojo humano no podría concebir por sí solo.",
@@ -57,82 +68,81 @@ export default function Home() {
       id: 2, title: "aria libera", img: "/fotos_portadas/Portada_Aria libera.jpg", 
       desc: "la imperfección como lenguaje visual predominante.", 
       info: { date: "2023", location: "milan", role: "art direction" }, 
-      gallery: customGallery,
+      gallery: trailImages,
       extraTexts: [
-        "espacios que respiran a través de la asimetría y el vacío.",
-        "una oda a la belleza de lo efímero y lo incompleto.",
-        "geometrías que se rompen para encontrar una nueva forma de equilibrio visual."
+        "espacios que respiran a través de la asimetría y el vacío visual.",
+        "una oda a la belleza de lo efímero y lo incompleto en la era digital.",
+        "geometrías que se rompen para encontrar una nueva forma de equilibrio."
       ]
     },
     { 
       id: 3, title: "beautiful failures", img: "/fotos_portadas/Portada_Beautiful failures.jpg", 
       desc: "exploración rítmica del espacio en blanco.", 
       info: { date: "2024", location: "madrid", role: "visual design" }, 
-      gallery: customGallery,
+      gallery: trailImages,
       extraTexts: [
-        "el lienzo blanco no es un vacío, sino un campo de fuerza donde el error encuentra su lugar.",
+        "el lienzo blanco no es un vacío, sino un campo de fuerza para el error.",
         "ritmos visuales que nacen de la repetición y la sutil variación del fallo.",
-        "una investigación sobre cómo la anomalía digital genera nuevas estéticas de diseño."
+        "investigación sobre cómo la anomalía genera nuevas estéticas de diseño."
       ]
     },
     { 
       id: 4, title: "ledsc4", img: "/fotos_portadas/Portada_Ledsc4.jpg", 
       desc: "el contraste extremo define la forma.", 
       info: { date: "2022", location: "london", role: "creative lead" }, 
-      gallery: customGallery,
+      gallery: trailImages,
       extraTexts: [
-        "la luz y la sombra llevadas al límite para esculpir la identidad visual.",
-        "un estudio sobre la legibilidad y la abstracción en entornos de alto contraste.",
-        "reducción de la forma a su esencia lumínica y matérica."
+        "la luz y la sombra llevadas al límite para esculpir la identidad.",
+        "un estudio sobre la legibilidad y la abstracción en entornos de contraste.",
+        "reducción de la forma a su esencia lumínica y matérica pura."
       ]
     },
     { 
       id: 5, title: "now you see me moria", img: "/fotos_portadas/Portada_Now you see me moria.jpg", 
       desc: "abstracción aplicada al diseño contemporáneo.", 
       info: { date: "2023", location: "berlin", role: "photography" }, 
-      gallery: customGallery,
+      gallery: trailImages,
       extraTexts: [
         "capturando la realidad a través de un filtro de abstracción geométrica.",
-        "la fotografía como herramienta para descomponer y reensamblar el entorno urbano.",
-        "una mirada que busca lo invisible en lo cotidiano a través del diseño visual."
+        "la fotografía como herramienta para descomponer el entorno urbano.",
+        "una mirada que busca lo invisible en lo cotidiano del diseño."
       ]
     },
     { 
       id: 6, title: "rise up", img: "/fotos_portadas/Portada_rise up.JPG", 
       desc: "fragmentos de un proceso inacabado.", 
       info: { date: "2024", location: "paris", role: "concept" }, 
-      gallery: customGallery,
+      gallery: trailImages,
       extraTexts: [
-        "la belleza de la evolución constante, capturada en un estado de 'work in progress'.",
-        "una exploración conceptual sobre la ascendencia y la transformación formal.",
-        "texturas visuales que narran la historia de su propia creación y error."
+        "la belleza de la evolución constante en un estado de 'work in progress'.",
+        "exploración conceptual sobre la ascendencia y la transformación formal.",
+        "texturas visuales que narran la historia de su propia creación."
       ]
     },
     { 
       id: 7, title: "san sadurnì", img: "/fotos_portadas/Portada_San sadurni.jpg", 
       desc: "capturando la esencia del movimiento estático.", 
       info: { date: "2023", location: "barcelona", role: "production" }, 
-      gallery: customGallery,
+      gallery: trailImages,
       extraTexts: [
-        "una investigación visual sobre la tensión entre lo quieto y lo dinámico.",
+        "investigación visual sobre la tensión entre lo quieto y lo dinámico.",
         "el movimiento congelado en el tiempo para revelar patrones ocultos.",
-        "una producción visual que explora la cinemática a través de la imagen fija."
+        "producción visual que explora la cinemática a través de la imagen fija."
       ]
     },
     { 
       id: 8, title: "vora", img: "/fotos_portadas/Portada_vora.jpg", 
       desc: "reducción visual al mínimo exponente.", 
       info: { date: "2024", location: "remote", role: "ui design" }, 
-      gallery: customGallery,
+      gallery: trailImages,
       extraTexts: [
         "la interfaz como un espacio de máxima limpieza y claridad visual.",
-        "eliminación de lo superfluo para centrar la atención en la interacción pura.",
-        "una estética de diseño que busca la máxima eficiencia visual con el mínimo de elementos."
+        "eliminación de lo superfluo para centrar la atención en la interacción.",
+        "estética de diseño que busca la máxima eficiencia con el mínimo elemento."
       ]
     }
   ];
 
-  // --- EFECTOS DE MOVIMIENTO ---
   useEffect(() => {
     const handleMouseMove = (e) => {
       mouseX.set(e.clientX);
@@ -143,16 +153,36 @@ export default function Home() {
   }, [mouseX, mouseY]);
 
   useEffect(() => {
-    // ... (Lógica de posiciones random para Home, Projects, About omitida para brevedad, mantenla igual)
+    if (view === "home") {
+      setNavPositions({
+        giulia: { top: "15vh", left: "40vw", rotate: "-2deg" },
+        projects: { top: "75vh", left: "15vw", rotate: "4deg" },
+        about: { top: "45vh", right: "12vw", rotate: "-3deg" }
+      });
+    }
+    
+    if (view === "about") {
+      setAboutPositions({
+        email: { top: Math.floor(Math.random() * 20 + 10) + "vh", left: Math.floor(Math.random() * 50 + 5) + "vw", rotate: Math.floor(Math.random() * 20 - 10) + "deg" },
+        phone: { bottom: Math.floor(Math.random() * 20 + 10) + "vh", right: Math.floor(Math.random() * 50 + 5) + "vw", rotate: Math.floor(Math.random() * 20 - 10) + "deg" }
+      });
+    }
 
     if (view === "detail") {
-      // Posiciones de la info superior
       setDetailInfoPositions({
-        date: { top: Math.floor(Math.random() * 5 + 3) + "vh", right: "18vw", rotate: (Math.random() * 8 - 4) + "deg" },
-        location: { top: Math.floor(Math.random() * 5 + 3) + "vh", right: "11vw", rotate: (Math.random() * 8 - 4) + "deg" },
-        role: { top: Math.floor(Math.random() * 5 + 3) + "vh", right: "4vw", rotate: (Math.random() * 8 - 4) + "deg" }
+        date: { top: Math.floor(Math.random() * 5 + 3) + "vh", right: "18vw", rotate: Math.floor(Math.random() * 10 - 5) + "deg" },
+        location: { top: Math.floor(Math.random() * 5 + 3) + "vh", right: "11vw", rotate: Math.floor(Math.random() * 10 - 5) + "deg" },
+        role: { top: Math.floor(Math.random() * 5 + 3) + "vh", right: "4vw", rotate: Math.floor(Math.random() * 10 - 5) + "deg" }
       });
-      // Ya no generamos posiciones random para los textos de la izquierda
+    }
+
+    if (view === "projects") {
+      const positions = projects.map(() => ({
+        top: Math.floor(Math.random() * 60 + 15) + "vh",
+        left: Math.floor(Math.random() * 70 + 10) + "vw",
+        rotation: Math.floor(Math.random() * 10 - 5) + "deg",
+      }));
+      setProjectPositions(positions);
     }
   }, [view]);
 
@@ -175,12 +205,26 @@ export default function Home() {
         ::-webkit-scrollbar { display: none; }
       `}</style>
 
-      {/* NAVEGACIÓN GLOBAL */}
+      {/* NAVEGACIÓN */}
       <nav>
-        {/* ... (Tu componente nav actual se mantiene igual) ... */}
+        <AnimatePresence>
+          {view === "home" ? (
+            <>
+              <motion.h1 onClick={() => setView("home")} initial={{ opacity: 0 }} animate={{ opacity: 1, ...navPositions.giulia }} style={{ position: "fixed", fontFamily: fontTitle, fontSize: "0.9rem", textDecoration: "line-through", zIndex: 1000, cursor: "pointer" }}>giulia</motion.h1>
+              <motion.div onClick={() => setView("projects")} initial={{ opacity: 0 }} animate={{ opacity: 1, ...navPositions.projects }} whileHover={{ color: kleinBlue }} style={{ position: "fixed", fontFamily: fontTitle, fontSize: "0.8rem", zIndex: 1000, cursor: "pointer" }}>projects</motion.div>
+              <motion.div onClick={() => setView("about")} initial={{ opacity: 0 }} animate={{ opacity: 1, ...navPositions.about }} whileHover={{ color: kleinBlue }} style={{ position: "fixed", fontFamily: fontTitle, fontSize: "0.8rem", zIndex: 1000, cursor: "pointer" }}>about</motion.div>
+            </>
+          ) : (
+            <div style={{ fontFamily: fontTitle, fontSize: "0.8rem", textTransform: "lowercase" }}>
+              <div onClick={() => {setView("home"); setSelectedProject(null);}} style={{ position: "fixed", top: "4vh", left: "4vw", zIndex: 1000, cursor: "pointer", textDecoration: view === "home" ? "line-through" : "none" }}>giulia</div>
+              <div onClick={() => {setView("projects"); setSelectedProject(null);}} style={{ position: "fixed", bottom: "4vh", left: "4vw", zIndex: 1000, cursor: "pointer", textDecoration: view === "projects" ? "line-through" : "none" }}>projects</div>
+              <div onClick={() => {setView("about"); setSelectedProject(null);}} style={{ position: "fixed", bottom: "4vh", right: "4vw", zIndex: 1000, cursor: "pointer", textDecoration: view === "about" ? "line-through" : "none" }}>about</div>
+            </div>
+          )}
+        </AnimatePresence>
       </nav>
 
-      {/* TEXTO DINÁMICO CURSOR (Detail) */}
+      {/* CURSOR DINÁMICO */}
       {view === "detail" && selectedProject && (
         <motion.div
           style={{
@@ -192,81 +236,85 @@ export default function Home() {
         >
           <AnimatePresence mode="wait">
             <motion.span
-              key={hoveredIndex !== null ? `text-${hoveredIndex}` : 'title'}
+              key={hoveredIndex !== null ? `cap-${hoveredIndex}` : 'title'}
               initial={{ opacity: 0, y: 5 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -5 }}
               transition={{ duration: 0.15 }}
             >
-              {hoveredIndex !== null 
-                ? (selectedProject.gallery[hoveredIndex]?.text || "detalle") 
-                : selectedProject.title}
+              {hoveredIndex !== null ? (selectedProject.gallery[hoveredIndex]?.text || "detalle") : selectedProject.title}
             </motion.span>
           </AnimatePresence>
         </motion.div>
       )}
 
       <AnimatePresence mode="wait">
-        {/* ... (Home, Projects, About se mantienen igual) ... */}
+        {/* VIEW: HOME */}
+        {view === "home" && (
+          <motion.div key="home" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} style={{height: "100vh"}}>
+            <ImageTrail images={trailImages.map(img => img.url)} />
+          </motion.div>
+        )}
+
+        {/* VIEW: PROJECTS */}
+        {view === "projects" && (
+          <motion.div key="projects" ref={containerRef} initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} style={{ position: "relative", width: "100vw", height: "100vh", overflow: "hidden" }}>
+            <Crosshair containerRef={containerRef} color={kleinBlue} />
+            {projects.map((proj, index) => (
+              <motion.div key={proj.id} className="project-item" onClick={() => openProject(proj)} style={{ position: "absolute", top: projectPositions[index]?.top, left: projectPositions[index]?.left, rotate: projectPositions[index]?.rotation, width: "150px", cursor: "pointer", zIndex: 10 }}>
+                <motion.img src={proj.img} whileHover={{ scale: 1.05 }} style={{ width: "100%", filter: "grayscale(100%)" }} onMouseOver={e => e.currentTarget.style.filter="grayscale(0%)"} onMouseOut={e => e.currentTarget.style.filter="grayscale(100%)"} />
+                <p style={{ fontFamily: fontBody, marginTop: "10px", fontSize: "0.7rem" }}>{proj.title}</p>
+              </motion.div>
+            ))}
+          </motion.div>
+        )}
+
+        {/* VIEW: ABOUT */}
+        {view === "about" && (
+          <motion.div key="about" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} style={{ width: "100vw", height: "100vh", position: "relative" }}>
+            <Crosshair color="#000" />
+            <motion.p animate={{ ...aboutPositions.email }} style={{ position: "absolute", fontFamily: fontTitle, fontSize: "0.8rem", color: kleinBlue, zIndex: 10 }}>giulia@example.com</motion.p>
+            <motion.p animate={{ ...aboutPositions.phone }} style={{ position: "absolute", fontFamily: fontTitle, fontSize: "0.8rem", color: kleinBlue, zIndex: 10 }}>+34 000 000 000</motion.p>
+            <div style={{ display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center", height: "100vh", gap: "2rem", padding: "0 20vw", textAlign: "center", zIndex: 10 }}>
+              <p style={{ fontFamily: fontBody, fontSize: "0.75rem", maxWidth: "300px", lineHeight: "1.5" }}>giulia es una directora creativa con base en barcelona, enfocada en la intersección entre el diseño digital y la imperfección orgánica.</p>
+              <p style={{ fontFamily: fontBody, fontSize: "0.75rem", maxWidth: "300px", lineHeight: "1.5" }}>su trabajo explora el error como una herramienta estética, buscando la armonía en procesos inacabados y texturas visuales crudas.</p>
+            </div>
+          </motion.div>
+        )}
 
         {/* VIEW: DETAIL */}
         {view === "detail" && selectedProject && (
           <motion.div key="detail" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} style={{ backgroundColor: "white", minHeight: "100vh" }}>
             <Crosshair color={kleinBlue} />
             
-            {/* Header info fija arriba (Random Positions) */}
             <div style={{ position: "fixed", width: "100vw", height: "15vh", top: 0, left: 0, zIndex: 1000, pointerEvents: "none" }}>
-              <motion.div animate={{ ...detailInfoPositions.date }} style={{ position: "absolute", fontFamily: fontTitle, fontSize: "0.7rem" }}> <span style={{ opacity: 0.4 }}>year </span>{selectedProject.info.date} </motion.div>
-              <motion.div animate={{ ...detailInfoPositions.location }} style={{ position: "absolute", fontFamily: fontTitle, fontSize: "0.7rem" }}> <span style={{ opacity: 0.4 }}>loc </span>{selectedProject.info.location} </motion.div>
-              <motion.div animate={{ ...detailInfoPositions.role }} style={{ position: "absolute", fontFamily: fontTitle, fontSize: "0.7rem" }}> <span style={{ opacity: 0.4 }}>role </span>{selectedProject.info.role} </motion.div>
+              <motion.div animate={{ ...detailInfoPositions.date }} style={{ position: "absolute", fontFamily: fontTitle, fontSize: "0.7rem", color: "#000" }}> <span style={{ opacity: 0.4 }}>year </span>{selectedProject.info.date} </motion.div>
+              <motion.div animate={{ ...detailInfoPositions.location }} style={{ position: "absolute", fontFamily: fontTitle, fontSize: "0.7rem", color: "#000" }}> <span style={{ opacity: 0.4 }}>loc </span>{selectedProject.info.location} </motion.div>
+              <motion.div animate={{ ...detailInfoPositions.role }} style={{ position: "absolute", fontFamily: fontTitle, fontSize: "0.7rem", color: "#000" }}> <span style={{ opacity: 0.4 }}>role </span>{selectedProject.info.role} </motion.div>
             </div>
 
             <div style={{ display: "flex", padding: "0 4vw" }}>
-              
-              {/* COLUMNA IZQUIERDA: Info Fija Ordenada */}
+              {/* LADO IZQUIERDO: TEXTOS */}
               <div style={{ width: "35vw", height: "100vh", position: "sticky", top: 0, display: "flex", flexDirection: "column", justifyContent: "center" }}>
-                
-                {/* Bloque de Título y Descripción Principal */}
-                <div style={{ marginBottom: "4rem" }}>
-                  <h1 style={{ fontFamily: fontTitle, fontSize: "4.5vw", color: kleinBlue, lineHeight: "0.8" }}>{selectedProject.title}</h1>
-                  <p style={{ fontFamily: fontBody, fontSize: "0.9rem", marginTop: "1rem", maxWidth: "20vw", lineHeight: "1.4" }}>{selectedProject.desc}</p>
+                <div style={{ marginBottom: "3rem" }}>
+                    <h1 style={{ fontFamily: fontTitle, fontSize: "4.5vw", color: kleinBlue, lineHeight: "0.9", marginBottom: "1.5rem" }}>{selectedProject.title}</h1>
+                    <p style={{ fontFamily: fontBody, fontSize: "0.9rem", maxWidth: "24vw", lineHeight: "1.6" }}>{selectedProject.desc}</p>
                 </div>
 
-                {/* LOS 3 PÁRRAFOS EXTRA (Ahora fijos y más grandes) */}
-                <div style={{ display: "flex", flexDirection: "column", gap: "2rem" }}>
-                  {selectedProject.extraTexts?.map((text, i) => (
-                    <motion.p
-                      key={i}
-                      initial={{ opacity: 0, y: 10 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ delay: 0.2 + i * 0.1, duration: 0.5 }}
-                      style={{ 
-                        fontFamily: fontBody, 
-                        fontSize: "0.85rem", // NUEVO: Un poco más grande (era 0.65rem)
-                        maxWidth: "18vw", // NUEVO: Un poco más ancho (era 10vw)
-                        lineHeight: "1.6", 
-                        opacity: 0.6 // NUEVO: Un poco más visible (era 0.4)
-                      }}
-                    >
-                      {text}
-                    </motion.p>
-                  ))}
+                <div style={{ display: "flex", flexDirection: "column", gap: "1.5rem" }}>
+                    {selectedProject.extraTexts?.map((t, i) => (
+                        <p key={i} style={{ fontFamily: fontBody, fontSize: "0.85rem", maxWidth: "20vw", lineHeight: "1.5", opacity: 0.6 }}>
+                            {t}
+                        </p>
+                    ))}
                 </div>
               </div>
 
-              {/* COLUMNA DERECHA: Galería Scrollable */}
+              {/* LADO DERECHO: IMÁGENES */}
               <div style={{ width: "65vw", paddingTop: "25vh", paddingBottom: "25vh", display: "flex", flexDirection: "column", gap: "30vh" }}>
                 {selectedProject.gallery.map((item, i) => (
                   <motion.div 
-                    key={i} 
-                    onMouseEnter={() => setHoveredIndex(i)} 
-                    onMouseLeave={() => setHoveredIndex(null)}
-                    initial={{ opacity: 0, y: 30 }} 
-                    whileInView={{ opacity: 1, y: 0 }} 
-                    viewport={{ once: true, margin: "-10%" }} 
-                    transition={{ duration: 0.8 }} 
-                    style={{ 
-                        width: (i + 1) % 3 === 0 ? "100%" : "70%", 
-                        alignSelf: i % 2 === 0 ? "flex-end" : "flex-start",
-                    }}
+                    key={i} onMouseEnter={() => setHoveredIndex(i)} onMouseLeave={() => setHoveredIndex(null)}
+                    initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.8 }} 
+                    style={{ width: (i + 1) % 3 === 0 ? "100%" : "70%", alignSelf: i % 2 === 0 ? "flex-end" : "flex-start" }}
                   >
                     <img src={item.url} style={{ width: "100%", height: "auto", display: "block" }} />
                   </motion.div>
