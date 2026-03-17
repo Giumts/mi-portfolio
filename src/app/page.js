@@ -102,7 +102,6 @@ export default function Home() {
         ::-webkit-scrollbar { display: none; }
       `}</style>
 
-      {/* NAVEGACIÓN */}
       <nav>
         <AnimatePresence>
           {view === "home" ? (
@@ -122,14 +121,12 @@ export default function Home() {
       </nav>
 
       <AnimatePresence mode="wait">
-        {/* VIEW: HOME */}
         {view === "home" && (
           <motion.div key="home" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} style={{height: "100vh"}}>
             <ImageTrail images={trailImages} />
           </motion.div>
         )}
 
-        {/* VIEW: PROJECTS */}
         {view === "projects" && (
           <motion.div key="projects" ref={containerRef} initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} style={{ position: "relative", width: "100vw", height: "100vh", overflow: "hidden" }}>
             <Crosshair containerRef={containerRef} color={kleinBlue} />
@@ -142,7 +139,6 @@ export default function Home() {
           </motion.div>
         )}
 
-        {/* VIEW: ABOUT */}
         {view === "about" && (
           <motion.div key="about" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} style={{ width: "100vw", height: "100vh", position: "relative" }}>
             <Crosshair color="#000" />
@@ -156,7 +152,6 @@ export default function Home() {
           </motion.div>
         )}
 
-        {/* VIEW: DETAIL */}
         {view === "detail" && selectedProject && (
           <motion.div key="detail" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} style={{ backgroundColor: "white", minHeight: "100vh" }}>
             <Crosshair color={kleinBlue} />
