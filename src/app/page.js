@@ -20,7 +20,6 @@ export default function Home() {
   const [selectedProject, setSelectedProject] = useState(null);
   const [isHovering, setIsHovering] = useState(false);
 
-  // Configuración de muelles para el movimiento suave del dibujo
   const springConfig = { stiffness: 150, damping: 20 };
   const mouseX = useSpring(0, springConfig);
   const mouseY = useSpring(0, springConfig);
@@ -82,6 +81,12 @@ export default function Home() {
     }
   }, [view]);
 
+  const openProject = (proj) => {
+    setSelectedProject(proj);
+    setView("detail");
+    window.scrollTo({ top: 0, behavior: 'instant' });
+  };
+
   return (
     <main style={{ backgroundColor: "white", minHeight: "100vh", width: "100vw", position: "relative", overflow: "hidden" }}>
       
@@ -98,7 +103,7 @@ export default function Home() {
         ::-webkit-scrollbar { display: none; }
       `}</style>
 
-      {/* NAVEGACIÓN */}
+      {/* NAVEGACIÓN ACTUALIZADA */}
       <nav>
         <AnimatePresence>
           {view === "home" ? (
@@ -108,7 +113,12 @@ export default function Home() {
               <motion.div onClick={() => setView("about")} initial={{ opacity: 0 }} animate={{ opacity: 1, ...navPositions.about }} whileHover={{ color: kleinBlue }} style={{ position: "fixed", fontFamily: fontTitle, fontSize: "0.8rem", zIndex: 1000, cursor: "pointer" }}>about</motion.div>
             </>
           ) : (
-            <div style={{ fontFamily: (view === "about" ? fontTitle : fontBody), fontSize: "0.8rem", textTransform: "lowercase" }}>
+            /* Navegación para About, Projects y Detail */
+            <div style={{ 
+              fontFamily: (view === "about" || view === "projects" ? fontTitle : fontBody), 
+              fontSize: "0.8rem", 
+              textTransform: "lowercase" 
+            }}>
               <div onClick={() => {setView("home"); setSelectedProject(null);}} style={{ position: "fixed", top: "4vh", left: "4vw", zIndex: 1000, cursor: "pointer", textDecoration: view === "home" ? "line-through" : "none" }}>giulia</div>
               <div onClick={() => {setView("projects"); setSelectedProject(null);}} style={{ position: "fixed", bottom: "4vh", left: "4vw", zIndex: 1000, cursor: "pointer", textDecoration: view === "projects" ? "line-through" : "none" }}>projects</div>
               <div onClick={() => {setView("about"); setSelectedProject(null);}} style={{ position: "fixed", bottom: "4vh", right: "4vw", zIndex: 1000, cursor: "pointer", textDecoration: view === "about" ? "line-through" : "none" }}>about</div>
@@ -124,55 +134,6 @@ export default function Home() {
           </motion.div>
         )}
 
-        {view === "about" && (
-          <motion.div key="about" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} style={{ width: "100vw", height: "100vh", position: "relative" }}>
-            
-            {/* DIBUJO QUE SIGUE AL MOUSE (SVG) */}
-            <svg style={{ position: "fixed", top: 0, left: 0, width: "100%", height: "100%", pointerEvents: "none", zIndex: 1 }}>
-               {/* Una forma orgánica que "persigue" al cursor */}
-               <motion.circle 
-                cx={mouseX} 
-                cy={mouseY} 
-                r="40" 
-                stroke={kleinBlue} 
-                strokeWidth="0.5" 
-                fill="none"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 0.3 }}
-              />
-              <motion.line 
-                x1="50%" y1="50%" 
-                x2={mouseX} y2={mouseY} 
-                stroke={kleinBlue} 
-                strokeWidth="0.5" 
-                strokeDasharray="5,5"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 0.2 }}
-              />
-            </svg>
-
-            <motion.p animate={{ ...aboutPositions.email }} style={{ position: "absolute", fontFamily: fontTitle, fontSize: "0.8rem", color: kleinBlue, zIndex: 10 }}>
-              giulia@example.com
-            </motion.p>
-            <motion.p animate={{ ...aboutPositions.phone }} style={{ position: "absolute", fontFamily: fontTitle, fontSize: "0.8rem", color: kleinBlue, zIndex: 10 }}>
-              +34 000 000 000
-            </motion.p>
-
-            <div style={{ display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center", height: "100vh", gap: "2rem", padding: "0 20vw", textAlign: "center", zIndex: 10 }}>
-              <p style={{ fontFamily: fontBody, fontSize: "0.75rem", maxWidth: "300px", lineHeight: "1.5" }}>
-                giulia es una directora creativa con base en barcelona, enfocada en la intersección entre el diseño digital y la imperfección orgánica.
-              </p>
-              <p style={{ fontFamily: fontBody, fontSize: "0.75rem", maxWidth: "300px", lineHeight: "1.5" }}>
-                su trabajo explora el error como una herramienta estética, buscando la armonía en procesos inacabados y texturas visuales crudas.
-              </p>
-              <p style={{ fontFamily: fontBody, fontSize: "0.75rem", maxWidth: "300px", lineHeight: "1.5" }}>
-                actualmente colabora con estudios internacionales desarrollando identidades visuales que desafían la limpieza digital convencional.
-              </p>
-            </div>
-          </motion.div>
-        )}
-        
-        {/* Mantener las otras vistas (projects, detail) igual que antes... */}
         {view === "projects" && (
           <motion.div key="projects" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} style={{ position: "relative", width: "100vw", height: "100vh" }}>
             {projects.map((proj, index) => (
@@ -181,6 +142,43 @@ export default function Home() {
                 <p style={{ fontFamily: fontBody, marginTop: "10px", fontSize: "0.7rem" }}>{proj.title}</p>
               </motion.div>
             ))}
+          </motion.div>
+        )}
+
+        {view === "about" && (
+          <motion.div key="about" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} style={{ width: "100vw", height: "100vh", position: "relative" }}>
+            <svg style={{ position: "fixed", top: 0, left: 0, width: "100%", height: "100%", pointerEvents: "none", zIndex: 1 }}>
+               <motion.circle cx={mouseX} cy={mouseY} r="40" stroke={kleinBlue} strokeWidth="0.5" fill="none" initial={{ opacity: 0 }} animate={{ opacity: 0.3 }} />
+               <motion.line x1="50%" y1="50%" x2={mouseX} y2={mouseY} stroke={kleinBlue} strokeWidth="0.5" strokeDasharray="5,5" initial={{ opacity: 0 }} animate={{ opacity: 0.2 }} />
+            </svg>
+            <motion.p animate={{ ...aboutPositions.email }} style={{ position: "absolute", fontFamily: fontTitle, fontSize: "0.8rem", color: kleinBlue, zIndex: 10 }}>giulia@example.com</motion.p>
+            <motion.p animate={{ ...aboutPositions.phone }} style={{ position: "absolute", fontFamily: fontTitle, fontSize: "0.8rem", color: kleinBlue, zIndex: 10 }}>+34 000 000 000</motion.p>
+            <div style={{ display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center", height: "100vh", gap: "2rem", padding: "0 20vw", textAlign: "center", zIndex: 10 }}>
+              <p style={{ fontFamily: fontBody, fontSize: "0.75rem", maxWidth: "300px", lineHeight: "1.5" }}>giulia es una directora creativa con base en barcelona, enfocada en la intersección entre el diseño digital y la imperfección orgánica.</p>
+              <p style={{ fontFamily: fontBody, fontSize: "0.75rem", maxWidth: "300px", lineHeight: "1.5" }}>su trabajo explora el error como una herramienta estética, buscando la armonía en procesos inacabados y texturas visuales crudas.</p>
+              <p style={{ fontFamily: fontBody, fontSize: "0.75rem", maxWidth: "300px", lineHeight: "1.5" }}>actualmente colabora con estudios internacionales desarrollando identidades visuales que desafían la limpieza digital convencional.</p>
+            </div>
+          </motion.div>
+        )}
+
+        {view === "detail" && selectedProject && (
+          <motion.div key="detail" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
+             <div style={{ position: "fixed", top: "4vh", right: "4vw", fontFamily: fontTitle, fontSize: "0.9rem", color: kleinBlue, zIndex: 1000, display: "flex", gap: "3rem" }}>
+              <span>{selectedProject.info.date}</span>
+              <span>{selectedProject.info.location}</span>
+              <span>{selectedProject.info.role}</span>
+            </div>
+            <div style={{ display: "flex", padding: "0 4vw" }}>
+              <div style={{ width: "35vw", height: "100vh", position: "sticky", top: 0, display: "flex", flexDirection: "column", justifyContent: "center" }}>
+                <h1 style={{ fontFamily: fontTitle, fontSize: "5vw", color: kleinBlue, lineHeight: "0.9", marginBottom: "2rem" }}>{selectedProject.title}</h1>
+                <p style={{ fontFamily: fontBody, fontSize: "1.1rem", maxWidth: "24vw", lineHeight: "1.4" }}>{selectedProject.desc}</p>
+              </div>
+              <div style={{ width: "65vw", paddingTop: "25vh", display: "flex", flexDirection: "column", gap: "35vh" }}>
+                {[selectedProject.img, ...selectedProject.gallery].map((img, i) => (
+                  <motion.img key={i} src={img} style={{ width: (i + 1) % 3 === 0 ? "80%" : "50%", alignSelf: i % 2 === 0 ? "flex-end" : "flex-start", objectFit: "cover" }} />
+                ))}
+              </div>
+            </div>
           </motion.div>
         )}
       </AnimatePresence>
