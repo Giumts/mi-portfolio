@@ -1,13 +1,13 @@
 "use client";
 import { useState, useEffect, useRef } from "react";
 import ImageTrail from "./ImageTrail";
-import Crosshair from "./Crosshair"; // Importamos el componente de la cruz
+import Crosshair from "./Crosshair"; 
 import { motion, AnimatePresence, useSpring } from "framer-motion";
 
 export default function Home() {
   const [view, setView] = useState("home");
   const [projectPositions, setProjectPositions] = useState([]);
-  const containerRef = useRef(null); // Referencia para el efecto Crosshair en Projects
+  const containerRef = useRef(null);
 
   const [navPositions, setNavPositions] = useState({
     giulia: { top: "15vh", left: "40vw", rotate: "-2deg" },
@@ -81,7 +81,7 @@ export default function Home() {
       }));
       setProjectPositions(positions);
     }
-  }, [view, projects]);
+  }, [view]);
 
   const openProject = (proj) => {
     setSelectedProject(proj);
@@ -102,7 +102,7 @@ export default function Home() {
         ::-webkit-scrollbar { display: none; }
       `}</style>
 
-      {/* NAVEGACIÓN */}
+      {/* NAVEGACIÓN GLOBAL */}
       <nav>
         <AnimatePresence>
           {view === "home" ? (
@@ -122,31 +122,19 @@ export default function Home() {
       </nav>
 
       <AnimatePresence mode="wait">
+        {/* VIEW: HOME */}
         {view === "home" && (
           <motion.div key="home" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} style={{height: "100vh"}}>
             <ImageTrail images={trailImages} />
           </motion.div>
         )}
 
+        {/* VIEW: PROJECTS */}
         {view === "projects" && (
-          <motion.div 
-            key="projects" 
-            ref={containerRef}
-            initial={{ opacity: 0 }} 
-            animate={{ opacity: 1 }} 
-            exit={{ opacity: 0 }} 
-            style={{ position: "relative", width: "100vw", height: "100vh", overflow: "hidden" }}
-          >
-            {/* CROSSHAIR COMPONENT (Negro por defecto en Projects) */}
-            <Crosshair containerRef={containerRef} color="#000" />
-
+          <motion.div key="projects" ref={containerRef} initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} style={{ position: "relative", width: "100vw", height: "100vh", overflow: "hidden" }}>
+            <Crosshair containerRef={containerRef} color={kleinBlue} />
             {projects.map((proj, index) => (
-              <motion.div 
-                key={proj.id} 
-                className="project-item" // Clase necesaria para el efecto glitch
-                onClick={() => openProject(proj)} 
-                style={{ position: "absolute", top: projectPositions[index]?.top, left: projectPositions[index]?.left, rotate: projectPositions[index]?.rotation, width: "150px", cursor: "pointer", zIndex: 10 }}
-              >
+              <motion.div key={proj.id} className="project-item" onClick={() => openProject(proj)} style={{ position: "absolute", top: projectPositions[index]?.top, left: projectPositions[index]?.left, rotate: projectPositions[index]?.rotation, width: "150px", cursor: "pointer", zIndex: 10 }}>
                 <motion.img src={proj.img} whileHover={{ scale: 1.05 }} style={{ width: "100%", filter: "grayscale(100%)" }} onMouseOver={e => e.currentTarget.style.filter="grayscale(0%)"} onMouseOut={e => e.currentTarget.style.filter="grayscale(100%)"} />
                 <p style={{ fontFamily: fontBody, marginTop: "10px", fontSize: "0.7rem" }}>{proj.title}</p>
               </motion.div>
@@ -154,12 +142,10 @@ export default function Home() {
           </motion.div>
         )}
 
+        {/* VIEW: ABOUT */}
         {view === "about" && (
           <motion.div key="about" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} style={{ width: "100vw", height: "100vh", position: "relative" }}>
-            
-            {/* CROSSHAIR COMPONENT (Negro en About) */}
             <Crosshair color="#000" />
-            
             <motion.p animate={{ ...aboutPositions.email }} style={{ position: "absolute", fontFamily: fontTitle, fontSize: "0.8rem", color: kleinBlue, zIndex: 10 }}>giulia@example.com</motion.p>
             <motion.p animate={{ ...aboutPositions.phone }} style={{ position: "absolute", fontFamily: fontTitle, fontSize: "0.8rem", color: kleinBlue, zIndex: 10 }}>+34 000 000 000</motion.p>
             <div style={{ display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center", height: "100vh", gap: "2rem", padding: "0 20vw", textAlign: "center", zIndex: 10 }}>
@@ -170,21 +156,32 @@ export default function Home() {
           </motion.div>
         )}
 
+        {/* VIEW: DETAIL */}
         {view === "detail" && selectedProject && (
-          <motion.div key="detail" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
-             <div style={{ position: "fixed", top: "4vh", right: "4vw", fontFamily: fontTitle, fontSize: "0.9rem", color: kleinBlue, zIndex: 1000, display: "flex", gap: "3rem" }}>
-              <span>{selectedProject.info.date}</span>
-              <span>{selectedProject.info.location}</span>
-              <span>{selectedProject.info.role}</span>
+          <motion.div key="detail" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} style={{ backgroundColor: "white", minHeight: "100vh" }}>
+            <Crosshair color={kleinBlue} />
+            
+            {/* INFO FLOTANTE ARRIBA */}
+            <div style={{ position: "fixed", top: "4vh", right: "4vw", fontFamily: fontTitle, fontSize: "0.7rem", color: kleinBlue, zIndex: 1000, display: "flex", gap: "3rem" }}>
+              <div style={{ display: "flex", flexDirection: "column" }}><span style={{ opacity: 0.5 }}>year</span><span>{selectedProject.info.date}</span></div>
+              <div style={{ display: "flex", flexDirection: "column" }}><span style={{ opacity: 0.5 }}>location</span><span>{selectedProject.info.location}</span></div>
+              <div style={{ display: "flex", flexDirection: "column" }}><span style={{ opacity: 0.5 }}>role</span><span>{selectedProject.info.role}</span></div>
             </div>
+
             <div style={{ display: "flex", padding: "0 4vw" }}>
-              <div style={{ width: "35vw", height: "100vh", position: "sticky", top: 0, display: "flex", flexDirection: "column", justifyContent: "center" }}>
-                <h1 style={{ fontFamily: fontTitle, fontSize: "5vw", color: kleinBlue, lineHeight: "0.9", marginBottom: "2rem" }}>{selectedProject.title}</h1>
-                <p style={{ fontFamily: fontBody, fontSize: "1.1rem", maxWidth: "24vw", lineHeight: "1.4" }}>{selectedProject.desc}</p>
+              {/* LADO IZQUIERDO FIJO */}
+              <div style={{ width: "35vw", height: "100vh", position: "sticky", top: 0, display: "flex", flexDirection: "column", justifyContent: "center", paddingRight: "4vw" }}>
+                <h1 style={{ fontFamily: fontTitle, fontSize: "4.5vw", color: kleinBlue, lineHeight: "0.9", marginBottom: "2rem" }}>{selectedProject.title}</h1>
+                <p style={{ fontFamily: fontBody, fontSize: "0.9rem", maxWidth: "24vw", lineHeight: "1.6" }}>{selectedProject.desc}</p>
+                <motion.div onClick={() => setView("projects")} whileHover={{ x: -5, color: kleinBlue }} style={{ marginTop: "3rem", fontFamily: fontTitle, fontSize: "0.7rem", cursor: "pointer" }}>← back to projects</motion.div>
               </div>
-              <div style={{ width: "65vw", paddingTop: "25vh", display: "flex", flexDirection: "column", gap: "35vh" }}>
+
+              {/* LADO DERECHO SCROLLABLE */}
+              <div style={{ width: "65vw", paddingTop: "25vh", paddingBottom: "25vh", display: "flex", flexDirection: "column", gap: "30vh" }}>
                 {[selectedProject.img, ...selectedProject.gallery].map((img, i) => (
-                  <motion.img key={i} src={img} style={{ width: (i + 1) % 3 === 0 ? "80%" : "50%", alignSelf: i % 2 === 0 ? "flex-end" : "flex-start", objectFit: "cover" }} />
+                  <motion.div key={i} initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.8 }} style={{ width: (i + 1) % 3 === 0 ? "100%" : "70%", alignSelf: i % 2 === 0 ? "flex-end" : "flex-start" }}>
+                    <img src={img} style={{ width: "100%", height: "auto", display: "block" }} />
+                  </motion.div>
                 ))}
               </div>
             </div>
