@@ -38,7 +38,7 @@ const Crosshair = ({ color = 'black', containerRef = null }) => {
         ) {
           gsap.to([lineHorizontalRef.current, lineVerticalRef.current], { opacity: 0 });
         } else {
-          gsap.to([lineHorizontalRef.current, lineVerticalRef.current], { opacity: 1 });
+          gsap.to([lineHorizontalRef.current, lineVerticalRef.current], { opacity: 0.4 }); // Opacidad suave
         }
       }
     };
@@ -59,7 +59,7 @@ const Crosshair = ({ color = 'black', containerRef = null }) => {
       gsap.to([lineHorizontalRef.current, lineVerticalRef.current], {
         duration: 0.9,
         ease: 'Power3.easeOut',
-        opacity: 1
+        opacity: 0.4
       });
       requestAnimationFrame(render);
       target.removeEventListener('mousemove', onFirstMove);
@@ -83,9 +83,9 @@ const Crosshair = ({ color = 'black', containerRef = null }) => {
         if (lineVerticalRef.current) lineVerticalRef.current.style.filter = 'none';
       }
     }).to(primitiveValues, {
-      duration: 0.5,
+      duration: 0.4,
       ease: 'power1',
-      startAt: { turbulence: 0.05 },
+      startAt: { turbulence: 0.04 },
       turbulence: 0
     });
 
@@ -111,7 +111,6 @@ const Crosshair = ({ color = 'black', containerRef = null }) => {
       requestAnimationFrame(render);
     };
 
-    // Aplicar el efecto de glitch a todos los elementos con clase "project-item"
     const links = containerRef?.current 
       ? containerRef.current.querySelectorAll('.project-item') 
       : document.querySelectorAll('.project-item');
@@ -137,16 +136,17 @@ const Crosshair = ({ color = 'black', containerRef = null }) => {
         <defs>
           <filter id="filter-noise-x">
             <feTurbulence type="fractalNoise" baseFrequency="0.000001" numOctaves="1" ref={filterXRef} />
-            <feDisplacementMap in="SourceGraphic" scale="40" />
+            <feDisplacementMap in="SourceGraphic" scale="30" />
           </filter>
           <filter id="filter-noise-y">
             <feTurbulence type="fractalNoise" baseFrequency="0.000001" numOctaves="1" ref={filterYRef} />
-            <feDisplacementMap in="SourceGraphic" scale="40" />
+            <feDisplacementMap in="SourceGraphic" scale="30" />
           </filter>
         </defs>
       </svg>
-      <div ref={lineHorizontalRef} style={{ position: 'absolute', width: '100%', height: '1px', background: color, top: 0, opacity: 0 }} />
-      <div ref={lineVerticalRef} style={{ position: 'absolute', height: '100%', width: '1px', background: color, left: 0, opacity: 0 }} />
+      {/* LÍNEAS MÁS FINAS (0.5px) Y SUTILES */}
+      <div ref={lineHorizontalRef} style={{ position: 'absolute', width: '100%', height: '0.5px', background: color, top: 0, opacity: 0 }} />
+      <div ref={lineVerticalRef} style={{ position: 'absolute', height: '100%', width: '0.5px', background: color, left: 0, opacity: 0 }} />
     </div>
   );
 };
