@@ -13,6 +13,11 @@ export default function Home() {
   const mouseX = useSpring(0, springConfig);
   const mouseY = useSpring(0, springConfig);
 
+  // --- CONFIGURACIÓN DE COLORES Y FUENTES ---
+  const kleinBlue = "#002FA7";
+  const fontTitle = "'Monor', monospace";
+  const fontBody = "'Roundo', sans-serif";
+
   const trailImages = [
     "/BEAUTIFUL_FAILURES_AY1.jpg", "/BEAUTIFUL_FAILURES_AY3.jpg", 
     "/BEAUTIFUL_FAILURES_AY15.jpg", "/BEAUTIFUL_FAILURES_AY37.jpg", 
@@ -59,38 +64,30 @@ export default function Home() {
     window.scrollTo({ top: 0, behavior: 'instant' });
   };
 
-  const lightTextStyle = {
-    fontFamily: "'Roundo ExtraLight', sans-serif",
-    fontSize: "0.85rem",
-    letterSpacing: "0.05em",
-    textTransform: "lowercase",
-    color: "#000",
-  };
-
   return (
     <main style={{ backgroundColor: "white", minHeight: "100vh", width: "100vw", position: "relative" }}>
       
       <style jsx global>{`
         @font-face {
-          font-family: 'Roundo Bold';
-          src: url('/fonts/Roundo-Bold.otf') format('opentype');
-          font-weight: bold;
+          font-family: 'Monor';
+          src: url('/fonts/Monor_Regular.otf') format('opentype');
         }
         @font-face {
-          font-family: 'Roundo ExtraLight';
-          src: url('/fonts/Roundo-ExtraLight.otf') format('opentype');
-          font-weight: 200;
+          font-family: 'Roundo';
+          src: url('/fonts/Roundo-Regular.otf') format('opentype');
         }
+        
         body, html, * { 
           cursor: crosshair !important; 
           margin: 0; 
           padding: 0; 
           color: #000;
+          -webkit-font-smoothing: antialiased;
         }
         ::-webkit-scrollbar { display: none; }
       `}</style>
 
-      {/* CURSOR FLOTANTE */}
+      {/* CURSOR FLOTANTE (AZUL KLEIN) */}
       <AnimatePresence>
         {isHovering && view === "detail" && (
           <motion.div
@@ -99,9 +96,10 @@ export default function Home() {
               position: "fixed", x: mouseX, y: mouseY,
               marginLeft: "25px", marginTop: "25px",
               zIndex: 9999, pointerEvents: "none",
-              fontFamily: "'Roundo Bold', sans-serif",
-              fontSize: "3rem", lineHeight: "0.8",
-              textTransform: "lowercase", color: "#000"
+              fontFamily: fontTitle,
+              fontSize: "3rem",
+              textTransform: "lowercase", 
+              color: kleinBlue
             }}
           >
             {selectedProject?.title}
@@ -109,28 +107,28 @@ export default function Home() {
         )}
       </AnimatePresence>
 
-      {/* NAVEGACIÓN */}
-      <nav>
+      {/* NAVEGACIÓN (ROUNDO NEGRO) */}
+      <nav style={{ fontFamily: fontBody, fontSize: "0.8rem", textTransform: "lowercase", color: "#000" }}>
         {view === "home" ? (
           <AnimatePresence>
             <motion.h1 
               onClick={() => {setView("home"); setSelectedProject(null);}} 
               initial={{ opacity: 0 }} animate={{ opacity: 1 }}
-              style={{ position: "fixed", top: "5vh", width: "100%", textAlign: "center", textDecoration: "line-through", fontSize: "0.75rem", letterSpacing: "3px", textTransform: "uppercase", fontFamily: "'Roundo ExtraLight', sans-serif", zIndex: 1000 }}>giulia</motion.h1>
+              style={{ position: "fixed", top: "5vh", width: "100%", textAlign: "center", textDecoration: "line-through", zIndex: 1000 }}>giulia</motion.h1>
             <motion.div 
               onClick={() => {setView("projects"); setSelectedProject(null);}} 
               initial={{ opacity: 0 }} animate={{ opacity: 1 }}
-              style={{ position: "fixed", bottom: "5vh", width: "100%", textAlign: "center", fontSize: "0.75rem", letterSpacing: "3px", textTransform: "uppercase", fontFamily: "'Roundo ExtraLight', sans-serif", zIndex: 1000 }}>projects</motion.div>
+              style={{ position: "fixed", bottom: "5vh", width: "100%", textAlign: "center", zIndex: 1000 }}>projects</motion.div>
             <motion.div 
               onClick={() => {setView("about"); setSelectedProject(null);}} 
               initial={{ opacity: 0 }} animate={{ opacity: 1 }}
-              style={{ position: "fixed", right: "8vw", top: "40%", transform: "translateY(-50%)", fontSize: "0.75rem", letterSpacing: "3px", textTransform: "uppercase", fontFamily: "'Roundo ExtraLight', sans-serif", zIndex: 1000 }}>about</motion.div>
+              style={{ position: "fixed", right: "8vw", top: "40%", transform: "translateY(-50%)", zIndex: 1000 }}>about</motion.div>
           </AnimatePresence>
         ) : (
           <>
-            <div onClick={() => {setView("home"); setSelectedProject(null);}} style={{ ...lightTextStyle, position: "fixed", top: "4vh", left: "4vw", zIndex: 1000, textDecoration: view === "home" ? "line-through" : "none" }}>giulia</div>
-            <div onClick={() => {setView("projects"); setSelectedProject(null);}} style={{ ...lightTextStyle, position: "fixed", bottom: "4vh", left: "4vw", zIndex: 1000, textDecoration: view === "projects" ? "line-through" : "none" }}>projects</div>
-            <div onClick={() => {setView("about"); setSelectedProject(null);}} style={{ ...lightTextStyle, position: "fixed", bottom: "4vh", right: "4vw", zIndex: 1000, textDecoration: view === "about" ? "line-through" : "none" }}>about</div>
+            <div onClick={() => {setView("home"); setSelectedProject(null);}} style={{ position: "fixed", top: "4vh", left: "4vw", zIndex: 1000, textDecoration: view === "home" ? "line-through" : "none" }}>giulia</div>
+            <div onClick={() => {setView("projects"); setSelectedProject(null);}} style={{ position: "fixed", bottom: "4vh", left: "4vw", zIndex: 1000, textDecoration: view === "projects" ? "line-through" : "none" }}>projects</div>
+            <div onClick={() => {setView("about"); setSelectedProject(null);}} style={{ position: "fixed", bottom: "4vh", right: "4vw", zIndex: 1000, textDecoration: view === "about" ? "line-through" : "none" }}>about</div>
           </>
         )}
       </nav>
@@ -145,9 +143,9 @@ export default function Home() {
         {view === "projects" && (
           <motion.div key="projects" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} style={{ position: "relative", width: "100vw", height: "100vh" }}>
             {projects.map((proj, index) => (
-              <motion.div key={proj.id} onClick={() => openProject(proj)} style={{ position: "absolute", top: randomPositions[index]?.top, left: randomPositions[index]?.left, rotate: randomPositions[index]?.rotation, width: "140px" }}>
+              <motion.div key={proj.id} onClick={() => openProject(proj)} style={{ position: "absolute", top: randomPositions[index]?.top, left: randomPositions[index]?.left, rotate: randomPositions[index]?.rotation, width: "150px" }}>
                 <motion.img src={proj.img} whileHover={{ scale: 1.05 }} style={{ width: "100%", filter: "grayscale(100%)" }} onMouseOver={e => e.currentTarget.style.filter="grayscale(0%)"} onMouseOut={e => e.currentTarget.style.filter="grayscale(100%)"} />
-                <p style={{ ...lightTextStyle, marginTop: "10px", fontSize: "0.7rem" }}>{proj.title}</p>
+                <p style={{ fontFamily: fontBody, marginTop: "10px", fontSize: "0.7rem", color: "#000" }}>{proj.title}</p>
               </motion.div>
             ))}
           </motion.div>
@@ -156,21 +154,14 @@ export default function Home() {
         {view === "detail" && selectedProject && (
           <motion.div key="detail" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} style={{ width: "100vw", position: "relative" }}>
             
-            {/* INFO TÉCNICA (UNA SOLA LÍNEA HORIZONTAL - ARRIBA A LA DERECHA) */}
+            {/* INFO TÉCNICA (MONOR AZUL KLEIN) */}
             <motion.div 
-              initial={{ opacity: 0 }} 
-              animate={{ opacity: 1 }} 
+              initial={{ opacity: 0 }} animate={{ opacity: 1 }} 
               style={{
-                position: "fixed", 
-                top: "4vh", 
-                right: "4vw", 
-                fontFamily: "'Roundo Bold', sans-serif",
-                fontSize: "0.85rem",
-                textTransform: "lowercase",
-                color: "#000",
-                zIndex: 1000,
-                display: "flex",
-                gap: "2rem" // Espacio entre los elementos
+                position: "fixed", top: "4vh", right: "4vw", 
+                fontFamily: fontTitle, fontSize: "0.9rem",
+                textTransform: "lowercase", color: kleinBlue,
+                zIndex: 1000, display: "flex", gap: "3rem"
               }}
             >
               <span>{selectedProject.info.date}</span>
@@ -180,17 +171,20 @@ export default function Home() {
 
             <div style={{ display: "flex", flexDirection: "row", minHeight: "200vh", padding: "0 4vw" }}>
               
-              {/* LADO IZQUIERDO: STICKY INFO PRINCIPAL */}
+              {/* IZQUIERDA: TITULO AZUL + DESC NEGRA */}
               <div style={{ width: "35vw", height: "100vh", position: "sticky", top: 0, display: "flex", flexDirection: "column", justifyContent: "center" }}>
-                <h1 style={{ fontFamily: "'Roundo Bold', sans-serif", fontSize: "4.5vw", textTransform: "lowercase", lineHeight: "0.85", marginBottom: "2.5rem" }}>{selectedProject.title}</h1>
-                <p style={{ ...lightTextStyle, fontSize: "1.1rem", maxWidth: "24vw", lineHeight: "1.4" }}>{selectedProject.desc}</p>
+                <h1 style={{ fontFamily: fontTitle, fontSize: "5vw", color: kleinBlue, textTransform: "lowercase", lineHeight: "0.9", marginBottom: "2rem" }}>
+                  {selectedProject.title}
+                </h1>
+                <p style={{ fontFamily: fontBody, fontSize: "1.1rem", color: "#000", maxWidth: "24vw", lineHeight: "1.4" }}>
+                  {selectedProject.desc}
+                </p>
               </div>
 
-              {/* LADO DERECHO: GALERÍA ASIMÉTRICA */}
+              {/* DERECHA: GALERÍA */}
               <div style={{ width: "65vw", paddingTop: "25vh", display: "flex", flexDirection: "column", gap: "35vh" }}>
                 {[selectedProject.img, ...selectedProject.gallery].map((img, i) => (
-                  <motion.div 
-                    key={i} initial={{ opacity: 0, y: 50 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, margin: "-10%" }}
+                  <motion.div key={i} initial={{ opacity: 0, y: 50 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, margin: "-10%" }}
                     style={{ 
                       width: (i + 1) % 3 === 0 ? "85vw" : "40vw",
                       alignSelf: (i % 2 === 0 ? "flex-end" : "flex-start"),
@@ -206,15 +200,16 @@ export default function Home() {
                 ))}
               </div>
             </div>
-            <div style={{ height: "60vh" }} />
           </motion.div>
         )}
 
         {view === "about" && (
           <motion.div key="about" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} style={{ display: "flex", justifyContent: "center", alignItems: "center", height: "100vh", width: "100vw" }}>
-            <div style={{ maxWidth: "800px", padding: "0 4vw" }}>
-              <p style={{ fontFamily: "'Roundo Bold', sans-serif", fontSize: "4rem", lineHeight: "0.85", marginBottom: "3rem" }}>giulia es una directora creativa enfocada en la estética de la imperfección.</p>
-              <div style={{ ...lightTextStyle, fontSize: "1.3rem", display: "flex", gap: "5rem" }}>
+            <div style={{ maxWidth: "900px", padding: "0 4vw" }}>
+              <p style={{ fontFamily: fontTitle, fontSize: "4.5rem", color: kleinBlue, lineHeight: "0.9", marginBottom: "3rem" }}>
+                giulia es una directora creativa enfocada en la estética de la imperfección.
+              </p>
+              <div style={{ fontFamily: fontBody, fontSize: "1.2rem", color: "#000", display: "flex", gap: "5rem" }}>
                 <p>giulia@example.com</p>
                 <p>+34 000 000 000</p>
               </div>
