@@ -7,7 +7,7 @@ import { motion, AnimatePresence, useSpring } from "framer-motion";
 export default function Home() {
   const [view, setView] = useState("home");
   const [projectPositions, setProjectPositions] = useState([]);
-  const [hoveredIndex, setHoveredIndex] = useState(null); // Nuevo: para rastrear el hover en imágenes
+  const [hoveredIndex, setHoveredIndex] = useState(null); 
   const containerRef = useRef(null);
 
   const [navPositions, setNavPositions] = useState({
@@ -29,7 +29,7 @@ export default function Home() {
 
   const [selectedProject, setSelectedProject] = useState(null);
 
-  const springConfig = { stiffness: 250, damping: 30 }; // Un poco más rápido para el texto
+  const springConfig = { stiffness: 250, damping: 30 };
   const mouseX = useSpring(0, springConfig);
   const mouseY = useSpring(0, springConfig);
 
@@ -146,8 +146,8 @@ export default function Home() {
         </AnimatePresence>
       </nav>
 
-      {/* TEXTO FLOTANTE QUE SIGUE AL CURSOR (Solo en Detail) */}
-      {view === "detail" && hoveredIndex !== null && (
+      {/* TEXTO DINÁMICO CURSOR (Detail) */}
+      {view === "detail" && selectedProject && (
         <motion.div
           style={{
             position: "fixed",
@@ -157,14 +157,17 @@ export default function Home() {
             y: mouseY,
             pointerEvents: "none",
             zIndex: 9999,
-            padding: "10px",
+            padding: "12px",
             fontFamily: fontTitle,
             fontSize: "0.6rem",
             color: kleinBlue,
             textTransform: "lowercase"
           }}
         >
-          view_img_{hoveredIndex.toString().padStart(2, '0')}
+          {/* Lógica: Si no hay hover en imagen, muestra el título. Si hay hover, muestra el índice de imagen. */}
+          {hoveredIndex !== null 
+            ? `view_img_${hoveredIndex.toString().padStart(2, '0')}` 
+            : selectedProject.title}
         </motion.div>
       )}
 
@@ -230,8 +233,8 @@ export default function Home() {
                 {[selectedProject.img, ...selectedProject.gallery].map((img, i) => (
                   <motion.div 
                     key={i} 
-                    onMouseEnter={() => setHoveredIndex(i)} // Al entrar, activamos el texto flotante
-                    onMouseLeave={() => setHoveredIndex(null)} // Al salir, lo ocultamos
+                    onMouseEnter={() => setHoveredIndex(i)} 
+                    onMouseLeave={() => setHoveredIndex(null)}
                     initial={{ opacity: 0, y: 30 }} 
                     whileInView={{ opacity: 1, y: 0 }} 
                     viewport={{ once: true }} 
