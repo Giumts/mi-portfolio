@@ -1,13 +1,36 @@
 "use client";
 import { useState, useEffect, useRef } from "react";
 import ImageTrail from "./ImageTrail";
-import Crosshair from "./Crosshair"; // Importamos el nuevo componente
+import Crosshair from "./Crosshair"; 
 import { motion, AnimatePresence, useSpring } from "framer-motion";
+
+// --- COMPONENTE PARTÍCULA ---
+const Particle = ({ x, y, size, color }) => {
+  return (
+    <motion.div
+      style={{
+        position: "absolute",
+        width: size,
+        height: size,
+        borderRadius: "50%",
+        backgroundColor: color,
+        x: x,
+        y: y,
+        pointerEvents: "none",
+        zIndex: 1
+      }}
+      initial={{ opacity: 0.2 }}
+      animate={{ opacity: 0 }}
+      transition={{ duration: 1.5, ease: "easeOut" }}
+    />
+  );
+};
 
 export default function Home() {
   const [view, setView] = useState("home");
   const [projectPositions, setProjectPositions] = useState([]);
-  const containerRef = useRef(null); // Referencia para el efecto Crosshair
+  const containerRef = useRef(null); 
+  const [particles, setParticles] = useState([]); // Estado para las partículas
 
   const [navPositions, setNavPositions] = useState({
     giulia: { top: "15vh", left: "40vw", rotate: "-2deg" },
@@ -16,8 +39,8 @@ export default function Home() {
   });
   
   const [aboutPositions, setAboutPositions] = useState({
-    email: { top: "20vh", left: "15vw", rotate: "5deg" },
-    phone: { bottom: "15vh", right: "20vw", rotate: "-8deg" }
+    email: { top: "15vh", left: "10vw", rotate: "5deg" },
+    phone: { bottom: "15vh", right: "10vw", rotate: "-8deg" }
   });
 
   const [selectedProject, setSelectedProject] = useState(null);
@@ -54,10 +77,29 @@ export default function Home() {
     const handleMouseMove = (e) => {
       mouseX.set(e.clientX);
       mouseY.set(e.clientY);
+      
+      // Añadir una partícula en la posición actual del mouse
+      if (view === "about") {
+        setParticles((prevParticles) => [
+          ...prevParticles,
+          {
+            id: Date.now(),
+            x: e.clientX,
+            y: e.clientY,
+            size: Math.random() * 5 + 2, // Tamaño aleatorio
+            color: kleinBlue // Color Azul Klein
+          }
+        ]);
+        
+        // Eliminar las partículas más antiguas para mantener el rendimiento
+        if (particles.length > 50) {
+          setParticles((prevParticles) => prevParticles.slice(1));
+        }
+      }
     };
     window.addEventListener("mousemove", handleMouseMove);
     return () => window.removeEventListener("mousemove", handleMouseMove);
-  }, [mouseX, mouseY]);
+  }, [mouseX, mouseY, view, particles]);
 
   useEffect(() => {
     if (view === "home") {
@@ -137,13 +179,12 @@ export default function Home() {
             exit={{ opacity: 0 }} 
             style={{ position: "relative", width: "100vw", height: "100vh", overflow: "hidden" }}
           >
-            {/* CROSSHAIR COMPONENT */}
             <Crosshair containerRef={containerRef} color="#000" />
 
             {projects.map((proj, index) => (
               <motion.div 
                 key={proj.id} 
-                className="project-item" // Clase necesaria para el efecto glitch
+                className="project-item" 
                 onClick={() => openProject(proj)} 
                 style={{ position: "absolute", top: projectPositions[index]?.top, left: projectPositions[index]?.left, rotate: projectPositions[index]?.rotation, width: "150px", cursor: "pointer", zIndex: 10 }}
               >
@@ -156,10 +197,13 @@ export default function Home() {
 
         {view === "about" && (
           <motion.div key="about" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} style={{ width: "100vw", height: "100vh", position: "relative" }}>
-             <svg style={{ position: "fixed", top: 0, left: 0, width: "100%", height: "100%", pointerEvents: "none", zIndex: 1 }}>
-               <motion.circle cx={mouseX} cy={mouseY} r="40" stroke={kleinBlue} strokeWidth="0.5" fill="none" initial={{ opacity: 0 }} animate={{ opacity: 0.3 }} />
-               <motion.line x1="50%" y1="50%" x2={mouseX} y2={mouseY} stroke={kleinBlue} strokeWidth="0.5" strokeDasharray="5,5" initial={{ opacity: 0 }} animate={{ opacity: 0.2 }} />
-            </svg>
+             {/* EFECTO ESTELA DE PARTÍCULAS (ABOUT) */}
+             <div style={{ position: "fixed", top: 0, left: 0, width: "100%", height: "100%", pointerEvents: "none", zIndex: 1 }}>
+               {particles.map((particle) => (
+                 <Particle key={particle.id} {...particle} />
+               ))}
+            </div>
+
             <motion.p animate={{ ...aboutPositions.email }} style={{ position: "absolute", fontFamily: fontTitle, fontSize: "0.8rem", color: kleinBlue, zIndex: 10 }}>giulia@example.com</motion.p>
             <motion.p animate={{ ...aboutPositions.phone }} style={{ position: "absolute", fontFamily: fontTitle, fontSize: "0.8rem", color: kleinBlue, zIndex: 10 }}>+34 000 000 000</motion.p>
             <div style={{ display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center", height: "100vh", gap: "2rem", padding: "0 20vw", textAlign: "center", zIndex: 10 }}>
