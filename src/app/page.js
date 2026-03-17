@@ -103,12 +103,21 @@ export default function Home() {
           src: url('/fonts/Roundo-Regular.otf') format('opentype');
         }
         body, html, * { 
-          cursor: crosshair !important; 
           margin: 0; 
           padding: 0; 
           color: #000;
           -webkit-font-smoothing: antialiased;
+          /* Cursor por defecto: cruz */
+          cursor: crosshair !important;
+          transition: cursor 0.1s ease; /* Suavizar el cambio de cursor */
         }
+        
+        /* --- EFECTO DE ROTACIÓN DE LA CRUZ AL CLICAR --- */
+        body:active, html:active, *:active {
+          /* Rotamos el cursor crosshair 45 grados al mantener el clic */
+          cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="transform: rotate(45deg);transform-origin: center;"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>') 12 12, crosshair !important;
+        }
+
         ::-webkit-scrollbar { display: none; }
       `}</style>
 
@@ -117,34 +126,34 @@ export default function Home() {
         <AnimatePresence>
           {view === "home" ? (
             <>
-              {/* Logo Giulia */}
+              {/* Logo Giulia - Monor Pequeña */}
               <motion.h1 
                 onClick={() => setView("home")}
                 initial={{ opacity: 0 }} 
                 animate={{ opacity: 1, ...navPositions.giulia }}
-                style={{ position: "fixed", fontFamily: fontTitle, fontSize: "1.5rem", textDecoration: "line-through", zIndex: 1000, cursor: "pointer" }}
+                style={{ position: "fixed", fontFamily: fontTitle, fontSize: "0.9rem", textDecoration: "line-through", zIndex: 1000, cursor: "pointer" }}
               >
                 giulia
               </motion.h1>
 
-              {/* Link Projects */}
+              {/* Link Projects - Monor Pequeña */}
               <motion.div 
                 onClick={() => setView("projects")}
                 initial={{ opacity: 0 }} 
                 animate={{ opacity: 1, ...navPositions.projects }}
                 whileHover={{ color: kleinBlue, scale: 1.1 }}
-                style={{ position: "fixed", fontFamily: fontTitle, fontSize: "1.2rem", zIndex: 1000, cursor: "pointer" }}
+                style={{ position: "fixed", fontFamily: fontTitle, fontSize: "0.8rem", zIndex: 1000, cursor: "pointer" }}
               >
                 projects
               </motion.div>
 
-              {/* Link About */}
+              {/* Link About - Monor Pequeña */}
               <motion.div 
                 onClick={() => setView("about")}
                 initial={{ opacity: 0 }} 
                 animate={{ opacity: 1, top: navPositions.about.top, right: navPositions.about.right, rotate: navPositions.about.rotate }}
                 whileHover={{ color: kleinBlue, scale: 1.1 }}
-                style={{ position: "fixed", fontFamily: fontTitle, fontSize: "1.2rem", zIndex: 1000, cursor: "pointer" }}
+                style={{ position: "fixed", fontFamily: fontTitle, fontSize: "0.8rem", zIndex: 1000, cursor: "pointer" }}
               >
                 about
               </motion.div>
