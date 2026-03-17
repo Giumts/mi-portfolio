@@ -67,12 +67,23 @@ export default function Home() {
         about: { top: "45vh", right: "12vw", rotate: "-3deg" }
       });
     }
+    
+    // POSICIONES RANDOM PARA EMAIL Y TELÉFONO EN ABOUT
     if (view === "about") {
       setAboutPositions({
-        email: { top: "15vh", left: "10vw", rotate: "5deg" },
-        phone: { bottom: "15vh", right: "10vw", rotate: "-8deg" }
+        email: { 
+          top: Math.floor(Math.random() * 20 + 10) + "vh", 
+          left: Math.floor(Math.random() * 60 + 5) + "vw", 
+          rotate: Math.floor(Math.random() * 20 - 10) + "deg" 
+        },
+        phone: { 
+          bottom: Math.floor(Math.random() * 20 + 10) + "vh", 
+          right: Math.floor(Math.random() * 60 + 5) + "vw", 
+          rotate: Math.floor(Math.random() * 20 - 10) + "deg" 
+        }
       });
     }
+
     if (view === "projects") {
       const positions = projects.map(() => ({
         top: Math.floor(Math.random() * 60 + 15) + "vh",
@@ -161,11 +172,12 @@ export default function Home() {
           <motion.div key="detail" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} style={{ backgroundColor: "white", minHeight: "100vh" }}>
             <Crosshair color={kleinBlue} />
             
-            {/* INFO FLOTANTE ARRIBA */}
-            <div style={{ position: "fixed", top: "4vh", right: "4vw", fontFamily: fontTitle, fontSize: "0.7rem", color: kleinBlue, zIndex: 1000, display: "flex", gap: "3rem" }}>
-              <div style={{ display: "flex", flexDirection: "column" }}><span style={{ opacity: 0.5 }}>year</span><span>{selectedProject.info.date}</span></div>
-              <div style={{ display: "flex", flexDirection: "column" }}><span style={{ opacity: 0.5 }}>location</span><span>{selectedProject.info.location}</span></div>
-              <div style={{ display: "flex", flexDirection: "column" }}><span style={{ opacity: 0.5 }}>role</span><span>{selectedProject.info.role}</span></div>
+            {/* INFO FLOTANTE ARRIBA - Solo Role en Negro */}
+            <div style={{ position: "fixed", top: "4vh", right: "4vw", fontFamily: fontTitle, fontSize: "0.7rem", color: "#000", zIndex: 1000 }}>
+              <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-end" }}>
+                <span style={{ opacity: 0.5 }}>role</span>
+                <span>{selectedProject.info.role}</span>
+              </div>
             </div>
 
             <div style={{ display: "flex", padding: "0 4vw" }}>
@@ -173,14 +185,46 @@ export default function Home() {
               <div style={{ width: "35vw", height: "100vh", position: "sticky", top: 0, display: "flex", flexDirection: "column", justifyContent: "center", paddingRight: "4vw" }}>
                 <h1 style={{ fontFamily: fontTitle, fontSize: "4.5vw", color: kleinBlue, lineHeight: "0.9", marginBottom: "2rem" }}>{selectedProject.title}</h1>
                 <p style={{ fontFamily: fontBody, fontSize: "0.9rem", maxWidth: "24vw", lineHeight: "1.6" }}>{selectedProject.desc}</p>
-                <motion.div onClick={() => setView("projects")} whileHover={{ x: -5, color: kleinBlue }} style={{ marginTop: "3rem", fontFamily: fontTitle, fontSize: "0.7rem", cursor: "pointer" }}>← back to projects</motion.div>
               </div>
 
               {/* LADO DERECHO SCROLLABLE */}
               <div style={{ width: "65vw", paddingTop: "25vh", paddingBottom: "25vh", display: "flex", flexDirection: "column", gap: "30vh" }}>
                 {[selectedProject.img, ...selectedProject.gallery].map((img, i) => (
-                  <motion.div key={i} initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.8 }} style={{ width: (i + 1) % 3 === 0 ? "100%" : "70%", alignSelf: i % 2 === 0 ? "flex-end" : "flex-start" }}>
-                    <img src={img} style={{ width: "100%", height: "auto", display: "block" }} />
+                  <motion.div 
+                    key={i} 
+                    initial={{ opacity: 0, y: 30 }} 
+                    whileInView={{ opacity: 1, y: 0 }} 
+                    viewport={{ once: true }} 
+                    transition={{ duration: 0.8 }} 
+                    style={{ 
+                        width: (i + 1) % 3 === 0 ? "100%" : "70%", 
+                        alignSelf: i % 2 === 0 ? "flex-end" : "flex-start",
+                        position: "relative" 
+                    }}
+                  >
+                    <div style={{ position: "relative", overflow: "hidden" }}>
+                        <img 
+                            src={img} 
+                            style={{ width: "100%", height: "auto", display: "block" }} 
+                            onMouseOver={(e) => (e.currentTarget.nextSibling.style.opacity = 1)}
+                            onMouseOut={(e) => (e.currentTarget.nextSibling.style.opacity = 0)}
+                        />
+                        <div style={{ 
+                            position: "absolute", 
+                            bottom: "10px", 
+                            left: "10px", 
+                            fontFamily: fontTitle, 
+                            fontSize: "0.6rem", 
+                            color: kleinBlue,
+                            opacity: 0,
+                            transition: "opacity 0.3s ease",
+                            pointerEvents: "none",
+                            backgroundColor: "rgba(255,255,255,0.8)",
+                            padding: "2px 5px"
+                        }}>
+                          {selectedProject.title} — view_{i.toString().padStart(2, '0')}
+                        </div>
+                    </div>
                   </motion.div>
                 ))}
               </div>
