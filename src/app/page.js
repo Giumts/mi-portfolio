@@ -88,7 +88,7 @@ export default function Home() {
   };
 
   return (
-    <main style={{ backgroundColor: "white", minHeight: "100vh", width: "100vw", position: "relative", overflow: "hidden" }}>
+    <main style={{ backgroundColor: "white", minHeight: "100vh", width: "100vw", position: "relative", overflowX: "hidden" }}>
       
       <style jsx global>{`
         @font-face { font-family: 'Monor'; src: url('/fonts/Monor_Regular.otf') format('opentype'); }
@@ -103,7 +103,7 @@ export default function Home() {
         ::-webkit-scrollbar { display: none; }
       `}</style>
 
-      {/* NAVEGACIÓN ACTUALIZADA */}
+      {/* NAVEGACIÓN UNIFICADA EN MONOR (excepto en Home) */}
       <nav>
         <AnimatePresence>
           {view === "home" ? (
@@ -113,9 +113,8 @@ export default function Home() {
               <motion.div onClick={() => setView("about")} initial={{ opacity: 0 }} animate={{ opacity: 1, ...navPositions.about }} whileHover={{ color: kleinBlue }} style={{ position: "fixed", fontFamily: fontTitle, fontSize: "0.8rem", zIndex: 1000, cursor: "pointer" }}>about</motion.div>
             </>
           ) : (
-            /* Navegación para About, Projects y Detail */
             <div style={{ 
-              fontFamily: (view === "about" || view === "projects" ? fontTitle : fontBody), 
+              fontFamily: fontTitle, // Forzamos Monor en todas las vistas internas
               fontSize: "0.8rem", 
               textTransform: "lowercase" 
             }}>
