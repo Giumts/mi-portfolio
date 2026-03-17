@@ -11,6 +11,13 @@ export default function Home() {
     projects: { top: "80vh", left: "10vw", rotate: "0deg" },
     about: { top: "50vh", right: "10vw", rotate: "0deg" }
   });
+  
+  // Estado para posiciones aleatorias en la página About
+  const [aboutPositions, setAboutPositions] = useState({
+    email: { top: "20vh", left: "15vw", rotate: "5deg" },
+    phone: { bottom: "15vh", right: "20vw", rotate: "-8deg" }
+  });
+
   const [selectedProject, setSelectedProject] = useState(null);
   const [isHovering, setIsHovering] = useState(false);
 
@@ -18,7 +25,6 @@ export default function Home() {
   const mouseX = useSpring(0, springConfig);
   const mouseY = useSpring(0, springConfig);
 
-  // --- CONFIGURACIÓN DE COLORES Y FUENTES ---
   const kleinBlue = "#002FA7";
   const fontTitle = "'Monor', monospace";
   const fontBody = "'Roundo', sans-serif";
@@ -53,23 +59,26 @@ export default function Home() {
   }, [mouseX, mouseY]);
 
   useEffect(() => {
-    // Generar posiciones random para el menú de Home
     if (view === "home") {
       setNavPositions({
-        giulia: { 
-          top: Math.floor(Math.random() * 20 + 10) + "vh", 
-          left: Math.floor(Math.random() * 50 + 20) + "vw",
-          rotate: Math.floor(Math.random() * 10 - 5) + "deg"
+        giulia: { top: "15vh", left: "40vw", rotate: "-2deg" },
+        projects: { top: "75vh", left: "15vw", rotate: "4deg" },
+        about: { top: "45vh", right: "12vw", rotate: "-3deg" }
+      });
+    }
+
+    // Generar posiciones random para el contacto en About
+    if (view === "about") {
+      setAboutPositions({
+        email: { 
+          top: Math.floor(Math.random() * 20 + 5) + "vh", 
+          left: Math.floor(Math.random() * 60 + 5) + "vw",
+          rotate: Math.floor(Math.random() * 20 - 10) + "deg"
         },
-        projects: { 
-          top: Math.floor(Math.random() * 20 + 65) + "vh", 
-          left: Math.floor(Math.random() * 30 + 5) + "vw",
-          rotate: Math.floor(Math.random() * 14 - 7) + "deg"
-        },
-        about: { 
-          top: Math.floor(Math.random() * 30 + 35) + "vh", 
-          right: Math.floor(Math.random() * 15 + 5) + "vw",
-          rotate: Math.floor(Math.random() * 10 - 5) + "deg"
+        phone: { 
+          bottom: Math.floor(Math.random() * 20 + 5) + "vh", 
+          right: Math.floor(Math.random() * 60 + 5) + "vw",
+          rotate: Math.floor(Math.random() * 20 - 10) + "deg"
         }
       });
     }
@@ -91,75 +100,32 @@ export default function Home() {
   };
 
   return (
-    <main style={{ backgroundColor: "white", minHeight: "100vh", width: "100vw", position: "relative", overflowX: "hidden" }}>
+    <main style={{ backgroundColor: "white", minHeight: "100vh", width: "100vw", position: "relative", overflow: "hidden" }}>
       
       <style jsx global>{`
-        @font-face {
-          font-family: 'Monor';
-          src: url('/fonts/Monor_Regular.otf') format('opentype');
-        }
-        @font-face {
-          font-family: 'Roundo';
-          src: url('/fonts/Roundo-Regular.otf') format('opentype');
-        }
+        @font-face { font-family: 'Monor'; src: url('/fonts/Monor_Regular.otf') format('opentype'); }
+        @font-face { font-family: 'Roundo'; src: url('/fonts/Roundo-Regular.otf') format('opentype'); }
         body, html, * { 
-          margin: 0; 
-          padding: 0; 
-          color: #000;
-          -webkit-font-smoothing: antialiased;
-          /* Cursor por defecto: cruz */
+          margin: 0; padding: 0; color: #000; -webkit-font-smoothing: antialiased;
           cursor: crosshair !important;
-          transition: cursor 0.1s ease; /* Suavizar el cambio de cursor */
+          transition: cursor 0.1s ease;
         }
-        
-        /* --- EFECTO DE ROTACIÓN DE LA CRUZ AL CLICAR --- */
         body:active, html:active, *:active {
-          /* Rotamos el cursor crosshair 45 grados al mantener el clic */
           cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="transform: rotate(45deg);transform-origin: center;"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>') 12 12, crosshair !important;
         }
-
         ::-webkit-scrollbar { display: none; }
       `}</style>
 
-      {/* NAVEGACIÓN DINÁMICA */}
+      {/* NAVEGACIÓN */}
       <nav>
         <AnimatePresence>
           {view === "home" ? (
             <>
-              {/* Logo Giulia - Monor Pequeña */}
-              <motion.h1 
-                onClick={() => setView("home")}
-                initial={{ opacity: 0 }} 
-                animate={{ opacity: 1, ...navPositions.giulia }}
-                style={{ position: "fixed", fontFamily: fontTitle, fontSize: "0.9rem", textDecoration: "line-through", zIndex: 1000, cursor: "pointer" }}
-              >
-                giulia
-              </motion.h1>
-
-              {/* Link Projects - Monor Pequeña */}
-              <motion.div 
-                onClick={() => setView("projects")}
-                initial={{ opacity: 0 }} 
-                animate={{ opacity: 1, ...navPositions.projects }}
-                whileHover={{ color: kleinBlue, scale: 1.1 }}
-                style={{ position: "fixed", fontFamily: fontTitle, fontSize: "0.8rem", zIndex: 1000, cursor: "pointer" }}
-              >
-                projects
-              </motion.div>
-
-              {/* Link About - Monor Pequeña */}
-              <motion.div 
-                onClick={() => setView("about")}
-                initial={{ opacity: 0 }} 
-                animate={{ opacity: 1, top: navPositions.about.top, right: navPositions.about.right, rotate: navPositions.about.rotate }}
-                whileHover={{ color: kleinBlue, scale: 1.1 }}
-                style={{ position: "fixed", fontFamily: fontTitle, fontSize: "0.8rem", zIndex: 1000, cursor: "pointer" }}
-              >
-                about
-              </motion.div>
+              <motion.h1 onClick={() => setView("home")} initial={{ opacity: 0 }} animate={{ opacity: 1, ...navPositions.giulia }} style={{ position: "fixed", fontFamily: fontTitle, fontSize: "0.9rem", textDecoration: "line-through", zIndex: 1000, cursor: "pointer" }}>giulia</motion.h1>
+              <motion.div onClick={() => setView("projects")} initial={{ opacity: 0 }} animate={{ opacity: 1, ...navPositions.projects }} whileHover={{ color: kleinBlue }} style={{ position: "fixed", fontFamily: fontTitle, fontSize: "0.8rem", zIndex: 1000, cursor: "pointer" }}>projects</motion.div>
+              <motion.div onClick={() => setView("about")} initial={{ opacity: 0 }} animate={{ opacity: 1, ...navPositions.about }} whileHover={{ color: kleinBlue }} style={{ position: "fixed", fontFamily: fontTitle, fontSize: "0.8rem", zIndex: 1000, cursor: "pointer" }}>about</motion.div>
             </>
           ) : (
-            /* Navegación fija en esquinas para otras vistas */
             <div style={{ fontFamily: fontBody, fontSize: "0.8rem", textTransform: "lowercase" }}>
               <div onClick={() => {setView("home"); setSelectedProject(null);}} style={{ position: "fixed", top: "4vh", left: "4vw", zIndex: 1000, cursor: "pointer", textDecoration: view === "home" ? "line-through" : "none" }}>giulia</div>
               <div onClick={() => {setView("projects"); setSelectedProject(null);}} style={{ position: "fixed", bottom: "4vh", left: "4vw", zIndex: 1000, cursor: "pointer", textDecoration: view === "projects" ? "line-through" : "none" }}>projects</div>
@@ -169,10 +135,10 @@ export default function Home() {
         </AnimatePresence>
       </nav>
 
-      {/* CONTENIDO DE VISTAS */}
+      {/* CONTENIDO */}
       <AnimatePresence mode="wait">
         {view === "home" && (
-          <motion.div key="home" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} style={{height: "100vh", overflow: "hidden"}}>
+          <motion.div key="home" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} style={{height: "100vh"}}>
             <ImageTrail images={trailImages} />
           </motion.div>
         )}
@@ -188,15 +154,43 @@ export default function Home() {
           </motion.div>
         )}
 
+        {view === "about" && (
+          <motion.div key="about" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} style={{ width: "100vw", height: "100vh", position: "relative" }}>
+            
+            {/* Email y Phone Aleatorios (MONOR AZUL KLEIN) */}
+            <motion.p animate={{ ...aboutPositions.email }} style={{ position: "absolute", fontFamily: fontTitle, fontSize: "0.8rem", color: kleinBlue }}>
+              giulia@example.com
+            </motion.p>
+            <motion.p animate={{ ...aboutPositions.phone }} style={{ position: "absolute", fontFamily: fontTitle, fontSize: "0.8rem", color: kleinBlue }}>
+              +34 000 000 000
+            </motion.p>
+
+            {/* Texto descriptivo: 3 párrafos pequeños en el centro (ROUNDO NEGRO) */}
+            <div style={{ 
+              display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center", 
+              height: "100vh", gap: "2rem", padding: "0 20vw", textAlign: "center" 
+            }}>
+              <p style={{ fontFamily: fontBody, fontSize: "0.75rem", maxWidth: "300px", lineHeight: "1.5" }}>
+                giulia es una directora creativa con base en barcelona, enfocada en la intersección entre el diseño digital y la imperfección orgánica.
+              </p>
+              <p style={{ fontFamily: fontBody, fontSize: "0.75rem", maxWidth: "300px", lineHeight: "1.5" }}>
+                su trabajo explora el error como una herramienta estética, buscando la armonía en procesos inacabados y texturas visuales crudas.
+              </p>
+              <p style={{ fontFamily: fontBody, fontSize: "0.75rem", maxWidth: "300px", lineHeight: "1.5" }}>
+                actualmente colabora con estudios internacionales desarrollando identidades visuales que desafían la limpieza digital convencional.
+              </p>
+            </div>
+          </motion.div>
+        )}
+
+        {/* VISTA DETALLE PROYECTO... (Se mantiene igual que antes) */}
         {view === "detail" && selectedProject && (
           <motion.div key="detail" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
-             {/* Info técnica superior */}
              <div style={{ position: "fixed", top: "4vh", right: "4vw", fontFamily: fontTitle, fontSize: "0.9rem", color: kleinBlue, zIndex: 1000, display: "flex", gap: "3rem" }}>
               <span>{selectedProject.info.date}</span>
               <span>{selectedProject.info.location}</span>
               <span>{selectedProject.info.role}</span>
             </div>
-
             <div style={{ display: "flex", padding: "0 4vw" }}>
               <div style={{ width: "35vw", height: "100vh", position: "sticky", top: 0, display: "flex", flexDirection: "column", justifyContent: "center" }}>
                 <h1 style={{ fontFamily: fontTitle, fontSize: "5vw", color: kleinBlue, lineHeight: "0.9", marginBottom: "2rem" }}>{selectedProject.title}</h1>
@@ -204,41 +198,10 @@ export default function Home() {
               </div>
               <div style={{ width: "65vw", paddingTop: "25vh", display: "flex", flexDirection: "column", gap: "35vh" }}>
                 {[selectedProject.img, ...selectedProject.gallery].map((img, i) => (
-                  <motion.img key={i} src={img} initial={{ opacity: 0, y: 50 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}
-                    style={{ 
-                      width: (i + 1) % 3 === 0 ? "80%" : "50%", 
-                      alignSelf: i % 2 === 0 ? "flex-end" : "flex-start",
-                      objectFit: "cover" 
-                    }} 
-                  />
+                  <motion.img key={i} src={img} style={{ width: (i + 1) % 3 === 0 ? "80%" : "50%", alignSelf: i % 2 === 0 ? "flex-end" : "flex-start", objectFit: "cover" }} />
                 ))}
               </div>
             </div>
-          </motion.div>
-        )}
-
-        {view === "about" && (
-          <motion.div key="about" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} style={{ display: "flex", justifyContent: "center", alignItems: "center", height: "100vh" }}>
-            <div style={{ maxWidth: "900px", padding: "0 4vw" }}>
-              <p style={{ fontFamily: fontTitle, fontSize: "4rem", color: kleinBlue, lineHeight: "0.9", marginBottom: "3rem" }}>
-                giulia es una directora creativa enfocada en la estética de la imperfección.
-              </p>
-              <div style={{ fontFamily: fontBody, fontSize: "1.2rem", display: "flex", gap: "5rem" }}>
-                <p>giulia@example.com</p>
-                <p>+34 000 000 000</p>
-              </div>
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
-
-      {/* Cursor personalizado solo en detalle */}
-      <AnimatePresence>
-        {isHovering && view === "detail" && (
-          <motion.div
-            style={{ position: "fixed", x: mouseX, y: mouseY, pointerEvents: "none", zIndex: 9999, fontFamily: fontTitle, color: kleinBlue, fontSize: "2rem", marginLeft: 20 }}
-          >
-            {selectedProject?.title}
           </motion.div>
         )}
       </AnimatePresence>
