@@ -1,11 +1,14 @@
 "use client";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import ImageTrail from "./ImageTrail";
+import Crosshair from "./Crosshair"; // Importamos el nuevo componente
 import { motion, AnimatePresence, useSpring } from "framer-motion";
 
 export default function Home() {
   const [view, setView] = useState("home");
   const [projectPositions, setProjectPositions] = useState([]);
+  const containerRef = useRef(null); // Referencia para el efecto Crosshair
+
   const [navPositions, setNavPositions] = useState({
     giulia: { top: "15vh", left: "40vw", rotate: "-2deg" },
     projects: { top: "75vh", left: "15vw", rotate: "4deg" },
@@ -18,7 +21,6 @@ export default function Home() {
   });
 
   const [selectedProject, setSelectedProject] = useState(null);
-  const [isHovering, setIsHovering] = useState(false);
 
   const springConfig = { stiffness: 150, damping: 20 };
   const mouseX = useSpring(0, springConfig);
@@ -60,15 +62,15 @@ export default function Home() {
   useEffect(() => {
     if (view === "home") {
       setNavPositions({
-        giulia: { top: Math.floor(Math.random() * 20 + 10) + "vh", left: Math.floor(Math.random() * 50 + 20) + "vw", rotate: Math.floor(Math.random() * 10 - 5) + "deg" },
-        projects: { top: Math.floor(Math.random() * 20 + 65) + "vh", left: Math.floor(Math.random() * 30 + 5) + "vw", rotate: Math.floor(Math.random() * 14 - 7) + "deg" },
-        about: { top: Math.floor(Math.random() * 30 + 35) + "vh", right: Math.floor(Math.random() * 15 + 5) + "vw", rotate: Math.floor(Math.random() * 10 - 5) + "deg" }
+        giulia: { top: "15vh", left: "40vw", rotate: "-2deg" },
+        projects: { top: "75vh", left: "15vw", rotate: "4deg" },
+        about: { top: "45vh", right: "12vw", rotate: "-3deg" }
       });
     }
     if (view === "about") {
       setAboutPositions({
-        email: { top: Math.floor(Math.random() * 20 + 5) + "vh", left: Math.floor(Math.random() * 60 + 5) + "vw", rotate: Math.floor(Math.random() * 20 - 10) + "deg" },
-        phone: { bottom: Math.floor(Math.random() * 20 + 5) + "vh", right: Math.floor(Math.random() * 60 + 5) + "vw", rotate: Math.floor(Math.random() * 20 - 10) + "deg" }
+        email: { top: "15vh", left: "10vw", rotate: "5deg" },
+        phone: { bottom: "15vh", right: "10vw", rotate: "-8deg" }
       });
     }
     if (view === "projects") {
@@ -97,13 +99,10 @@ export default function Home() {
           margin: 0; padding: 0; color: #000; -webkit-font-smoothing: antialiased;
           cursor: crosshair !important;
         }
-        body:active, html:active, *:active {
-          cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="transform: rotate(45deg);transform-origin: center;"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>') 12 12, crosshair !important;
-        }
         ::-webkit-scrollbar { display: none; }
       `}</style>
 
-      {/* NAVEGACIÓN UNIFICADA EN MONOR (excepto en Home) */}
+      {/* NAVEGACIÓN */}
       <nav>
         <AnimatePresence>
           {view === "home" ? (
@@ -113,11 +112,7 @@ export default function Home() {
               <motion.div onClick={() => setView("about")} initial={{ opacity: 0 }} animate={{ opacity: 1, ...navPositions.about }} whileHover={{ color: kleinBlue }} style={{ position: "fixed", fontFamily: fontTitle, fontSize: "0.8rem", zIndex: 1000, cursor: "pointer" }}>about</motion.div>
             </>
           ) : (
-            <div style={{ 
-              fontFamily: fontTitle, // Forzamos Monor en todas las vistas internas
-              fontSize: "0.8rem", 
-              textTransform: "lowercase" 
-            }}>
+            <div style={{ fontFamily: fontTitle, fontSize: "0.8rem", textTransform: "lowercase" }}>
               <div onClick={() => {setView("home"); setSelectedProject(null);}} style={{ position: "fixed", top: "4vh", left: "4vw", zIndex: 1000, cursor: "pointer", textDecoration: view === "home" ? "line-through" : "none" }}>giulia</div>
               <div onClick={() => {setView("projects"); setSelectedProject(null);}} style={{ position: "fixed", bottom: "4vh", left: "4vw", zIndex: 1000, cursor: "pointer", textDecoration: view === "projects" ? "line-through" : "none" }}>projects</div>
               <div onClick={() => {setView("about"); setSelectedProject(null);}} style={{ position: "fixed", bottom: "4vh", right: "4vw", zIndex: 1000, cursor: "pointer", textDecoration: view === "about" ? "line-through" : "none" }}>about</div>
@@ -134,9 +129,24 @@ export default function Home() {
         )}
 
         {view === "projects" && (
-          <motion.div key="projects" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} style={{ position: "relative", width: "100vw", height: "100vh" }}>
+          <motion.div 
+            key="projects" 
+            ref={containerRef}
+            initial={{ opacity: 0 }} 
+            animate={{ opacity: 1 }} 
+            exit={{ opacity: 0 }} 
+            style={{ position: "relative", width: "100vw", height: "100vh", overflow: "hidden" }}
+          >
+            {/* CROSSHAIR COMPONENT */}
+            <Crosshair containerRef={containerRef} color="#000" />
+
             {projects.map((proj, index) => (
-              <motion.div key={proj.id} onClick={() => openProject(proj)} style={{ position: "absolute", top: projectPositions[index]?.top, left: projectPositions[index]?.left, rotate: projectPositions[index]?.rotation, width: "150px", cursor: "pointer" }}>
+              <motion.div 
+                key={proj.id} 
+                className="project-item" // Clase necesaria para el efecto glitch
+                onClick={() => openProject(proj)} 
+                style={{ position: "absolute", top: projectPositions[index]?.top, left: projectPositions[index]?.left, rotate: projectPositions[index]?.rotation, width: "150px", cursor: "pointer", zIndex: 10 }}
+              >
                 <motion.img src={proj.img} whileHover={{ scale: 1.05 }} style={{ width: "100%", filter: "grayscale(100%)" }} onMouseOver={e => e.currentTarget.style.filter="grayscale(0%)"} onMouseOut={e => e.currentTarget.style.filter="grayscale(100%)"} />
                 <p style={{ fontFamily: fontBody, marginTop: "10px", fontSize: "0.7rem" }}>{proj.title}</p>
               </motion.div>
@@ -146,7 +156,7 @@ export default function Home() {
 
         {view === "about" && (
           <motion.div key="about" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} style={{ width: "100vw", height: "100vh", position: "relative" }}>
-            <svg style={{ position: "fixed", top: 0, left: 0, width: "100%", height: "100%", pointerEvents: "none", zIndex: 1 }}>
+             <svg style={{ position: "fixed", top: 0, left: 0, width: "100%", height: "100%", pointerEvents: "none", zIndex: 1 }}>
                <motion.circle cx={mouseX} cy={mouseY} r="40" stroke={kleinBlue} strokeWidth="0.5" fill="none" initial={{ opacity: 0 }} animate={{ opacity: 0.3 }} />
                <motion.line x1="50%" y1="50%" x2={mouseX} y2={mouseY} stroke={kleinBlue} strokeWidth="0.5" strokeDasharray="5,5" initial={{ opacity: 0 }} animate={{ opacity: 0.2 }} />
             </svg>
