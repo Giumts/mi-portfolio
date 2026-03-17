@@ -102,6 +102,7 @@ export default function Home() {
         ::-webkit-scrollbar { display: none; }
       `}</style>
 
+      {/* NAVEGACIÓN GLOBAL */}
       <nav>
         <AnimatePresence>
           {view === "home" ? (
@@ -121,12 +122,14 @@ export default function Home() {
       </nav>
 
       <AnimatePresence mode="wait">
+        {/* VIEW: HOME */}
         {view === "home" && (
           <motion.div key="home" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} style={{height: "100vh"}}>
             <ImageTrail images={trailImages} />
           </motion.div>
         )}
 
+        {/* VIEW: PROJECTS */}
         {view === "projects" && (
           <motion.div key="projects" ref={containerRef} initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} style={{ position: "relative", width: "100vw", height: "100vh", overflow: "hidden" }}>
             <Crosshair containerRef={containerRef} color={kleinBlue} />
@@ -139,6 +142,7 @@ export default function Home() {
           </motion.div>
         )}
 
+        {/* VIEW: ABOUT */}
         {view === "about" && (
           <motion.div key="about" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} style={{ width: "100vw", height: "100vh", position: "relative" }}>
             <Crosshair color="#000" />
@@ -152,43 +156,35 @@ export default function Home() {
           </motion.div>
         )}
 
+        {/* VIEW: DETAIL */}
         {view === "detail" && selectedProject && (
           <motion.div key="detail" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} style={{ backgroundColor: "white", minHeight: "100vh" }}>
             <Crosshair color={kleinBlue} />
             
-            <div style={{ position: "fixed", top: "4vh", right: "4vw", fontFamily: fontTitle, fontSize: "0.7rem", color: "#000", zIndex: 1000 }}>
-              {selectedProject.info.role}
+            {/* INFO FLOTANTE ARRIBA */}
+            <div style={{ position: "fixed", top: "4vh", right: "4vw", fontFamily: fontTitle, fontSize: "0.7rem", color: kleinBlue, zIndex: 1000, display: "flex", gap: "3rem" }}>
+              <div style={{ display: "flex", flexDirection: "column" }}><span style={{ opacity: 0.5 }}>year</span><span>{selectedProject.info.date}</span></div>
+              <div style={{ display: "flex", flexDirection: "column" }}><span style={{ opacity: 0.5 }}>location</span><span>{selectedProject.info.location}</span></div>
+              <div style={{ display: "flex", flexDirection: "column" }}><span style={{ opacity: 0.5 }}>role</span><span>{selectedProject.info.role}</span></div>
             </div>
 
             <div style={{ display: "flex", padding: "0 4vw" }}>
+              {/* LADO IZQUIERDO FIJO */}
               <div style={{ width: "35vw", height: "100vh", position: "sticky", top: 0, display: "flex", flexDirection: "column", justifyContent: "center", paddingRight: "4vw" }}>
                 <h1 style={{ fontFamily: fontTitle, fontSize: "4.5vw", color: kleinBlue, lineHeight: "0.9", marginBottom: "2rem" }}>{selectedProject.title}</h1>
                 <p style={{ fontFamily: fontBody, fontSize: "0.9rem", maxWidth: "24vw", lineHeight: "1.6" }}>{selectedProject.desc}</p>
                 <motion.div onClick={() => setView("projects")} whileHover={{ x: -5, color: kleinBlue }} style={{ marginTop: "3rem", fontFamily: fontTitle, fontSize: "0.7rem", cursor: "pointer" }}>← back to projects</motion.div>
               </div>
 
+              {/* LADO DERECHO SCROLLABLE */}
               <div style={{ width: "65vw", paddingTop: "25vh", paddingBottom: "25vh", display: "flex", flexDirection: "column", gap: "30vh" }}>
-                {[selectedProject.img, ...(selectedProject.gallery || [])].map((img, i) => {
-                  const hasCaption = i === 0 || i === 2 || i === 5;
-                  const captionText = i === 0 ? `fragmento visual nº 1 / textura y error.` : i === 2 ? `composición orgánica nº 3 / espacio rítmico.` : `detalle técnico nº 6 / abstracción aplicada.`;
-                  return (
-                    <motion.div key={i} className="detail-image-container" initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.8 }} style={{ width: (i + 1) % 3 === 0 ? "100%" : "70%", alignSelf: i % 2 === 0 ? "flex-end" : "flex-start", position: "relative" }}>
-                      <img src={img} style={{ width: "100%", height: "auto", display: "block" }} />
-                      
-                      {hasCaption && (
-                        <div className="hover-caption" style={{ position: "absolute", bottom: "-40px", right: (i % 2 === 0 ? "0" : "auto"), left: (i % 2 === 0 ? "auto" : "0"), fontFamily: fontTitle, fontSize: "0.7rem", color: "#000", opacity: 0, transition: "opacity 0.3s ease", zIndex: 10, pointerEvents: "none", textAlign: (i % 2 === 0 ? "right" : "left") }}>
-                          <div style={{ textTransform: "lowercase", opacity: 0.5 }}>{selectedProject.title}</div>
-                          <div>{captionText}</div>
-                        </div>
-                      )}
-                    </motion.div>
-                  );
-                })}
+                {[selectedProject.img, ...selectedProject.gallery].map((img, i) => (
+                  <motion.div key={i} initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.8 }} style={{ width: (i + 1) % 3 === 0 ? "100%" : "70%", alignSelf: i % 2 === 0 ? "flex-end" : "flex-start" }}>
+                    <img src={img} style={{ width: "100%", height: "auto", display: "block" }} />
+                  </motion.div>
+                ))}
               </div>
             </div>
-            <style jsx>{`
-              :global(.detail-image-container:hover .hover-caption) { opacity: 1 !important; }
-            `}</style>
           </motion.div>
         )}
       </AnimatePresence>
