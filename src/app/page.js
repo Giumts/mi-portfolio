@@ -20,6 +20,12 @@ export default function Home() {
     phone: { bottom: "15vh", right: "10vw", rotate: "-8deg" }
   });
 
+  const [detailInfoPositions, setDetailInfoPositions] = useState({
+    date: { top: "4vh", right: "15vw", rotate: "0deg" },
+    location: { top: "6vh", right: "8vw", rotate: "2deg" },
+    role: { top: "4vh", right: "4vw", rotate: "-1deg" }
+  });
+
   const [selectedProject, setSelectedProject] = useState(null);
 
   const springConfig = { stiffness: 150, damping: 20 };
@@ -68,19 +74,26 @@ export default function Home() {
       });
     }
     
-    // POSICIONES RANDOM PARA EMAIL Y TELÉFONO EN ABOUT
     if (view === "about") {
       setAboutPositions({
         email: { 
           top: Math.floor(Math.random() * 20 + 10) + "vh", 
-          left: Math.floor(Math.random() * 60 + 5) + "vw", 
+          left: Math.floor(Math.random() * 50 + 5) + "vw", 
           rotate: Math.floor(Math.random() * 20 - 10) + "deg" 
         },
         phone: { 
           bottom: Math.floor(Math.random() * 20 + 10) + "vh", 
-          right: Math.floor(Math.random() * 60 + 5) + "vw", 
+          right: Math.floor(Math.random() * 50 + 5) + "vw", 
           rotate: Math.floor(Math.random() * 20 - 10) + "deg" 
         }
+      });
+    }
+
+    if (view === "detail") {
+      setDetailInfoPositions({
+        date: { top: Math.floor(Math.random() * 5 + 3) + "vh", right: "18vw", rotate: Math.floor(Math.random() * 10 - 5) + "deg" },
+        location: { top: Math.floor(Math.random() * 5 + 3) + "vh", right: "11vw", rotate: Math.floor(Math.random() * 10 - 5) + "deg" },
+        role: { top: Math.floor(Math.random() * 5 + 3) + "vh", right: "4vw", rotate: Math.floor(Math.random() * 10 - 5) + "deg" }
       });
     }
 
@@ -172,12 +185,17 @@ export default function Home() {
           <motion.div key="detail" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} style={{ backgroundColor: "white", minHeight: "100vh" }}>
             <Crosshair color={kleinBlue} />
             
-            {/* INFO FLOTANTE ARRIBA - Solo Role en Negro */}
-            <div style={{ position: "fixed", top: "4vh", right: "4vw", fontFamily: fontTitle, fontSize: "0.7rem", color: "#000", zIndex: 1000 }}>
-              <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-end" }}>
-                <span style={{ opacity: 0.5 }}>role</span>
-                <span>{selectedProject.info.role}</span>
-              </div>
+            {/* INFO FLOTANTE SUPERIOR RANDOM */}
+            <div style={{ position: "fixed", width: "100vw", height: "15vh", top: 0, left: 0, zIndex: 1000, pointerEvents: "none" }}>
+              <motion.div animate={{ ...detailInfoPositions.date }} style={{ position: "absolute", fontFamily: fontTitle, fontSize: "0.7rem", color: "#000" }}>
+                <span style={{ opacity: 0.4 }}>year </span>{selectedProject.info.date}
+              </motion.div>
+              <motion.div animate={{ ...detailInfoPositions.location }} style={{ position: "absolute", fontFamily: fontTitle, fontSize: "0.7rem", color: "#000" }}>
+                <span style={{ opacity: 0.4 }}>loc </span>{selectedProject.info.location}
+              </motion.div>
+              <motion.div animate={{ ...detailInfoPositions.role }} style={{ position: "absolute", fontFamily: fontTitle, fontSize: "0.7rem", color: "#000" }}>
+                <span style={{ opacity: 0.4 }}>role </span>{selectedProject.info.role}
+              </motion.div>
             </div>
 
             <div style={{ display: "flex", padding: "0 4vw" }}>
@@ -187,7 +205,7 @@ export default function Home() {
                 <p style={{ fontFamily: fontBody, fontSize: "0.9rem", maxWidth: "24vw", lineHeight: "1.6" }}>{selectedProject.desc}</p>
               </div>
 
-              {/* LADO DERECHO SCROLLABLE */}
+              {/* LADO DERECHO SCROLLABLE - Imágenes Limpias */}
               <div style={{ width: "65vw", paddingTop: "25vh", paddingBottom: "25vh", display: "flex", flexDirection: "column", gap: "30vh" }}>
                 {[selectedProject.img, ...selectedProject.gallery].map((img, i) => (
                   <motion.div 
@@ -199,32 +217,9 @@ export default function Home() {
                     style={{ 
                         width: (i + 1) % 3 === 0 ? "100%" : "70%", 
                         alignSelf: i % 2 === 0 ? "flex-end" : "flex-start",
-                        position: "relative" 
                     }}
                   >
-                    <div style={{ position: "relative", overflow: "hidden" }}>
-                        <img 
-                            src={img} 
-                            style={{ width: "100%", height: "auto", display: "block" }} 
-                            onMouseOver={(e) => (e.currentTarget.nextSibling.style.opacity = 1)}
-                            onMouseOut={(e) => (e.currentTarget.nextSibling.style.opacity = 0)}
-                        />
-                        <div style={{ 
-                            position: "absolute", 
-                            bottom: "10px", 
-                            left: "10px", 
-                            fontFamily: fontTitle, 
-                            fontSize: "0.6rem", 
-                            color: kleinBlue,
-                            opacity: 0,
-                            transition: "opacity 0.3s ease",
-                            pointerEvents: "none",
-                            backgroundColor: "rgba(255,255,255,0.8)",
-                            padding: "2px 5px"
-                        }}>
-                          {selectedProject.title} — view_{i.toString().padStart(2, '0')}
-                        </div>
-                    </div>
+                    <img src={img} style={{ width: "100%", height: "auto", display: "block" }} />
                   </motion.div>
                 ))}
               </div>
