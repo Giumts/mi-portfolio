@@ -93,8 +93,9 @@ export default function Home() {
     <main style={{ backgroundColor: "white", minHeight: "100vh", width: "100vw", position: "relative", overflowX: "hidden" }}>
       
       <style jsx global>{`
-        @font-face { font-family: 'Monor'; src: url('/fonts/Monor_Regular.otf') format('opentype'); }
-        @font-face { font-family: 'Roundo'; src: url('/fonts/Roundo-Regular.otf') format('opentype'); }
+        @font-face { font-family: 'Monor'; src: url('/fonts/Monor_Regular.otf') format('opentype'); font-display: swap; }
+        @font-face { font-family: 'Roundo'; src: url('/fonts/Roundo-Regular.otf') format('opentype'); font-display: swap; }
+        
         body, html, * { 
           margin: 0; padding: 0; color: #000; -webkit-font-smoothing: antialiased;
           cursor: crosshair !important;
@@ -106,7 +107,6 @@ export default function Home() {
         }
       `}</style>
 
-      {/* NAVEGACIÓN GLOBAL */}
       <nav>
         <AnimatePresence>
           {view === "home" ? (
@@ -125,7 +125,7 @@ export default function Home() {
         </AnimatePresence>
 
         <style jsx>{`
-          .nav-item-home { position: fixed; font-family: ${fontTitle}; font-size: 0.8rem; z-index: 1000; cursor: pointer; }
+          .nav-item-home { position: fixed; font-family: 'Monor', monospace; font-size: 0.8rem; z-index: 1000; cursor: pointer; }
           .title { font-size: 0.9rem; text-decoration: line-through; }
           
           @media (max-width: 768px) {
@@ -136,14 +136,12 @@ export default function Home() {
       </nav>
 
       <AnimatePresence mode="wait">
-        {/* VIEW: HOME */}
         {view === "home" && (
           <motion.div key="home" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} style={{height: "100vh"}}>
             <ImageTrail images={trailImages} />
           </motion.div>
         )}
 
-        {/* VIEW: PROJECTS */}
         {view === "projects" && (
           <motion.div key="projects" ref={containerRef} initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="projects-view">
             <div className="hide-mobile">
@@ -153,11 +151,17 @@ export default function Home() {
               <motion.div key={proj.id} className="project-item" onClick={() => openProject(proj)} 
                 style={{ 
                   position: "absolute", 
-                  top: projectPositions[index]?.top, 
-                  left: projectPositions[index]?.left, 
-                  rotate: projectPositions[index]?.rotation,
+                  top: projectPositions[index]?.top || "20vh", 
+                  left: projectPositions[index]?.left || "20vw", 
+                  rotate: projectPositions[index]?.rotation || "0deg",
                 }}>
-                <motion.img src={proj.img} whileHover={{ scale: 1.05 }} style={{ width: "100%", filter: "grayscale(100%)" }} onMouseOver={e => e.currentTarget.style.filter="grayscale(0%)"} onMouseOut={e => e.currentTarget.style.filter="grayscale(100%)"} />
+                <motion.img 
+                    src={proj.img} 
+                    whileHover={{ scale: 1.05 }} 
+                    style={{ width: "100%", filter: "grayscale(100%)", display: "block" }} 
+                    onMouseOver={e => e.currentTarget.style.filter="grayscale(0%)"} 
+                    onMouseOut={e => e.currentTarget.style.filter="grayscale(100%)"} 
+                />
                 <p style={{ fontFamily: fontBody, marginTop: "10px", fontSize: "0.7rem" }}>{proj.title}</p>
               </motion.div>
             ))}
@@ -174,7 +178,6 @@ export default function Home() {
           </motion.div>
         )}
 
-        {/* VIEW: ABOUT */}
         {view === "about" && (
           <motion.div key="about" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} style={{ width: "100vw", height: "100vh", position: "relative" }}>
             <div className="hide-mobile"><Crosshair color="#000" /></div>
@@ -186,9 +189,9 @@ export default function Home() {
               <p>actualmente colabora con estudios internacionales desarrollando identidades visuales que desafían la limpieza digital convencional.</p>
             </div>
             <style jsx>{`
-              .about-contact { position: absolute; font-family: ${fontTitle}; font-size: 0.8rem; color: ${kleinBlue}; z-index: 10; }
-              .about-content { display: flex; flex-direction: column; justify-content: center; align-items: center; height: 100vh; gap: 2rem; padding: 0 20vw; textAlign: center; z-index: 10; }
-              .about-content p { font-family: ${fontBody}; font-size: 0.75rem; max-width: 300px; line-height: 1.5; text-align: center; }
+              .about-contact { position: absolute; font-family: 'Monor', monospace; font-size: 0.8rem; color: #002FA7; z-index: 10; }
+              .about-content { display: flex; flex-direction: column; justify-content: center; align-items: center; height: 100vh; gap: 2rem; padding: 0 20vw; text-align: center; z-index: 10; }
+              .about-content p { font-family: sans-serif; font-size: 0.75rem; max-width: 300px; line-height: 1.5; text-align: center; }
               
               @media (max-width: 768px) {
                 .about-contact { position: relative !important; top: auto !important; left: auto !important; bottom: auto !important; right: auto !important; text-align: center; margin: 10px 0; }
@@ -201,7 +204,6 @@ export default function Home() {
           </motion.div>
         )}
 
-        {/* VIEW: DETAIL */}
         {view === "detail" && selectedProject && (
           <motion.div key="detail" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} style={{ backgroundColor: "white", minHeight: "100vh" }}>
             <div className="hide-mobile"><Crosshair color={kleinBlue} /></div>
@@ -222,21 +224,21 @@ export default function Home() {
               <div className="detail-gallery">
                 {[selectedProject.img, ...selectedProject.gallery].map((img, i) => (
                   <motion.div key={i} className="gallery-img-wrapper" initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.8 }} style={{ alignSelf: i % 2 === 0 ? "flex-end" : "flex-start" }}>
-                    <img src={img} style={{ width: "100%", height: "auto", display: "block" }} />
+                    <img src={img} style={{ width: "100%", height: "auto", display: "block" }} alt="gallery item" />
                   </motion.div>
                 ))}
               </div>
             </div>
 
             <style jsx>{`
-              .detail-info-header { position: fixed; top: 4vh; right: 4vw; font-family: ${fontTitle}; font-size: 0.7rem; color: ${kleinBlue}; z-index: 1000; display: flex; gap: 3rem; }
+              .detail-info-header { position: fixed; top: 4vh; right: 4vw; font-family: 'Monor', monospace; font-size: 0.7rem; color: #002FA7; z-index: 1000; display: flex; gap: 3rem; }
               .info-block { display: flex; flex-direction: column; }
               .label { opacity: 0.5; }
               .detail-container { display: flex; padding: 0 4vw; }
               .detail-sidebar { width: 35vw; height: 100vh; position: sticky; top: 0; display: flex; flex-direction: column; justify-content: center; padding-right: 4vw; }
-              .detail-title { font-family: ${fontTitle}; font-size: 4.5vw; color: ${kleinBlue}; line-height: 0.9; margin-bottom: 2rem; }
-              .detail-desc { font-family: ${fontBody}; font-size: 0.9rem; max-width: 24vw; line-height: 1.6; }
-              .back-btn { margin-top: 3rem; font-family: ${fontTitle}; font-size: 0.7rem; cursor: pointer; }
+              .detail-title { font-family: 'Monor', monospace; font-size: 4.5vw; color: #002FA7; line-height: 0.9; margin-bottom: 2rem; }
+              .detail-desc { font-family: sans-serif; font-size: 0.9rem; max-width: 24vw; line-height: 1.6; }
+              .back-btn { margin-top: 3rem; font-family: 'Monor', monospace; font-size: 0.7rem; cursor: pointer; }
               .detail-gallery { width: 65vw; padding: 25vh 0; display: flex; flex-direction: column; gap: 30vh; }
               .gallery-img-wrapper { width: 70%; }
 
