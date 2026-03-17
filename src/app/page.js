@@ -18,7 +18,7 @@ export default function Home() {
   const fontTitle = "'Lineal Thin', sans-serif";
   const fontBody = "'Roundo Extra Light', sans-serif";
 
-  // --- BASE DE DATOS DE PROYECTOS ---
+  // --- BASE DE DATOS DE PROYECTOS COMPLETA ---
   const projects = [
     { 
       id: 1, title: "24 seconds", img: "/fotos_portadas/Portada_24seconds.jpg", 
@@ -59,7 +59,7 @@ export default function Home() {
     },
     { 
       id: 5, title: "now you see me moria", img: "/fotos_portadas/Portada_Now you see me moria.jpg", 
-      desc: "abstracción aplicada al diseño contemporáneo y crítica social.", 
+      desc: "abstracción aplicada al diseño contemporáneo.", 
       info: { date: "2023", location: "berlin", role: "photography" },
       gallery: [
         { src: "/BEAUTIFUL_FAILURES_AY75.jpg", text: "presencia invisible" },
@@ -77,7 +77,7 @@ export default function Home() {
     },
     { 
       id: 7, title: "san sadurnì", img: "/fotos_portadas/Portada_San sadurni.jpg", 
-      desc: "capturando la esencia del movimiento estático en el entorno rural.", 
+      desc: "capturando la esencia del movimiento estático.", 
       info: { date: "2023", location: "barcelona", role: "production" },
       gallery: [
         { src: "/BEAUTIFUL_FAILURES_AY37.jpg", text: "raíces modernas" },
@@ -86,7 +86,7 @@ export default function Home() {
     },
     { 
       id: 8, title: "vora", img: "/fotos_portadas/Portada_vora.jpg", 
-      desc: "reducción visual al mínimo exponente para maximizar el impacto.", 
+      desc: "reducción visual al mínimo exponente.", 
       info: { date: "2024", location: "remote", role: "ui design" },
       gallery: [
         { src: "/BEAUTIFUL_FAILURES_AY51.jpg", text: "límite visual" },
@@ -95,6 +95,7 @@ export default function Home() {
     }
   ];
 
+  // Imágenes para el rastro de la Home
   const trailImages = projects.map(p => p.img);
 
   useEffect(() => {
@@ -155,7 +156,7 @@ export default function Home() {
         )}
       </AnimatePresence>
 
-      {/* NAVEGACIÓN */}
+      {/* NAVEGACIÓN GLOBAL */}
       <nav style={{ zIndex: 1001 }}>
         {view === "home" ? (
           <>
@@ -165,7 +166,7 @@ export default function Home() {
           </>
         ) : (
           <>
-            <div onClick={() => {setView("home"); setHoverData({active: false})}} style={{ position: "fixed", top: "4vh", left: "4vw", fontFamily: fontBody, fontSize: "0.8rem", color: "#000", cursor: "pointer" }}>giulia</div>
+            <div onClick={() => {setView("home"); setHoverData({active: false})}} style={{ position: "fixed", top: "4vh", left: "4vw", fontFamily: fontBody, fontSize: "0.8rem", color: "#000", cursor: "pointer", textDecoration: view === "home" ? "line-through" : "none" }}>giulia</div>
             <div onClick={() => setView("projects")} style={{ position: "fixed", bottom: "4vh", left: "4vw", fontFamily: fontBody, fontSize: "0.8rem", color: "#000", cursor: "pointer", textDecoration: view === "projects" ? "line-through" : "none" }}>projects</div>
             <div onClick={() => setView("about")} style={{ position: "fixed", bottom: "4vh", right: "4vw", fontFamily: fontBody, fontSize: "0.8rem", color: "#000", cursor: "pointer", textDecoration: view === "about" ? "line-through" : "none" }}>about</div>
           </>
@@ -173,12 +174,14 @@ export default function Home() {
       </nav>
 
       <AnimatePresence mode="wait">
+        {/* VISTA: HOME */}
         {view === "home" && (
           <motion.div key="home" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
             <ImageTrail images={trailImages} />
           </motion.div>
         )}
 
+        {/* VISTA: PROJECTS */}
         {view === "projects" && (
           <motion.div key="projects" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} style={{ position: "relative", width: "100vw", height: "100vh" }}>
             {projects.map((proj, index) => (
@@ -190,9 +193,9 @@ export default function Home() {
           </motion.div>
         )}
 
+        {/* VISTA: DETAIL */}
         {view === "detail" && selectedProject && (
           <motion.div key="detail" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
-            {/* INFO TÉCNICA */}
             <div style={{ position: "fixed", top: "4vh", right: "4vw", fontFamily: fontTitle, color: kleinBlue, fontSize: "0.85rem", display: "flex", gap: "3rem", zIndex: 1000 }}>
               <span>{selectedProject.info.date}</span>
               <span>{selectedProject.info.location}</span>
@@ -220,6 +223,7 @@ export default function Home() {
           </motion.div>
         )}
 
+        {/* VISTA: ABOUT */}
         {view === "about" && (
           <motion.div key="about" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} style={{ width: "100vw", height: "100vh", position: "relative" }}>
             <div style={{ position: "absolute", top: "4vh", left: "50%", transform: "translateX(-50%)", display: "flex", gap: "4rem", zIndex: 1000 }}>
