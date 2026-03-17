@@ -1,6 +1,6 @@
 "use client";
 import { useState, useEffect } from "react";
-import ImageTrail from "./ImageTrail";
+import ImageTrail from "./ImageTrail"; // Asegúrate de que este archivo existe y está bien configurado
 import { motion, AnimatePresence, useSpring } from "framer-motion";
 
 export default function Home() {
@@ -17,18 +17,56 @@ export default function Home() {
   const fontTitle = "'Lineal Thin', sans-serif";
   const fontBody = "'Roundo Extra Light', sans-serif";
 
+  // --- BASE DE DATOS DE PROYECTOS CON GALERÍAS DETALLADAS ---
   const projects = [
-    { id: 1, title: "24 seconds", img: "/fotos_portadas/Portada_24seconds.jpg", desc: "una búsqueda de la armonía en el error digital.", info: { date: "2024", location: "barcelona", role: "creative direction" }, gallery: [{ src: "/BEAUTIFUL_FAILURES_AY1.jpg", text: "instante suspendido" }, { src: "/BEAUTIFUL_FAILURES_AY3.jpg", text: "ruido visual" }] },
-    { id: 2, title: "aria libera", img: "/fotos_portadas/Portada_Aria libera.jpg", desc: "la imperfección como lenguaje visual.", info: { date: "2023", location: "milan", role: "art direction" }, gallery: [{ src: "/BEAUTIFUL_FAILURES_AY37.jpg", text: "aire contenido" }] },
-    { id: 3, title: "beautiful failures", img: "/fotos_portadas/Portada_Beautiful failures.jpg", desc: "exploración rítmica del espacio.", info: { date: "2024", location: "madrid", role: "visual design" }, gallery: [{ src: "/BEAUTIFUL_FAILURES_AY49.jpg", text: "caos ordenado" }] },
-    { id: 4, title: "ledsc4", img: "/fotos_portadas/Portada_Ledsc4.jpg", desc: "contraste extremo.", info: { date: "2022", location: "london", role: "creative lead" }, gallery: [{ src: "/BEAUTIFUL_FAILURES_AY71.jpg", text: "geometría" }] },
-    { id: 5, title: "now you see me moria", img: "/fotos_portadas/Portada_Now you see me moria.jpg", desc: "abstracción aplicada.", info: { date: "2023", location: "berlin", role: "photography" }, gallery: [{ src: "/BEAUTIFUL_FAILURES_AY9.jpg", text: "fragmento" }] },
-    { id: 6, title: "rise up", img: "/fotos_portadas/Portada_rise up.JPG", desc: "procesos inacabados.", info: { date: "2024", location: "paris", role: "concept" }, gallery: [{ src: "/BEAUTIFUL_FAILURES_AY15.jpg", text: "estética" }] },
-    { id: 7, title: "san sadurnì", img: "/fotos_portadas/Portada_San sadurni.jpg", desc: "movimiento estático.", info: { date: "2023", location: "barcelona", role: "production" }, gallery: [{ src: "/BEAUTIFUL_FAILURES_AY37.jpg", text: "raíces" }] },
-    { id: 8, title: "vora", img: "/fotos_portadas/Portada_vora.jpg", desc: "reducción visual.", info: { date: "2024", location: "remote", role: "ui design" }, gallery: [{ src: "/BEAUTIFUL_FAILURES_AY51.jpg", text: "límite" }] }
+    { 
+      id: 1, 
+      title: "24 seconds", 
+      img: "/fotos_portadas/Portada_24seconds.jpg", 
+      desc: "una búsqueda de la armonía en el error digital.", 
+      info: { date: "2024", location: "barcelona", role: "creative direction" },
+      // GALERÍA DE 10 IMÁGENES
+      detailGallery: [
+        { src: "/BEAUTIFUL_FAILURES_AY1.jpg", text: "captura de movimiento 01" },
+        { src: "/BEAUTIFUL_FAILURES_AY3.jpg", text: "distorsión rítmica" },
+        { src: "/BEAUTIFUL_FAILURES_AY15.jpg", text: "estudio cromático" },
+        { src: "/BEAUTIFUL_FAILURES_AY37.jpg", text: "abstracción de luz" },
+        { src: "/BEAUTIFUL_FAILURES_AY42.jpg", text: "la forma del vacío" },
+        { src: "/BEAUTIFUL_FAILURES_AY49.jpg", text: "textura orgánica" },
+        { src: "/BEAUTIFUL_FAILURES_AY51.jpg", text: "geometría pura" },
+        { src: "/BEAUTIFUL_FAILURES_AY59.jpg", text: "límite visual" },
+        { src: "/BEAUTIFUL_FAILURES_AY71.jpg", text: "composición rítmica" },
+        { src: "/BEAUTIFUL_FAILURES_AY75.jpg", text: "ruido visual 02" }
+      ]
+    },
+    { 
+      id: 2, 
+      title: "beautiful failures", 
+      img: "/fotos_portadas/Portada_Beautiful failures.jpg", 
+      desc: "exploración rítmica del espacio y el error controlado.", 
+      info: { date: "2024", location: "madrid", role: "visual design" },
+      // GALERÍA DE 10 IMÁGENES
+      detailGallery: [
+        { src: "/BEAUTIFUL_FAILURES_AY49.jpg", text: "caos ordenado" },
+        { src: "/BEAUTIFUL_FAILURES_AY51.jpg", text: "belleza técnica" },
+        { src: "/BEAUTIFUL_FAILURES_AY59.jpg", text: "contraste puro" },
+        { src: "/BEAUTIFUL_FAILURES_AY71.jpg", text: "fragmento de luz" },
+        { src: "/BEAUTIFUL_FAILURES_AY1.jpg", text: "error 01" },
+        { src: "/BEAUTIFUL_FAILURES_AY15.jpg", text: "instante suspendido" },
+        { src: "/BEAUTIFUL_FAILURES_AY37.jpg", text: "reducción visual" },
+        { src: "/BEAUTIFUL_FAILURES_AY75.jpg", text: "textura técnica" },
+        { src: "/BEAUTIFUL_FAILURES_AY42.jpg", text: "la forma del vacío" },
+        { src: "/BEAUTIFUL_FAILURES_AY9.jpg", text: "composición rítmica" }
+      ]
+    },
+    // ... Resto de proyectos (puedes añadir galerías similares si lo deseas)
+    { id: 3, title: "ledsc4", img: "/fotos_portadas/Portada_Ledsc4.jpg", desc: "contraste extremo.", info: { date: "2022", location: "london", role: "creative lead" }, detailGallery: [{ src: "/BEAUTIFUL_FAILURES_AY71.jpg", text: "geometría" }] },
+    { id: 4, title: "vora", img: "/fotos_portadas/Portada_vora.jpg", desc: "reducción visual.", info: { date: "2024", location: "remote", role: "ui design" }, detailGallery: [{ src: "/BEAUTIFUL_FAILURES_AY51.jpg", text: "límite" }] }
   ];
 
-  const trailImages = projects.map(p => p.img);
+  // --- RASTRO DE LA HOME: SOLO IMÁGENES DE BEAUTIFUL FAILURES ---
+  const beautifulFailures = projects.find(p => p.title === "beautiful failures");
+  const trailImages = beautifulFailures ? beautifulFailures.detailGallery.map(img => img.src) : [];
 
   useEffect(() => {
     const handleMouseMove = (e) => {
@@ -73,30 +111,16 @@ export default function Home() {
         )}
       </AnimatePresence>
 
-      {/* NAVEGACIÓN FIJA (Sin desvanecimientos extraños) */}
+      {/* NAVEGACIÓN FIJA */}
       <nav style={{ position: "fixed", width: "100%", height: "100%", pointerEvents: "none", zIndex: 1000 }}>
-        {/* GIULIA */}
-        <div 
-          onClick={() => setView("home")} 
-          style={{ position: "absolute", top: view === "home" ? "5vh" : "4vh", left: view === "home" ? "50%" : "4vw", transform: view === "home" ? "translateX(-50%)" : "none", fontFamily: view === "home" ? fontTitle : fontBody, color: view === "home" ? kleinBlue : "#000", fontSize: view === "home" ? "1.1rem" : "0.8rem", textDecoration: view === "home" ? "line-through" : "none", pointerEvents: "auto", transition: "all 0.5s ease" }}
-        >giulia</div>
-
-        {/* PROJECTS */}
-        <div 
-          onClick={() => {setView("projects"); setSelectedProject(null)}} 
-          style={{ position: "absolute", bottom: view === "home" ? "5vh" : "4vh", left: view === "home" ? "50%" : "4vw", transform: view === "home" ? "translateX(-50%)" : "none", fontFamily: view === "home" ? fontTitle : fontBody, color: view === "home" ? kleinBlue : "#000", fontSize: view === "home" ? "1.1rem" : "0.8rem", textDecoration: view === "projects" ? "line-through" : "none", pointerEvents: "auto", transition: "all 0.5s ease" }}
-        >projects</div>
-
-        {/* ABOUT */}
-        <div 
-          onClick={() => {setView("about"); setSelectedProject(null)}} 
-          style={{ position: "absolute", right: view === "home" ? "8vw" : "4vw", top: view === "home" ? "50%" : "auto", bottom: view === "home" ? "auto" : "4vh", transform: view === "home" ? "translateY(-50%)" : "none", fontFamily: view === "home" ? fontTitle : fontBody, color: view === "home" ? kleinBlue : "#000", fontSize: view === "home" ? "1.1rem" : "0.8rem", textDecoration: view === "about" ? "line-through" : "none", pointerEvents: "auto", transition: "all 0.5s ease" }}
-        >about</div>
+        <div onClick={() => setView("home")} style={{ position: "absolute", top: view === "home" ? "5vh" : "4vh", left: view === "home" ? "50%" : "4vw", transform: view === "home" ? "translateX(-50%)" : "none", fontFamily: view === "home" ? fontTitle : fontBody, color: view === "home" ? kleinBlue : "#000", fontSize: view === "home" ? "1.1rem" : "0.8rem", textDecoration: view === "home" ? "line-through" : "none", pointerEvents: "auto", transition: "all 0.5s ease" }}>giulia</div>
+        <div onClick={() => {setView("projects"); setSelectedProject(null)}} style={{ position: "absolute", bottom: view === "home" ? "5vh" : "4vh", left: view === "home" ? "50%" : "4vw", transform: view === "home" ? "translateX(-50%)" : "none", fontFamily: view === "home" ? fontTitle : fontBody, color: view === "home" ? kleinBlue : "#000", fontSize: view === "home" ? "1.1rem" : "0.8rem", textDecoration: view === "projects" ? "line-through" : "none", pointerEvents: "auto", transition: "all 0.5s ease" }}>projects</div>
+        <div onClick={() => {setView("about"); setSelectedProject(null)}} style={{ position: "absolute", right: view === "home" ? "8vw" : "4vw", top: view === "home" ? "50%" : "auto", bottom: view === "home" ? "auto" : "4vh", transform: view === "home" ? "translateY(-50%)" : "none", fontFamily: view === "home" ? fontTitle : fontBody, color: view === "home" ? kleinBlue : "#000", fontSize: view === "home" ? "1.1rem" : "0.8rem", textDecoration: view === "about" ? "line-through" : "none", pointerEvents: "auto", transition: "all 0.5s ease" }}>about</div>
       </nav>
 
       {/* CONTENIDO PRINCIPAL */}
       <div style={{ width: "100vw", height: "100vh" }}>
-        {view === "home" && <ImageTrail images={trailImages} />}
+        {view === "home" && trailImages.length > 0 && <ImageTrail images={trailImages} />}
 
         <AnimatePresence mode="wait">
           {view === "projects" && (
@@ -110,7 +134,7 @@ export default function Home() {
             </motion.div>
           )}
 
-          {view === "detail" && selectedProject && (
+          {view === "detail" && selectedProject && selectedProject.detailGallery && (
             <motion.div key="detail" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
               <div style={{ position: "fixed", top: "4vh", right: "4vw", fontFamily: fontTitle, color: kleinBlue, fontSize: "0.85rem", display: "flex", gap: "3rem", zIndex: 1000 }}>
                 <span>{selectedProject.info.date}</span><span>{selectedProject.info.location}</span><span>{selectedProject.info.role}</span>
@@ -120,10 +144,16 @@ export default function Home() {
                   <h1 style={{ fontFamily: fontTitle, fontSize: "5vw", color: kleinBlue, lineHeight: "1" }}>{selectedProject.title}</h1>
                   <p style={{ fontFamily: fontBody, fontSize: "1.1rem", maxWidth: "24vw", marginTop: "2rem" }}>{selectedProject.desc}</p>
                 </div>
+                {/* GALERÍA DE 10 IMÁGENES ASIMÉTRICAS */}
                 <div style={{ width: "65vw", paddingTop: "25vh", display: "flex", flexDirection: "column", gap: "35vh", paddingBottom: "10vh" }}>
-                  {selectedProject.gallery.map((item, i) => (
+                  {selectedProject.detailGallery.map((item, i) => (
                     <motion.div key={i} style={{ width: (i + 1) % 3 === 0 ? "85vw" : "40vw", alignSelf: (i % 2 === 0 ? "flex-end" : "flex-start"), marginLeft: (i + 1) % 3 === 0 ? "-30vw" : "0" }}>
-                      <img src={item.src} onMouseEnter={() => setHoverData({ active: true, title: selectedProject.title, text: item.text })} onMouseLeave={() => setHoverData({ active: false, title: "", text: "" })} style={{ width: "100%", height: (i + 1) % 3 === 0 ? "85vh" : "auto", objectFit: "cover" }} />
+                      <img 
+                        src={item.src} 
+                        onMouseEnter={() => setHoverData({ active: true, title: selectedProject.title, text: item.text })} 
+                        onMouseLeave={() => setHoverData({ active: false, title: "", text: "" })} 
+                        style={{ width: "100%", height: (i + 1) % 3 === 0 ? "85vh" : "auto", objectFit: "cover" }} 
+                      />
                     </motion.div>
                   ))}
                 </div>
@@ -138,7 +168,7 @@ export default function Home() {
                 <span style={{ fontFamily: fontTitle, fontSize: "0.8rem", color: kleinBlue }}>+34 600 000 000</span>
               </div>
               <div style={{ display: "flex", justifyContent: "flex-end", alignItems: "center", height: "100%", paddingRight: "10vw" }}>
-                <p style={{ fontFamily: fontBody, fontSize: "1rem", color: "#000", maxWidth: "30vw", lineHeight: "1.6" }}>giulia es una directora creativa enfocada en la estética de la imperfección y la narrativa visual contemporánea...</p>
+                <p style={{ fontFamily: fontBody, fontSize: "1rem", color: "#000", maxWidth: "30vw", lineHeight: "1.6" }}>giulia es una directora creativa enfocada en la estética de la imperfección...</p>
               </div>
             </motion.div>
           )}
