@@ -81,7 +81,7 @@ export default function Home() {
       }));
       setProjectPositions(positions);
     }
-  }, [view]);
+  }, [view, projects]);
 
   const openProject = (proj) => {
     setSelectedProject(proj);
@@ -161,11 +161,9 @@ export default function Home() {
           <motion.div key="detail" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} style={{ backgroundColor: "white", minHeight: "100vh" }}>
             <Crosshair color={kleinBlue} />
             
-            {/* INFO FLOTANTE ARRIBA */}
-            <div style={{ position: "fixed", top: "4vh", right: "4vw", fontFamily: fontTitle, fontSize: "0.7rem", color: kleinBlue, zIndex: 1000, display: "flex", gap: "3rem" }}>
-              <div style={{ display: "flex", flexDirection: "column" }}><span style={{ opacity: 0.5 }}>year</span><span>{selectedProject.info.date}</span></div>
-              <div style={{ display: "flex", flexDirection: "column" }}><span style={{ opacity: 0.5 }}>location</span><span>{selectedProject.info.location}</span></div>
-              <div style={{ display: "flex", flexDirection: "column" }}><span style={{ opacity: 0.5 }}>role</span><span>{selectedProject.info.role}</span></div>
+            {/* INFO FLOTANTE: SOLO ROL EN NEGRO */}
+            <div style={{ position: "fixed", top: "4vh", right: "4vw", fontFamily: fontTitle, fontSize: "0.7rem", color: "#000", zIndex: 1000 }}>
+              {selectedProject.info.role}
             </div>
 
             <div style={{ display: "flex", padding: "0 4vw" }}>
@@ -178,11 +176,61 @@ export default function Home() {
 
               {/* LADO DERECHO SCROLLABLE */}
               <div style={{ width: "65vw", paddingTop: "25vh", paddingBottom: "25vh", display: "flex", flexDirection: "column", gap: "30vh" }}>
-                {[selectedProject.img, ...selectedProject.gallery].map((img, i) => (
-                  <motion.div key={i} initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.8 }} style={{ width: (i + 1) % 3 === 0 ? "100%" : "70%", alignSelf: i % 2 === 0 ? "flex-end" : "flex-start" }}>
-                    <img src={img} style={{ width: "100%", height: "auto", display: "block" }} />
-                  </motion.div>
-                ))}
+                {[selectedProject.img, ...selectedProject.gallery].map((img, i) => {
+                  const hasCaption = i === 0 || i === 2 || i === 5; // Imágenes seleccionadas para el texto
+                  const captionText = i === 0 
+                    ? `fragmento visual nº 1 / textura y error.` 
+                    : i === 2 
+                    ? `composición orgánica nº 3 / espacio rítmico.` 
+                    : `detalle técnico nº 6 / abstracción aplicada.`;
+
+                  return (
+                    <motion.div 
+                      key={i} 
+                      className="detail-image-container" // Para identificar el hover
+                      initial={{ opacity: 0, y: 30 }} 
+                      whileInView={{ opacity: 1, y: 0 }} 
+                      viewport={{ once: true }} 
+                      transition={{ duration: 0.8 }} 
+                      style={{ 
+                        width: (i + 1) % 3 === 0 ? "100%" : "70%", 
+                        alignSelf: i % 2 === 0 ? "flex-end" : "flex-start",
+                        position: "relative" // Necesario para el texto flotante
+                      }}
+                    >
+                      <img src={img} style={{ width: "100%", height: "auto", display: "block" }} />
+                      
+                      {/* TEXTO FLOTANTE AL HOVER */}
+                      {hasCaption && (
+                        <div style={{
+                          position: "absolute",
+                          bottom: "-40px", // Justo debajo de la imagen
+                          right: (i % 2 === 0 ? "0" : "auto"),
+                          left: (i % 2 === 0 ? "auto" : "0"),
+                          fontFamily: fontTitle,
+                          fontSize: "0.7rem",
+                          color: "#000",
+                          backgroundColor: "rgba(255,255,255,0.8)", // Fondo sutil para legibilidad
+                          padding: "5px",
+                          opacity: 0, // Oculto por defecto
+                          transition: "opacity 0.3s ease",
+                          zIndex: 10,
+                          pointerEvents: "none" // Para no interferir con el scroll
+                        }}>
+                          <div style={{ textTransform: "lowercase", opacity: 0.6 }}>{selectedProject.title}</div>
+                          <div>{captionText}</div>
+                        </div>
+                      )}
+
+                      <style jsx>{`
+                        .detail-image-container:hover div {
+                          opacity: 1 !important; // Muestra el texto al hover
+                        }
+                      `}</style>
+
+                    </motion.div>
+                  );
+                })}
               </div>
             </div>
           </motion.div>
