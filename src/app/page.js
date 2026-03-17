@@ -7,13 +7,13 @@ export default function Home() {
   const [view, setView] = useState("home");
   const [randomPositions, setRandomPositions] = useState([]);
   const [selectedProject, setSelectedProject] = useState(null);
-  const [isHovering, setIsHovering] = useState(false);
+  const [hoverData, setHoverData] = useState({ active: false, title: "", text: "" });
 
   const springConfig = { stiffness: 250, damping: 25 };
   const mouseX = useSpring(0, springConfig);
   const mouseY = useSpring(0, springConfig);
 
-  // --- CONFIGURACIÓN DE COLORES Y FUENTES ---
+  // --- CONFIGURACIÓN VISUAL ---
   const kleinBlue = "#002FA7";
   const fontTitle = "'Lineal Thin', sans-serif";
   const fontBody = "'Roundo Extra Light', sans-serif";
@@ -21,21 +21,33 @@ export default function Home() {
   const trailImages = [
     "/BEAUTIFUL_FAILURES_AY1.jpg", "/BEAUTIFUL_FAILURES_AY3.jpg", 
     "/BEAUTIFUL_FAILURES_AY15.jpg", "/BEAUTIFUL_FAILURES_AY37.jpg", 
-    "/BEAUTIFUL_FAILURES_AY42.jpg", "/BEAUTIFUL_FAILURES_AY49.jpg", 
-    "/BEAUTIFUL_FAILURES_AY51.jpg", "/BEAUTIFUL_FAILURES_AY59.jpg", 
-    "/BEAUTIFUL_FAILURES_AY71.jpg", "/BEAUTIFUL_FAILURES_AY75.jpg", 
-    "/BEAUTIFUL_FAILURES_AY9.jpg"
+    "/BEAUTIFUL_FAILURES_AY42.jpg"
   ];
 
   const projects = [
-    { id: 1, title: "24 seconds", img: "/fotos_portadas/Portada_24seconds.jpg", desc: "una búsqueda de la armonía en el error digital y la composición orgánica.", info: { date: "2024", location: "barcelona", role: "creative direction" }, gallery: trailImages },
-    { id: 2, title: "aria libera", img: "/fotos_portadas/Portada_Aria libera.jpg", desc: "la imperfección como lenguaje visual predominante.", info: { date: "2023", location: "milan", role: "art direction" }, gallery: trailImages },
-    { id: 3, title: "beautiful failures", img: "/fotos_portadas/Portada_Beautiful failures.jpg", desc: "exploración rítmica del espacio en blanco.", info: { date: "2024", location: "madrid", role: "visual design" }, gallery: trailImages },
-    { id: 4, title: "ledsc4", img: "/fotos_portadas/Portada_Ledsc4.jpg", desc: "el contraste extremo define la forma.", info: { date: "2022", location: "london", role: "creative lead" }, gallery: trailImages },
-    { id: 5, title: "now you see me moria", img: "/fotos_portadas/Portada_Now you see me moria.jpg", desc: "abstracción aplicada al diseño contemporáneo.", info: { date: "2023", location: "berlin", role: "photography" }, gallery: trailImages },
-    { id: 6, title: "rise up", img: "/fotos_portadas/Portada_rise up.JPG", desc: "fragmentos de un proceso inacabado.", info: { date: "2024", location: "paris", role: "concept" }, gallery: trailImages },
-    { id: 7, title: "san sadurnì", img: "/fotos_portadas/Portada_San sadurni.jpg", desc: "capturando la esencia del movimiento estático.", info: { date: "2023", location: "barcelona", role: "production" }, gallery: trailImages },
-    { id: 8, title: "vora", img: "/fotos_portadas/Portada_vora.jpg", desc: "reducción visual al mínimo exponente.", info: { date: "2024", location: "remote", role: "ui design" }, gallery: trailImages },
+    { 
+      id: 1, 
+      title: "24 seconds", 
+      img: "/fotos_portadas/Portada_24seconds.jpg", 
+      desc: "una búsqueda de la armonía en el error digital y la composición orgánica.", 
+      info: { date: "2024", location: "barcelona", role: "creative direction" },
+      gallery: [
+        { src: "/BEAUTIFUL_FAILURES_AY1.jpg", text: "captura de movimiento 01" },
+        { src: "/BEAUTIFUL_FAILURES_AY3.jpg", text: "distorsión cromática" },
+        { src: "/BEAUTIFUL_FAILURES_AY15.jpg", text: "estudio de luz" }
+      ]
+    },
+    { 
+      id: 2, 
+      title: "aria libera", 
+      img: "/fotos_portadas/Portada_Aria libera.jpg", 
+      desc: "la imperfección como lenguaje visual predominante.", 
+      info: { date: "2023", location: "milan", role: "art direction" },
+      gallery: [
+        { src: "/BEAUTIFUL_FAILURES_AY37.jpg", text: "espacio negativo" },
+        { src: "/BEAUTIFUL_FAILURES_AY42.jpg", text: "textura orgánica" }
+      ]
+    },
   ];
 
   useEffect(() => {
@@ -65,64 +77,63 @@ export default function Home() {
   };
 
   return (
-    <main style={{ backgroundColor: "white", minHeight: "100vh", width: "100vw", position: "relative" }}>
+    <main style={{ backgroundColor: "white", minHeight: "100vh", width: "100vw", position: "relative", overflowX: "hidden" }}>
       
       <style jsx global>{`
-        @font-face {
-          font-family: 'Lineal Thin';
-          src: url('/fonts/Lineal-Thin.otf') format('opentype');
-        }
-        @font-face {
-          font-family: 'Roundo Extra Light';
-          src: url('/fonts/Roundo-ExtraLight.otf') format('opentype');
-        }
-        
-        body, html, * { 
-          cursor: crosshair !important; 
-          margin: 0; 
-          padding: 0; 
-          color: #000;
-          -webkit-font-smoothing: antialiased;
-        }
+        @font-face { font-family: 'Lineal Thin'; src: url('/fonts/Lineal-Thin.otf') format('opentype'); }
+        @font-face { font-family: 'Roundo Extra Light'; src: url('/fonts/Roundo-ExtraLight.otf') format('opentype'); }
+        body, html, * { cursor: crosshair !important; margin: 0; padding: 0; -webkit-font-smoothing: antialiased; }
         ::-webkit-scrollbar { display: none; }
       `}</style>
 
-      {/* NAVEGACIÓN PRINCIPAL */}
-      <nav>
+      {/* CURSOR DINÁMICO (TÍTULO AZUL + TEXTO NEGRO) */}
+      <AnimatePresence>
+        {hoverData.active && (
+          <motion.div
+            initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0 }}
+            style={{
+              position: "fixed", x: mouseX, y: mouseY,
+              marginLeft: "20px", marginTop: "20px",
+              zIndex: 9999, pointerEvents: "none",
+              display: "flex", flexDirection: "column"
+            }}
+          >
+            <span style={{ fontFamily: fontTitle, fontSize: "2.5rem", color: kleinBlue, textTransform: "lowercase", lineHeight: "0.9" }}>
+              {hoverData.title}
+            </span>
+            <span style={{ fontFamily: fontBody, fontSize: "0.9rem", color: "#000", textTransform: "lowercase", marginTop: "5px" }}>
+              {hoverData.text}
+            </span>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* NAVEGACIÓN GLOBAL */}
+      <nav style={{ zIndex: 1001, position: "relative" }}>
         {view === "home" ? (
-          <AnimatePresence>
-            <motion.h1 
-              onClick={() => {setView("home"); setSelectedProject(null);}} 
-              initial={{ opacity: 0 }} animate={{ opacity: 1 }}
-              style={{ position: "fixed", top: "5vh", width: "100%", textAlign: "center", textDecoration: "line-through", zIndex: 1000, fontFamily: fontTitle, color: kleinBlue, fontSize: "1.1rem", textTransform: "lowercase", letterSpacing: "2px" }}>giulia</motion.h1>
-            
-            <motion.div 
-              onClick={() => {setView("projects"); setSelectedProject(null);}} 
-              initial={{ opacity: 0 }} animate={{ opacity: 1 }}
-              style={{ position: "fixed", bottom: "5vh", width: "100%", textAlign: "center", zIndex: 1000, fontFamily: fontTitle, color: kleinBlue, fontSize: "1.1rem", textTransform: "lowercase", letterSpacing: "2px" }}>projects</motion.div>
-            
-            <motion.div 
-              onClick={() => {setView("about"); setSelectedProject(null);}} 
-              initial={{ opacity: 0 }} animate={{ opacity: 1 }}
-              style={{ position: "fixed", right: "8vw", top: "40%", transform: "translateY(-50%)", zIndex: 1000, fontFamily: fontTitle, color: kleinBlue, fontSize: "1.1rem", textTransform: "lowercase", letterSpacing: "2px" }}>about</motion.div>
-          </AnimatePresence>
-        ) : (
-          /* Navegación interna (Roundo Negro) */
           <>
-            <div onClick={() => {setView("home"); setSelectedProject(null);}} style={{ position: "fixed", top: "4vh", left: "4vw", zIndex: 1000, fontFamily: fontBody, fontSize: "0.8rem", textTransform: "lowercase", textDecoration: view === "home" ? "line-through" : "none" }}>giulia</div>
-            <div onClick={() => {setView("projects"); setSelectedProject(null);}} style={{ position: "fixed", bottom: "4vh", left: "4vw", zIndex: 1000, fontFamily: fontBody, fontSize: "0.8rem", textTransform: "lowercase", textDecoration: view === "projects" ? "line-through" : "none" }}>projects</div>
-            <div onClick={() => {setView("about"); setSelectedProject(null);}} style={{ position: "fixed", bottom: "4vh", right: "4vw", zIndex: 1000, fontFamily: fontBody, fontSize: "0.8rem", textTransform: "lowercase", textDecoration: view === "about" ? "line-through" : "none" }}>about</div>
+            <motion.h1 onClick={() => setView("home")} initial={{ opacity: 0 }} animate={{ opacity: 1 }} style={{ position: "fixed", top: "5vh", width: "100%", textAlign: "center", textDecoration: "line-through", fontFamily: fontTitle, color: kleinBlue, fontSize: "1.1rem", cursor: "pointer" }}>giulia</motion.h1>
+            <div onClick={() => setView("projects")} style={{ position: "fixed", bottom: "5vh", width: "100%", textAlign: "center", fontFamily: fontTitle, color: kleinBlue, fontSize: "1.1rem", cursor: "pointer" }}>projects</div>
+            <div onClick={() => setView("about")} style={{ position: "fixed", right: "8vw", top: "40%", transform: "translateY(-50%)", fontFamily: fontTitle, color: kleinBlue, fontSize: "1.1rem", cursor: "pointer" }}>about</div>
+          </>
+        ) : (
+          <>
+            <div onClick={() => {setView("home"); setHoverData({active: false})}} style={{ position: "fixed", top: "4vh", left: "4vw", fontFamily: fontBody, fontSize: "0.8rem", color: "#000", cursor: "pointer", textDecoration: view === "home" ? "line-through" : "none" }}>giulia</div>
+            <div onClick={() => setView("projects")} style={{ position: "fixed", bottom: "4vh", left: "4vw", fontFamily: fontBody, fontSize: "0.8rem", color: "#000", cursor: "pointer", textDecoration: view === "projects" ? "line-through" : "none" }}>projects</div>
+            <div onClick={() => setView("about")} style={{ position: "fixed", bottom: "4vh", right: "4vw", fontFamily: fontBody, fontSize: "0.8rem", color: "#000", cursor: "pointer", textDecoration: view === "about" ? "line-through" : "none" }}>about</div>
           </>
         )}
       </nav>
 
       <AnimatePresence mode="wait">
+        {/* HOME */}
         {view === "home" && (
-          <motion.div key="home" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} style={{height: "100vh", overflow: "hidden"}}>
+          <motion.div key="home" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
             <ImageTrail images={trailImages} />
           </motion.div>
         )}
 
+        {/* PROJECTS GRID */}
         {view === "projects" && (
           <motion.div key="projects" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} style={{ position: "relative", width: "100vw", height: "100vh" }}>
             {projects.map((proj, index) => (
@@ -134,44 +145,26 @@ export default function Home() {
           </motion.div>
         )}
 
+        {/* DETAIL VIEW */}
         {view === "detail" && selectedProject && (
-          <motion.div key="detail" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} style={{ width: "100vw", position: "relative" }}>
-            
-            {/* INFO TÉCNICA (LINEAL THIN AZUL KLEIN) */}
-            <motion.div 
-              style={{
-                position: "fixed", top: "4vh", right: "4vw", 
-                fontFamily: fontTitle, fontSize: "0.85rem",
-                textTransform: "lowercase", color: kleinBlue,
-                zIndex: 1000, display: "flex", gap: "3rem"
-              }}
-            >
+          <motion.div key="detail" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
+            <div style={{ position: "fixed", top: "4vh", right: "4vw", fontFamily: fontTitle, color: kleinBlue, fontSize: "0.85rem", display: "flex", gap: "3rem", zIndex: 1000 }}>
               <span>{selectedProject.info.date}</span>
               <span>{selectedProject.info.location}</span>
               <span>{selectedProject.info.role}</span>
-            </motion.div>
-
-            <div style={{ display: "flex", flexDirection: "row", minHeight: "200vh", padding: "0 4vw" }}>
+            </div>
+            <div style={{ display: "flex", padding: "0 4vw" }}>
               <div style={{ width: "35vw", height: "100vh", position: "sticky", top: 0, display: "flex", flexDirection: "column", justifyContent: "center" }}>
-                <h1 style={{ fontFamily: fontTitle, fontSize: "5vw", color: kleinBlue, textTransform: "lowercase", lineHeight: "1", marginBottom: "2rem" }}>
-                  {selectedProject.title}
-                </h1>
-                <p style={{ fontFamily: fontBody, fontSize: "1.1rem", color: "#000", maxWidth: "24vw", lineHeight: "1.4" }}>
-                  {selectedProject.desc}
-                </p>
+                <h1 style={{ fontFamily: fontTitle, fontSize: "5vw", color: kleinBlue, lineHeight: "1" }}>{selectedProject.title}</h1>
+                <p style={{ fontFamily: fontBody, fontSize: "1.1rem", maxWidth: "24vw", marginTop: "2rem" }}>{selectedProject.desc}</p>
               </div>
-
               <div style={{ width: "65vw", paddingTop: "25vh", display: "flex", flexDirection: "column", gap: "35vh" }}>
-                {[selectedProject.img, ...selectedProject.gallery].map((img, i) => (
-                  <motion.div key={i} initial={{ opacity: 0, y: 50 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, margin: "-10%" }}
-                    style={{ 
-                      width: (i + 1) % 3 === 0 ? "85vw" : "40vw",
-                      alignSelf: (i % 2 === 0 ? "flex-end" : "flex-start"),
-                      marginLeft: (i + 1) % 3 === 0 ? "-30vw" : "0"
-                    }}
-                  >
+                {selectedProject.gallery.map((item, i) => (
+                  <motion.div key={i} style={{ width: (i + 1) % 3 === 0 ? "85vw" : "40vw", alignSelf: (i % 2 === 0 ? "flex-end" : "flex-start"), marginLeft: (i + 1) % 3 === 0 ? "-30vw" : "0" }}>
                     <motion.img 
-                      src={img} onMouseEnter={() => setIsHovering(true)} onMouseLeave={() => setIsHovering(false)}
+                      src={item.src} 
+                      onMouseEnter={() => setHoverData({ active: true, title: selectedProject.title, text: item.text })}
+                      onMouseLeave={() => setHoverData({ active: false, title: "", text: "" })}
                       style={{ width: "100%", height: (i + 1) % 3 === 0 ? "85vh" : "auto", objectFit: "cover" }} 
                     />
                   </motion.div>
@@ -181,38 +174,18 @@ export default function Home() {
           </motion.div>
         )}
 
+        {/* ABOUT VIEW (EL NUEVO DISEÑO) */}
         {view === "about" && (
-          <motion.div key="about" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} style={{ display: "flex", justifyContent: "center", alignItems: "center", height: "100vh", width: "100vw" }}>
-            <div style={{ maxWidth: "900px", padding: "0 4vw" }}>
-              <h2 style={{ fontFamily: fontTitle, fontSize: "1.1rem", color: kleinBlue, marginBottom: "1.5rem", textTransform: "lowercase", letterSpacing: "2px" }}>bio</h2>
-              <p style={{ fontFamily: fontBody, fontSize: "1.8rem", color: "#000", lineHeight: "1.3", marginBottom: "3rem" }}>
-                giulia es una directora creativa enfocada en la estética de la imperfección y la narrativa visual contemporánea.
-              </p>
-              <div style={{ fontFamily: fontBody, fontSize: "1.1rem", color: "#000", display: "flex", gap: "5rem" }}>
-                <p>giulia@example.com</p>
-                <p>+34 000 000 000</p>
-              </div>
+          <motion.div key="about" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} style={{ width: "100vw", height: "100vh", position: "relative" }}>
+            <div style={{ position: "absolute", top: "4vh", left: "50%", transform: "translateX(-50%)", display: "flex", gap: "4rem", zIndex: 1000 }}>
+              <span style={{ fontFamily: fontTitle, fontSize: "0.8rem", color: kleinBlue }}>giulia@example.com</span>
+              <span style={{ fontFamily: fontTitle, fontSize: "0.8rem", color: kleinBlue }}>+34 000 000 000</span>
             </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
-
-      {/* CURSOR DINÁMICO (LINEAL THIN AZUL) */}
-      <AnimatePresence>
-        {isHovering && view === "detail" && (
-          <motion.div
-            initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-            style={{
-              position: "fixed", x: mouseX, y: mouseY,
-              marginLeft: "25px", marginTop: "25px",
-              zIndex: 9999, pointerEvents: "none",
-              fontFamily: fontTitle,
-              fontSize: "2.5rem",
-              textTransform: "lowercase", 
-              color: kleinBlue
-            }}
-          >
-            {selectedProject?.title}
+            <div style={{ display: "flex", justifyContent: "flex-end", alignItems: "center", height: "100%", paddingRight: "10vw" }}>
+              <p style={{ fontFamily: fontBody, fontSize: "1rem", color: "#000", maxWidth: "30vw", lineHeight: "1.6" }}>
+                giulia es una directora creativa enfocada en la estética de la imperfección y la narrativa visual contemporánea. su trabajo explora el límite entre lo digital y lo orgánico, buscando la belleza en el error y la simplicidad estructural.
+              </p>
+            </div>
           </motion.div>
         )}
       </AnimatePresence>
