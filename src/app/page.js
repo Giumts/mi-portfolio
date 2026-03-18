@@ -17,13 +17,13 @@ export default function Home() {
   });
   
   const [aboutPositions, setAboutPositions] = useState({
-    email: { top: "15vh", left: "10vw", rotate: "5deg" },
-    phone: { bottom: "15vh", right: "10vw", rotate: "-8deg" }
+    email: { top: "25vh", left: "30vw", rotate: "-5deg" },
+    phone: { bottom: "25vh", right: "30vw", rotate: "5deg" }
   });
 
   const [detailInfoPositions, setDetailInfoPositions] = useState({
-    date: { top: "4vh", right: "15vw", rotate: "0deg" },
-    location: { top: "6vh", right: "8vw", rotate: "2deg" },
+    date: { top: "4vh", right: "18vw", rotate: "0deg" },
+    location: { top: "6vh", right: "11vw", rotate: "2deg" },
     role: { top: "4vh", right: "4vw", rotate: "-1deg" }
   });
 
@@ -72,8 +72,8 @@ export default function Home() {
     }
     if (view === "about") {
       setAboutPositions({
-        email: { top: "25vh", left: "30vw", rotate: "-5deg" },
-        phone: { bottom: "25vh", right: "30vw", rotate: "5deg" }
+        email: { top: "25vh", left: "10vw", rotate: "-5deg" },
+        phone: { bottom: "25vh", right: "10vw", rotate: "5deg" }
       });
     }
     if (view === "projects") {
@@ -90,11 +90,11 @@ export default function Home() {
         location: { top: "6vh", right: "11vw", rotate: "2deg" },
         role: { top: "4vh", right: "4vw", rotate: "-1deg" }
       });
-      // AJUSTE: Posiciones más centradas en la columna de 35vw
+      // POSICIONES PROTEGIDAS: Evitan el centro (50vh) para no pisar el título
       setLeftTextPositions([
-        { top: "12vh", left: "12vw", rotate: "-2deg" },
-        { top: "45vh", left: "8vw", rotate: "3deg" },
-        { top: "75vh", left: "14vw", rotate: "-1deg" }
+        { top: "15vh", left: "4vw", rotate: "-3deg" },  // Superior
+        { top: "78vh", left: "12vw", rotate: "4deg" },  // Inferior
+        { top: "40vh", left: "20vw", rotate: "-2deg" }  // Lateral externo
       ]);
     }
   }, [view]);
@@ -110,6 +110,7 @@ export default function Home() {
         ::-webkit-scrollbar { display: none; }
       `}</style>
 
+      {/* NAVEGACIÓN */}
       <nav>
         <AnimatePresence>
           {view === "home" ? (
@@ -128,6 +129,7 @@ export default function Home() {
         </AnimatePresence>
       </nav>
 
+      {/* CURSOR */}
       {view === "detail" && selectedProject && (
         <motion.div style={{ position: "fixed", left: 0, top: 0, x: mouseX, y: mouseY, pointerEvents: "none", zIndex: 9999, padding: "12px", fontFamily: fontTitle, fontSize: "0.6rem", color: kleinBlue, textTransform: "lowercase" }}>
           <AnimatePresence mode="wait">
@@ -180,16 +182,19 @@ export default function Home() {
 
             <div style={{ display: "flex", padding: "0 4vw" }}>
               <div style={{ width: "35vw", height: "100vh", position: "sticky", top: 0 }}>
-                <div style={{ position: "absolute", top: "50%", transform: "translateY(-50%)", zIndex: 5 }}>
+                {/* BLOQUE CENTRAL PROTEGIDO */}
+                <div style={{ position: "absolute", top: "50%", transform: "translateY(-50%)", zIndex: 10, width: "100%" }}>
                   <h1 style={{ fontFamily: fontTitle, fontSize: "4.5vw", color: kleinBlue, lineHeight: "0.8" }}>{selectedProject.title}</h1>
                   <p style={{ fontFamily: fontBody, fontSize: "0.9rem", marginTop: "1rem", maxWidth: "20vw", lineHeight: "1.4", opacity: 0.8 }}>{selectedProject.desc}</p>
                 </div>
+
+                {/* PÁRRAFOS FLOTANTES EN ZONAS BLANCAS */}
                 {selectedProject.extraTexts?.map((text, i) => (
                   <motion.p 
                     key={i} 
-                    animate={{ ...leftTextPositions[i], y: [0, -15, 0] }} 
-                    transition={{ ...leftTextPositions[i], y: { duration: 5, repeat: Infinity, ease: "easeInOut", delay: i * 0.8 } }}
-                    style={{ position: "absolute", fontFamily: fontBody, fontSize: "0.7rem", maxWidth: "16vw", lineHeight: "1.6", opacity: 0.5, pointerEvents: "none" }}
+                    animate={{ ...leftTextPositions[i], y: [0, -20, 0] }} 
+                    transition={{ ...leftTextPositions[i], y: { duration: 6, repeat: Infinity, ease: "easeInOut", delay: i * 1.2 } }}
+                    style={{ position: "absolute", fontFamily: fontBody, fontSize: "0.65rem", maxWidth: "12vw", lineHeight: "1.6", opacity: 0.4, pointerEvents: "none", zIndex: 1 }}
                   >
                     {text}
                   </motion.p>
