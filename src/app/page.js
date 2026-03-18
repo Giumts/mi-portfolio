@@ -47,13 +47,7 @@ export default function Home() {
     { url: "/BEAUTIFUL_FAILURES_AY3.jpg", text: "composición rítmica" },
     { url: "/BEAUTIFUL_FAILURES_AY15.jpg", text: "textura digital" },
     { url: "/BEAUTIFUL_FAILURES_AY37.jpg", text: "proceso abierto" },
-    { url: "/BEAUTIFUL_FAILURES_AY42.jpg", text: "interferencia visual" },
-    { url: "/BEAUTIFUL_FAILURES_AY49.jpg", text: "abstracción macro" },
-    { url: "/BEAUTIFUL_FAILURES_AY51.jpg", text: "luz y ruido digital" },
-    { url: "/BEAUTIFUL_FAILURES_AY59.jpg", text: "fragmentos de diseño" },
-    { url: "/BEAUTIFUL_FAILURES_AY71.jpg", text: "espacio negativo" },
-    { url: "/BEAUTIFUL_FAILURES_AY75.jpg", text: "estática visual" },
-    { url: "/BEAUTIFUL_FAILURES_AY9.jpg", text: "final inacabado" }
+    { url: "/BEAUTIFUL_FAILURES_AY42.jpg", text: "interferencia visual" }
   ];
 
   // Listado completo de los 8 proyectos con textos extra densos
@@ -211,7 +205,7 @@ export default function Home() {
                     key={i} 
                     animate={{ 
                       ...leftTextPositions[i],
-                      y: [0, -10, 0] // Efecto de levitación sutil
+                      y: [0, -15, 0] // Efecto de flotación sutil
                     }} 
                     transition={{ 
                       ...leftTextPositions[i], 
