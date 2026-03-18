@@ -30,7 +30,7 @@ export default function Home() {
   const gallery3 = [
     { url: "/fotos_detalle/bf_1.jpg", text: "fail 01" }, { url: "/fotos_detalle/bf_2.jpg", text: "fail 02" },
     { url: "/fotos_detalle/bf_3.jpg", text: "fail 03" }, { url: "/fotos_detalle/bf_4.jpg", text: "fail 04" },
-    { url: "/fotos_detalle/bf_5.jpg", text: "fail 05" }, { url: "/fotos_detalle/bf_6.jpg", text: "fail 06" },
+    { url: "/fotos_detalle/bf_5.png", text: "fail 05" }, { url: "/fotos_detalle/bf_6.png", text: "fail 06" },
     { url: "/fotos_detalle/bf_7.jpg", text: "fail 07" }, { url: "/fotos_detalle/bf_8.jpg", text: "fail 08" },
   ];
   const gallery4 = [
