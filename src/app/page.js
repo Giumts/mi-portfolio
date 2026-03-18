@@ -10,92 +10,101 @@ export default function Home() {
   const [hoveredIndex, setHoveredIndex] = useState(null); 
   const containerRef = useRef(null);
 
-  const [navPositions, setNavPositions] = useState({
-    giulia: { top: "15vh", left: "40vw", rotate: "-2deg" },
-    projects: { top: "75vh", left: "15vw", rotate: "4deg" },
-    about: { top: "45vh", right: "12vw", rotate: "-3deg" }
-  });
+  // ========================================================
+  // ZONA DE EDICIÓN: 8 FOTOS POR PROYECTO
+  // (Si no quieres una, borra la línea completa del objeto {url...})
+  // ========================================================
   
-  const [aboutPositions, setAboutPositions] = useState({
-    email: { top: "25vh", left: "30vw", rotate: "-5deg" },
-    phone: { bottom: "25vh", right: "30vw", rotate: "5deg" }
-  });
+  const gallery1 = [
+    { url: "/fotos_detalle/24_1.jpg", text: "frame 01" }, { url: "/fotos_detalle/24_2.jpg", text: "frame 02" },
+    { url: "/fotos_detalle/24_3.jpg", text: "frame 03" }, { url: "/fotos_detalle/24_4.jpg", text: "frame 04" },
+    { url: "/fotos_detalle/24_5.jpg", text: "frame 05" }, { url: "/fotos_detalle/24_6.jpg", text: "frame 06" },
+    { url: "/fotos_detalle/24_7.jpg", text: "frame 07" }, { url: "/fotos_detalle/24_8.jpg", text: "frame 08" },
+  ];
+  const gallery2 = [
+    { url: "/fotos_detalle/aria_1.jpg", text: "vuelo 01" }, { url: "/fotos_detalle/aria_2.jpg", text: "vuelo 02" },
+    { url: "/fotos_detalle/aria_3.jpg", text: "vuelo 03" }, { url: "/fotos_detalle/aria_4.jpg", text: "vuelo 04" },
+    { url: "/fotos_detalle/aria_5.jpg", text: "vuelo 05" }, { url: "/fotos_detalle/aria_6.jpg", text: "vuelo 06" },
+    { url: "/fotos_detalle/aria_7.jpg", text: "vuelo 07" }, { url: "/fotos_detalle/aria_8.jpg", text: "vuelo 08" },
+  ];
+  const gallery3 = [
+    { url: "/fotos_detalle/bf_1.jpg", text: "fail 01" }, { url: "/fotos_detalle/bf_2.jpg", text: "fail 02" },
+    { url: "/fotos_detalle/bf_3.jpg", text: "fail 03" }, { url: "/fotos_detalle/bf_4.jpg", text: "fail 04" },
+    { url: "/fotos_detalle/bf_5.jpg", text: "fail 05" }, { url: "/fotos_detalle/bf_6.jpg", text: "fail 06" },
+    { url: "/fotos_detalle/bf_7.jpg", text: "fail 07" }, { url: "/fotos_detalle/bf_8.jpg", text: "fail 08" },
+  ];
+  const gallery4 = [
+    { url: "/fotos_detalle/led_1.jpg", text: "light 01" }, { url: "/fotos_detalle/led_2.jpg", text: "light 02" },
+    { url: "/fotos_detalle/led_3.jpg", text: "light 03" }, { url: "/fotos_detalle/led_4.jpg", text: "light 04" },
+    { url: "/fotos_detalle/led_5.jpg", text: "light 05" }, { url: "/fotos_detalle/led_6.jpg", text: "light 06" },
+    { url: "/fotos_detalle/led_7.jpg", text: "light 07" }, { url: "/fotos_detalle/led_8.jpg", text: "light 08" },
+  ];
+  const gallery5 = [
+    { url: "/fotos_detalle/moria_1.jpg", text: "moria 01" }, { url: "/fotos_detalle/moria_2.jpg", text: "moria 02" },
+    { url: "/fotos_detalle/moria_3.jpg", text: "moria 03" }, { url: "/fotos_detalle/moria_4.jpg", text: "moria 04" },
+    { url: "/fotos_detalle/moria_5.jpg", text: "moria 05" }, { url: "/fotos_detalle/moria_6.jpg", text: "moria 06" },
+    { url: "/fotos_detalle/moria_7.jpg", text: "moria 07" }, { url: "/fotos_detalle/moria_8.jpg", text: "moria 08" },
+  ];
+  const gallery6 = [
+    { url: "/fotos_detalle/rise_1.jpg", text: "rise 01" }, { url: "/fotos_detalle/rise_2.jpg", text: "rise 02" },
+    { url: "/fotos_detalle/rise_3.jpg", text: "rise 03" }, { url: "/fotos_detalle/rise_4.jpg", text: "rise 04" },
+    { url: "/fotos_detalle/rise_5.jpg", text: "rise 05" }, { url: "/fotos_detalle/rise_6.jpg", text: "rise 06" },
+    { url: "/fotos_detalle/rise_7.jpg", text: "rise 07" }, { url: "/fotos_detalle/rise_8.jpg", text: "rise 08" },
+  ];
+  const gallery7 = [
+    { url: "/fotos_detalle/sad_1.jpg", text: "san 01" }, { url: "/fotos_detalle/sad_2.jpg", text: "san 02" },
+    { url: "/fotos_detalle/sad_3.jpg", text: "san 03" }, { url: "/fotos_detalle/sad_4.jpg", text: "san 04" },
+    { url: "/fotos_detalle/sad_5.jpg", text: "san 05" }, { url: "/fotos_detalle/sad_6.jpg", text: "san 06" },
+    { url: "/fotos_detalle/sad_7.jpg", text: "san 07" }, { url: "/fotos_detalle/sad_8.jpg", text: "san 08" },
+  ];
+  const gallery8 = [
+    { url: "/fotos_detalle/vora_1.jpg", text: "vora 01" }, { url: "/fotos_detalle/vora_2.jpg", text: "vora 02" },
+    { url: "/fotos_detalle/vora_3.jpg", text: "vora 03" }, { url: "/fotos_detalle/vora_4.jpg", text: "vora 04" },
+    { url: "/fotos_detalle/vora_5.jpg", text: "vora 05" }, { url: "/fotos_detalle/vora_6.jpg", text: "vora 06" },
+    { url: "/fotos_detalle/vora_7.jpg", text: "vora 07" }, { url: "/fotos_detalle/vora_8.jpg", text: "vora 08" },
+  ];
 
-  const [detailInfoPositions, setDetailInfoPositions] = useState({
-    date: { top: "4vh", right: "18vw", rotate: "0deg" },
-    location: { top: "6vh", right: "11vw", rotate: "2deg" },
-    role: { top: "4vh", right: "4vw", rotate: "-1deg" }
-  });
+  // ========================================================
+  // CONFIGURACIÓN PROYECTOS (ESTO NO CAMBIA)
+  // ========================================================
+  const projects = [
+    { id: 1, title: "24 seconds", img: "/fotos_portadas/Portada_24 seconds.jpg", gallery: gallery1, desc: "una búsqueda de la armonía en el error digital.", info: { date: "2024", location: "barcelona", role: "creative direction" }, extraTexts: ["la fragmentación del tiempo se convierte en una herramienta de diseño.", "exploramos cómo el código puede fallar de manera estética.", "simbiosis entre la máquina y el instinto visual."] },
+    { id: 2, title: "aria libera", img: "/fotos_portadas/Portada_Aria libera.jpg", gallery: gallery2, desc: "la imperfección como lenguaje visual predominante.", info: { date: "2023", location: "milan", role: "art direction" }, extraTexts: ["espacios que respiran a través de la asimetría.", "una oda a la belleza de lo efímero.", "geometrías que se rompen para equilibrar."] },
+    { id: 3, title: "beautiful failures", img: "/fotos_portadas/Portada_Beautiful failures.jpg", gallery: gallery3, desc: "exploración rítmica del espacio en blanco.", info: { date: "2024", location: "madrid", role: "visual design" }, extraTexts: ["el lienzo como campo de fuerza.", "ritmos visuales que nacen del fallo.", "investigación sobre la anomalía estética."] },
+    { id: 4, title: "ledsc4", img: "/fotos_portadas/Portada_Ledsc4.jpg", gallery: gallery4, desc: "el contraste extremo define la forma.", info: { date: "2022", location: "london", role: "creative lead" }, extraTexts: ["la luz y la sombra esculpen la identidad.", "estudio sobre la legibilidad extrema.", "reducción de la forma a su esencia."] },
+    { id: 5, title: "now you see me moria", img: "/fotos_portadas/Portada_Now you see me moria.jpg", gallery: gallery5, desc: "abstracción aplicada al diseño contemporáneo.", info: { date: "2023", location: "berlin", role: "photography" }, extraTexts: ["capturando la realidad tras un filtro.", "la fotografía descompone el entorno.", "buscar lo invisible en lo cotidiano."] },
+    { id: 6, title: "rise up", img: "/fotos_portadas/Portada_rise up.JPG", gallery: gallery6, desc: "fragmentos de un proceso inacabado.", info: { date: "2024", location: "paris", role: "concept" }, extraTexts: ["la belleza de la evolución constante.", "transformación formal y ascendencia.", "texturas que narran su propia creación."] },
+    { id: 7, title: "san sadurnì", img: "/fotos_portadas/Portada_San sadurni.jpg", gallery: gallery7, desc: "capturando la esencia del movimiento estático.", info: { date: "2023", location: "barcelona", role: "production" }, extraTexts: ["tensión visual entre lo quieto y lo dinámico.", "el movimiento congelado en patrones.", "diálogo entre cinemática e imagen fija."] },
+    { id: 8, title: "vora", img: "/fotos_portadas/Portada_vora.jpg", gallery: gallery8, desc: "reducción visual al mínimo exponente.", info: { date: "2024", location: "remote", role: "ui design" }, extraTexts: ["interfaz como espacio de máxima claridad.", "eliminación de lo superfluo.", "eficiencia visual con el mínimo elemento."] }
+  ];
 
+  // Resto de lógica (Home Trail, Estados, Mouse, Nav...)
+  const trailImages = ["/BEAUTIFUL_FAILURES_AY1.jpg", "/BEAUTIFUL_FAILURES_AY3.jpg", "/BEAUTIFUL_FAILURES_AY15.jpg", "/BEAUTIFUL_FAILURES_AY37.jpg", "/BEAUTIFUL_FAILURES_AY42.jpg"];
+  const [navPositions, setNavPositions] = useState({ giulia: { top: "15vh", left: "40vw", rotate: "-2deg" }, projects: { top: "75vh", left: "15vw", rotate: "4deg" }, about: { top: "45vh", right: "12vw", rotate: "-3deg" } });
+  const [aboutPositions, setAboutPositions] = useState({ email: { top: "25vh", left: "15vw", rotate: "-5deg" }, phone: { bottom: "25vh", right: "15vw", rotate: "5deg" } });
+  const [detailInfoPositions, setDetailInfoPositions] = useState({ date: { top: "4vh", right: "18vw", rotate: "0deg" }, location: { top: "6vh", right: "11vw", rotate: "2deg" }, role: { top: "4vh", right: "4vw", rotate: "-1deg" } });
   const [leftTextPositions, setLeftTextPositions] = useState([]);
   const [selectedProject, setSelectedProject] = useState(null);
-
   const springConfig = { stiffness: 250, damping: 30 };
-  const mouseX = useSpring(0, springConfig);
-  const mouseY = useSpring(0, springConfig);
-
-  const kleinBlue = "#002FA7";
-  const fontTitle = "'Monor', monospace";
-  const fontBody = "'Roundo', sans-serif";
-
-  const trailImages = [
-    { url: "/BEAUTIFUL_FAILURES_AY1.jpg", text: "error de sistema" },
-    { url: "/BEAUTIFUL_FAILURES_AY3.jpg", text: "composición rítmica" },
-    { url: "/BEAUTIFUL_FAILURES_AY15.jpg", text: "textura digital" },
-    { url: "/BEAUTIFUL_FAILURES_AY37.jpg", text: "proceso abierto" },
-    { url: "/BEAUTIFUL_FAILURES_AY42.jpg", text: "interferencia visual" }
-  ];
-
-  const projects = [
-    { id: 1, title: "24 seconds", img: "/fotos_portadas/Portada_24 seconds.jpg", desc: "una búsqueda de la armonía en el error digital.", info: { date: "2024", location: "barcelona", role: "creative direction" }, gallery: trailImages, extraTexts: ["la fragmentación del tiempo se convierte en una herramienta de diseño, donde cada segundo cuenta una historia de distorsión formal.", "exploramos cómo el código puede fallar de manera estética, creando patrones que el ojo humano no podría concebir por sí solo.", "el resultado es una simbiosis entre la máquina y el instinto visual, un archivo de lo que sucede cuando dejas de buscar la perfección."] },
-    { id: 2, title: "aria libera", img: "/fotos_portadas/Portada_Aria libera.jpg", desc: "la imperfección como lenguaje visual predominante.", info: { date: "2023", location: "milan", role: "art direction" }, gallery: trailImages, extraTexts: ["espacios que respiran a través de la asimetría y el vacío visual, creando tensiones entre lo que está y lo que falta.", "una oda a la belleza de lo efímero y lo incompleto en la era digital, buscando la honestidad en cada pixel.", "geometrías que se rompen para encontrar una nueva forma de equilibrio, desafiando la limpieza convencional."] },
-    { id: 3, title: "beautiful failures", img: "/fotos_portadas/Portada_Beautiful failures.jpg", desc: "exploración rítmica del espacio en blanco.", info: { date: "2024", location: "madrid", role: "visual design" }, gallery: trailImages, extraTexts: ["el lienzo no es un vacío, sino un campo de fuerza donde el error encuentra su lugar y su propósito.", "ritmos visuales que nacen de la repetición del fallo y la sutil variación de la anomalía digital.", "investigación sobre cómo la anomalía digital genera nuevas estéticas de diseño, rompiendo la cuadrícula establecida."] },
-    { id: 4, title: "ledsc4", img: "/fotos_portadas/Portada_Ledsc4.jpg", desc: "el contraste extremo define la forma.", info: { date: "2022", location: "london", role: "creative lead" }, gallery: trailImages, extraTexts: ["la luz y la sombra llevadas al límite para esculpir la identidad visual, creando formas que emergen de la oscuridad.", "un estudio sobre la legibilidad extrema y la abstracción en entornos de alto contraste y mínimo detalle.", "reducción de la forma a su esencia lumínica y matérica pura, eliminando todo lo superfluo de la interfaz."] },
-    { id: 5, title: "now you see me moria", img: "/fotos_portadas/Portada_Now you see me moria.jpg", desc: "abstracción aplicada al diseño contemporáneo.", info: { date: "2023", location: "berlin", role: "photography" }, gallery: trailImages, extraTexts: ["capturando la realidad tras un filtro geométrico que deconstruye la imagen, creando una nueva sintaxis visual.", "la fotografía descompone y reensambla el entorno urbano en patrones abstractos que desafían la percepción.", "una mirada que busca lo invisible en lo cotidiano, revelando la estructura subyacente del mundo visual."] },
-    { id: 6, title: "rise up", img: "/fotos_portadas/Portada_rise up.JPG", desc: "fragmentos de un proceso inacabado.", info: { date: "2024", location: "paris", role: "concept" }, gallery: trailImages, extraTexts: ["la belleza de la evolución constante, capturada en un estado de 'work in progress' que nunca se detiene.", "exploración conceptual sobre la transformación formal y la ascendencia visual de los elementos de diseño.", "texturas visuales que narran la historia de su propia creación y error, un archivo de lo inacabado."] },
-    { id: 7, title: "san sadurnì", img: "/fotos_portadas/Portada_San sadurni.jpg", desc: "capturando la esencia del movimiento estático.", info: { date: "2023", location: "barcelona", role: "production" }, gallery: trailImages, extraTexts: ["tensión visual entre lo quieto y lo dinámico, capturando la energía latente en la imagen fija.", "el movimiento congelado en patrones ocultos que desafían la percepción del tiempo y el espacio.", "una producción visual que explora la cinemática a través de la imagen fija, creando un diálogo entre ambas."] },
-    { id: 8, title: "vora", img: "/fotos_portadas/Portada_vora.jpg", desc: "reducción visual al mínimo exponente.", info: { date: "2024", location: "remote", role: "ui design" }, gallery: trailImages, extraTexts: ["la interfaz como espacio de máxima claridad visual y orden, donde la función define la forma.", "eliminación de lo superfluo para centrar la atención en la interacción y el contenido.", "estética de diseño que busca la máxima eficiencia visual con el mínimo elemento, un minimalismo radical."] }
-  ];
+  const mouseX = useSpring(0, springConfig); const mouseY = useSpring(0, springConfig);
+  const kleinBlue = "#002FA7"; const fontTitle = "'Monor', monospace"; const fontBody = "'Roundo', sans-serif";
 
   useEffect(() => {
-    const handleMouseMove = (e) => {
-      mouseX.set(e.clientX);
-      mouseY.set(e.clientY);
-    };
+    const handleMouseMove = (e) => { mouseX.set(e.clientX); mouseY.set(e.clientY); };
     window.addEventListener("mousemove", handleMouseMove);
     return () => window.removeEventListener("mousemove", handleMouseMove);
   }, [mouseX, mouseY]);
 
   useEffect(() => {
-    if (view === "home") {
-      setNavPositions({ giulia: { top: "15vh", left: "40vw", rotate: "-2deg" }, projects: { top: "75vh", left: "15vw", rotate: "4deg" }, about: { top: "45vh", right: "12vw", rotate: "-3deg" } });
-    }
-    if (view === "about") {
-      setAboutPositions({
-        email: { top: "25vh", left: "10vw", rotate: "-5deg" },
-        phone: { bottom: "25vh", right: "10vw", rotate: "5deg" }
-      });
-    }
+    if (view === "home") setNavPositions({ giulia: { top: "15vh", left: "40vw", rotate: "-2deg" }, projects: { top: "75vh", left: "15vw", rotate: "4deg" }, about: { top: "45vh", right: "12vw", rotate: "-3deg" } });
+    if (view === "about") setAboutPositions({ email: { top: "25vh", left: "15vw", rotate: "-5deg" }, phone: { bottom: "25vh", right: "15vw", rotate: "5deg" } });
     if (view === "projects") {
-      const positions = projects.map(() => ({
-        top: Math.floor(Math.random() * 60 + 15) + "vh",
-        left: Math.floor(Math.random() * 70 + 10) + "vw",
-        rotation: (Math.random() * 10 - 5) + "deg",
-      }));
+      const positions = projects.map(() => ({ top: Math.floor(Math.random() * 60 + 15) + "vh", left: Math.floor(Math.random() * 70 + 10) + "vw", rotation: (Math.random() * 10 - 5) + "deg" }));
       setProjectPositions(positions);
     }
     if (view === "detail") {
-      setDetailInfoPositions({
-        date: { top: "4vh", right: "18vw", rotate: "0deg" },
-        location: { top: "6vh", right: "11vw", rotate: "2deg" },
-        role: { top: "4vh", right: "4vw", rotate: "-1deg" }
-      });
-      // POSICIONES PROTEGIDAS: Evitan el centro (50vh) para no pisar el título
-      setLeftTextPositions([
-        { top: "15vh", left: "4vw", rotate: "-3deg" },  // Superior
-        { top: "78vh", left: "12vw", rotate: "4deg" },  // Inferior
-        { top: "40vh", left: "20vw", rotate: "-2deg" }  // Lateral externo
-      ]);
+      setDetailInfoPositions({ date: { top: "4vh", right: "18vw", rotate: "0deg" }, location: { top: "6vh", right: "11vw", rotate: "2deg" }, role: { top: "4vh", right: "4vw", rotate: "-1deg" } });
+      setLeftTextPositions([{ top: "15vh", left: "4vw", rotate: "-3deg" }, { top: "78vh", left: "12vw", rotate: "4deg" }, { top: "40vh", left: "20vw", rotate: "-2deg" }]);
     }
   }, [view]);
 
@@ -110,7 +119,7 @@ export default function Home() {
         ::-webkit-scrollbar { display: none; }
       `}</style>
 
-      {/* NAVEGACIÓN */}
+      {/* NAV & CURSOR */}
       <nav>
         <AnimatePresence>
           {view === "home" ? (
@@ -129,7 +138,6 @@ export default function Home() {
         </AnimatePresence>
       </nav>
 
-      {/* CURSOR */}
       {view === "detail" && selectedProject && (
         <motion.div style={{ position: "fixed", left: 0, top: 0, x: mouseX, y: mouseY, pointerEvents: "none", zIndex: 9999, padding: "12px", fontFamily: fontTitle, fontSize: "0.6rem", color: kleinBlue, textTransform: "lowercase" }}>
           <AnimatePresence mode="wait">
@@ -141,11 +149,7 @@ export default function Home() {
       )}
 
       <AnimatePresence mode="wait">
-        {view === "home" && (
-          <motion.div key="home" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} style={{height: "100vh"}}>
-            <ImageTrail images={trailImages.map(img => img.url)} />
-          </motion.div>
-        )}
+        {view === "home" && <motion.div key="home" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} style={{height: "100vh"}}><ImageTrail images={trailImages} /></motion.div>}
 
         {view === "projects" && (
           <motion.div key="projects" ref={containerRef} initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} style={{ position: "relative", width: "100vw", height: "100vh", overflow: "hidden" }}>
@@ -173,34 +177,16 @@ export default function Home() {
         {view === "detail" && selectedProject && (
           <motion.div key="detail" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} style={{ backgroundColor: "white", minHeight: "100vh" }}>
             <Crosshair color={kleinBlue} />
-            
-            <div style={{ position: "fixed", width: "100vw", height: "15vh", top: 0, left: 0, zIndex: 1000, pointerEvents: "none" }}>
-              <motion.div animate={{ ...detailInfoPositions.date }} style={{ position: "absolute", fontFamily: fontTitle, fontSize: "0.7rem" }}> <span style={{ opacity: 0.4 }}>year </span>{selectedProject.info.date} </motion.div>
-              <motion.div animate={{ ...detailInfoPositions.location }} style={{ position: "absolute", fontFamily: fontTitle, fontSize: "0.7rem" }}> <span style={{ opacity: 0.4 }}>loc </span>{selectedProject.info.location} </motion.div>
-              <motion.div animate={{ ...detailInfoPositions.role }} style={{ position: "absolute", fontFamily: fontTitle, fontSize: "0.7rem" }}> <span style={{ opacity: 0.4 }}>role </span>{selectedProject.info.role} </motion.div>
-            </div>
-
             <div style={{ display: "flex", padding: "0 4vw" }}>
               <div style={{ width: "35vw", height: "100vh", position: "sticky", top: 0 }}>
-                {/* BLOQUE CENTRAL PROTEGIDO */}
                 <div style={{ position: "absolute", top: "50%", transform: "translateY(-50%)", zIndex: 10, width: "100%" }}>
                   <h1 style={{ fontFamily: fontTitle, fontSize: "4.5vw", color: kleinBlue, lineHeight: "0.8" }}>{selectedProject.title}</h1>
                   <p style={{ fontFamily: fontBody, fontSize: "0.9rem", marginTop: "1rem", maxWidth: "20vw", lineHeight: "1.4", opacity: 0.8 }}>{selectedProject.desc}</p>
                 </div>
-
-                {/* PÁRRAFOS FLOTANTES EN ZONAS BLANCAS */}
                 {selectedProject.extraTexts?.map((text, i) => (
-                  <motion.p 
-                    key={i} 
-                    animate={{ ...leftTextPositions[i], y: [0, -20, 0] }} 
-                    transition={{ ...leftTextPositions[i], y: { duration: 6, repeat: Infinity, ease: "easeInOut", delay: i * 1.2 } }}
-                    style={{ position: "absolute", fontFamily: fontBody, fontSize: "0.65rem", maxWidth: "12vw", lineHeight: "1.6", opacity: 0.4, pointerEvents: "none", zIndex: 1 }}
-                  >
-                    {text}
-                  </motion.p>
+                  <motion.p key={i} animate={{ ...leftTextPositions[i], y: [0, -20, 0] }} transition={{ ...leftTextPositions[i], y: { duration: 6, repeat: Infinity, ease: "easeInOut", delay: i * 1.2 } }} style={{ position: "absolute", fontFamily: fontBody, fontSize: "0.65rem", maxWidth: "12vw", lineHeight: "1.6", opacity: 0.4, pointerEvents: "none", zIndex: 1 }}>{text}</motion.p>
                 ))}
               </div>
-
               <div style={{ width: "65vw", paddingTop: "25vh", paddingBottom: "25vh", display: "flex", flexDirection: "column", gap: "30vh" }}>
                 {selectedProject.gallery.map((item, i) => (
                   <motion.div key={i} onMouseEnter={() => setHoveredIndex(i)} onMouseLeave={() => setHoveredIndex(null)} initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.8 }} style={{ width: (i + 1) % 3 === 0 ? "100%" : "70%", alignSelf: i % 2 === 0 ? "flex-end" : "flex-start" }}>
