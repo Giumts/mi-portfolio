@@ -10,7 +10,6 @@ export default function Home() {
   const [hoveredIndex, setHoveredIndex] = useState(null); 
   const containerRef = useRef(null);
 
-  // Estados de posiciones para elementos dinámicos
   const [navPositions, setNavPositions] = useState({
     giulia: { top: "15vh", left: "40vw", rotate: "-2deg" },
     projects: { top: "75vh", left: "15vw", rotate: "4deg" },
@@ -28,9 +27,7 @@ export default function Home() {
     role: { top: "4vh", right: "4vw", rotate: "-1deg" }
   });
 
-  // NUEVO: Estado para las posiciones aleatorias de los 3 párrafos de la izquierda
   const [leftTextPositions, setLeftTextPositions] = useState([]);
-
   const [selectedProject, setSelectedProject] = useState(null);
 
   const springConfig = { stiffness: 250, damping: 30 };
@@ -41,7 +38,6 @@ export default function Home() {
   const fontTitle = "'Monor', monospace";
   const fontBody = "'Roundo', sans-serif";
 
-  // Galería base para ImageTrail y Galerías de proyecto
   const trailImages = [
     { url: "/BEAUTIFUL_FAILURES_AY1.jpg", text: "error de sistema" },
     { url: "/BEAUTIFUL_FAILURES_AY3.jpg", text: "composición rítmica" },
@@ -50,7 +46,6 @@ export default function Home() {
     { url: "/BEAUTIFUL_FAILURES_AY42.jpg", text: "interferencia visual" }
   ];
 
-  // Listado completo de los 8 proyectos con textos extra densos
   const projects = [
     { id: 1, title: "24 seconds", img: "/fotos_portadas/Portada_24 seconds.jpg", desc: "una búsqueda de la armonía en el error digital.", info: { date: "2024", location: "barcelona", role: "creative direction" }, gallery: trailImages, extraTexts: ["la fragmentación del tiempo se convierte en una herramienta de diseño, donde cada segundo cuenta una historia de distorsión formal.", "exploramos cómo el código puede fallar de manera estética, creando patrones que el ojo humano no podría concebir por sí solo.", "el resultado es una simbiosis entre la máquina y el instinto visual, un archivo de lo que sucede cuando dejas de buscar la perfección."] },
     { id: 2, title: "aria libera", img: "/fotos_portadas/Portada_Aria libera.jpg", desc: "la imperfección como lenguaje visual predominante.", info: { date: "2023", location: "milan", role: "art direction" }, gallery: trailImages, extraTexts: ["espacios que respiran a través de la asimetría y el vacío visual, creando tensiones entre lo que está y lo que falta.", "una oda a la belleza de lo efímero y lo incompleto en la era digital, buscando la honestidad en cada pixel.", "geometrías que se rompen para encontrar una nueva forma de equilibrio, desafiando la limpieza convencional."] },
@@ -77,8 +72,8 @@ export default function Home() {
     }
     if (view === "about") {
       setAboutPositions({
-        email: { top: Math.floor(Math.random() * 20 + 10) + "vh", left: Math.floor(Math.random() * 50 + 5) + "vw", rotate: (Math.random() * 20 - 10) + "deg" },
-        phone: { bottom: Math.floor(Math.random() * 20 + 10) + "vh", right: Math.floor(Math.random() * 50 + 5) + "vw", rotate: (Math.random() * 20 - 10) + "deg" }
+        email: { top: "25vh", left: "30vw", rotate: "-5deg" },
+        phone: { bottom: "25vh", right: "30vw", rotate: "5deg" }
       });
     }
     if (view === "projects") {
@@ -90,26 +85,21 @@ export default function Home() {
       setProjectPositions(positions);
     }
     if (view === "detail") {
-      // Info superior derecha
       setDetailInfoPositions({
-        date: { top: Math.floor(Math.random() * 4 + 2) + "vh", right: "18vw", rotate: (Math.random() * 6 - 3) + "deg" },
-        location: { top: Math.floor(Math.random() * 4 + 2) + "vh", right: "11vw", rotate: (Math.random() * 6 - 3) + "deg" },
-        role: { top: Math.floor(Math.random() * 4 + 2) + "vh", right: "4vw", rotate: (Math.random() * 6 - 3) + "deg" }
+        date: { top: "4vh", right: "18vw", rotate: "0deg" },
+        location: { top: "6vh", right: "11vw", rotate: "2deg" },
+        role: { top: "4vh", right: "4vw", rotate: "-1deg" }
       });
-      // NUEVO: Generar posiciones random para los 3 párrafos de la izquierda
+      // AJUSTE: Posiciones más centradas en la columna de 35vw
       setLeftTextPositions([
-        { top: Math.floor(Math.random() * 10 + 10) + "vh", left: Math.floor(Math.random() * 5 + 3) + "vw", rotate: (Math.random() * 10 - 5) + "deg" },
-        { top: Math.floor(Math.random() * 10 + 40) + "vh", left: Math.floor(Math.random() * 6 + 4) + "vw", rotate: (Math.random() * 10 - 5) + "deg" },
-        { top: Math.floor(Math.random() * 10 + 70) + "vh", left: Math.floor(Math.random() * 5 + 3) + "vw", rotate: (Math.random() * 10 - 5) + "deg" }
+        { top: "12vh", left: "12vw", rotate: "-2deg" },
+        { top: "45vh", left: "8vw", rotate: "3deg" },
+        { top: "75vh", left: "14vw", rotate: "-1deg" }
       ]);
     }
   }, [view]);
 
-  const openProject = (proj) => {
-    setSelectedProject(proj);
-    setView("detail");
-    window.scrollTo({ top: 0, behavior: 'instant' });
-  };
+  const openProject = (proj) => { setSelectedProject(proj); setView("detail"); window.scrollTo({ top: 0, behavior: 'instant' }); };
 
   return (
     <main style={{ backgroundColor: "white", minHeight: "100vh", width: "100vw", position: "relative", overflowX: "hidden" }}>
@@ -120,7 +110,6 @@ export default function Home() {
         ::-webkit-scrollbar { display: none; }
       `}</style>
 
-      {/* NAVEGACIÓN GLOBAL */}
       <nav>
         <AnimatePresence>
           {view === "home" ? (
@@ -139,7 +128,6 @@ export default function Home() {
         </AnimatePresence>
       </nav>
 
-      {/* CURSOR DINÁMICO */}
       {view === "detail" && selectedProject && (
         <motion.div style={{ position: "fixed", left: 0, top: 0, x: mouseX, y: mouseY, pointerEvents: "none", zIndex: 9999, padding: "12px", fontFamily: fontTitle, fontSize: "0.6rem", color: kleinBlue, textTransform: "lowercase" }}>
           <AnimatePresence mode="wait">
@@ -151,14 +139,12 @@ export default function Home() {
       )}
 
       <AnimatePresence mode="wait">
-        {/* VIEW: HOME */}
         {view === "home" && (
           <motion.div key="home" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} style={{height: "100vh"}}>
             <ImageTrail images={trailImages.map(img => img.url)} />
           </motion.div>
         )}
 
-        {/* VIEW: PROJECTS */}
         {view === "projects" && (
           <motion.div key="projects" ref={containerRef} initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} style={{ position: "relative", width: "100vw", height: "100vh", overflow: "hidden" }}>
             <Crosshair containerRef={containerRef} color={kleinBlue} />
@@ -171,7 +157,6 @@ export default function Home() {
           </motion.div>
         )}
 
-        {/* VIEW: ABOUT */}
         {view === "about" && (
           <motion.div key="about" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} style={{ width: "100vw", height: "100vh", position: "relative" }}>
             <Crosshair color="#000" />
@@ -183,10 +168,10 @@ export default function Home() {
           </motion.div>
         )}
 
-        {/* VIEW: DETAIL */}
         {view === "detail" && selectedProject && (
           <motion.div key="detail" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} style={{ backgroundColor: "white", minHeight: "100vh" }}>
             <Crosshair color={kleinBlue} />
+            
             <div style={{ position: "fixed", width: "100vw", height: "15vh", top: 0, left: 0, zIndex: 1000, pointerEvents: "none" }}>
               <motion.div animate={{ ...detailInfoPositions.date }} style={{ position: "absolute", fontFamily: fontTitle, fontSize: "0.7rem" }}> <span style={{ opacity: 0.4 }}>year </span>{selectedProject.info.date} </motion.div>
               <motion.div animate={{ ...detailInfoPositions.location }} style={{ position: "absolute", fontFamily: fontTitle, fontSize: "0.7rem" }}> <span style={{ opacity: 0.4 }}>loc </span>{selectedProject.info.location} </motion.div>
@@ -199,19 +184,12 @@ export default function Home() {
                   <h1 style={{ fontFamily: fontTitle, fontSize: "4.5vw", color: kleinBlue, lineHeight: "0.8" }}>{selectedProject.title}</h1>
                   <p style={{ fontFamily: fontBody, fontSize: "0.9rem", marginTop: "1rem", maxWidth: "20vw", lineHeight: "1.4", opacity: 0.8 }}>{selectedProject.desc}</p>
                 </div>
-                {/* LOS 3 PÁRRAFOS DENSOS, ALEATORIOS Y FLOTANTES */}
                 {selectedProject.extraTexts?.map((text, i) => (
                   <motion.p 
                     key={i} 
-                    animate={{ 
-                      ...leftTextPositions[i],
-                      y: [0, -15, 0] // Efecto de flotación sutil
-                    }} 
-                    transition={{ 
-                      ...leftTextPositions[i], 
-                      y: { duration: 4, repeat: Infinity, ease: "easeInOut", delay: i * 0.5 } 
-                    }}
-                    style={{ position: "absolute", fontFamily: fontBody, fontSize: "0.7rem", maxWidth: "15vw", lineHeight: "1.6", opacity: 0.5, pointerEvents: "none" }}
+                    animate={{ ...leftTextPositions[i], y: [0, -15, 0] }} 
+                    transition={{ ...leftTextPositions[i], y: { duration: 5, repeat: Infinity, ease: "easeInOut", delay: i * 0.8 } }}
+                    style={{ position: "absolute", fontFamily: fontBody, fontSize: "0.7rem", maxWidth: "16vw", lineHeight: "1.6", opacity: 0.5, pointerEvents: "none" }}
                   >
                     {text}
                   </motion.p>
