@@ -1,26 +1,31 @@
-@import "tailwindcss";
-
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
-}
-
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  margin: 0;
+  padding: 0;
+  background-color: white; /* Esto asegura el fondo blanco */
+}
+/* Estilos para el contenedor y el tooltip */
+.contenedor-imagen {
+  position: relative;
+  display: inline-block;
+}
+
+.tooltip-columna {
+  position: fixed; /* Para que siga al ratón con precisión */
+  display: none;   /* Se activa con el JS */
+  flex-direction: column; /* ¡Aquí se hace la columna! */
+  gap: 4px;
+  background-color: rgba(0, 0, 0, 0.85);
+  color: white;
+  padding: 10px;
+  border-radius: 6px;
+  pointer-events: none;
+  z-index: 9999;
+  font-size: 14px;
+  min-width: 120px;
+}
+
+.tooltip-columna span {
+  display: block; /* Asegura que cada texto ocupe su propia línea */
+  border-bottom: 1px solid #444;
+  padding: 2px 0;
 }
