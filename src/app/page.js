@@ -9,11 +9,9 @@ export default function Home() {
   const [projectPositions, setProjectPositions] = useState([]);
   const [hoveredIndex, setHoveredIndex] = useState(null); 
   const [detailInfoPositions, setDetailInfoPositions] = useState({});
+  const [cursorColor, setCursorColor] = useState("#000000");
   const containerRef = useRef(null);
 
-  // ========================================================
-  // GALERÍAS
-  // ========================================================
   const gallery1 = [
     { url: "/fotos_detalle/24_1.jpg", text: "frame 01" }, { url: "/fotos_detalle/24_2.jpg", text: "frame 02" },
     { url: "/fotos_detalle/24_3.mp4", text: "frame 03" }, { url: "/fotos_detalle/24_4.jpg", text: "frame 04" },
@@ -69,9 +67,6 @@ export default function Home() {
     { url: "/fotos_detalle/vora_7.jpg", text: "vora 07" }, { url: "/fotos_detalle/vora_8.jpg", text: "vora 08" },
   ];
 
-  // ========================================================
-  // PROYECTOS
-  // ========================================================
   const projects = [
     { id: 1, title: "24 seconds", img: "/fotos_portadas/Portada_24 seconds.jpg", gallery: gallery1, desc: "una búsqueda de la armonía en el error digital.", info: { date: "2024", location: "barcelona", role: "creative direction" }, extraTexts: ["la fragmentación del tiempo se convierte en una herramienta de diseño.", "exploramos cómo el código puede fallar de manera estética.", "simbiosis entre la máquina y el instinto visual."] },
     { id: 2, title: "aria libera", img: "/fotos_portadas/Portada_Aria libera.jpg", gallery: gallery2, desc: "la imperfección como lenguaje visual predominante.", info: { date: "2023", location: "milan", role: "art direction" }, extraTexts: ["espacios que respiran a través de la asimetría.", "una oda a la belleza de lo efímero.", "geometrías que se rompen para equilibrar."] },
@@ -117,6 +112,26 @@ export default function Home() {
 
   const openProject = (proj) => { setSelectedProject(proj); setView("detail"); window.scrollTo({ top: 0, behavior: 'instant' }); };
 
+  // ── NUEVO: analiza el brillo de la imagen bajo el cursor ──────────────────
+  const getImageBrightness = (imgElement) => {
+    const canvas = document.createElement("canvas");
+    const ctx = canvas.getContext("2d");
+    canvas.width = 50;
+    canvas.height = 50;
+    try {
+      ctx.drawImage(imgElement, 0, 0, 50, 50);
+      const data = ctx.getImageData(0, 0, 50, 50).data;
+      let sum = 0;
+      for (let i = 0; i < data.length; i += 4) {
+        sum += 0.299 * data[i] + 0.587 * data[i + 1] + 0.114 * data[i + 2];
+      }
+      const avg = sum / (data.length / 4);
+      setCursorColor(avg > 128 ? "#000000" : "#ffffff");
+    } catch (e) {
+      setCursorColor("#000000");
+    }
+  };
+
   return (
     <main style={{ backgroundColor: "white", minHeight: "100vh", width: "100vw", position: "relative", overflowX: "hidden" }}>
       <style jsx global>{`
@@ -145,7 +160,7 @@ export default function Home() {
         </AnimatePresence>
       </nav>
 
-      {/* CURSOR DETALLE - MODIFICADO PARA COLUMNA */}
+      {/* CURSOR DETALLE */}
       {view === "detail" && selectedProject && (
         <motion.div style={{ 
             position: "fixed", 
@@ -158,9 +173,9 @@ export default function Home() {
             padding: "12px", 
             fontFamily: fontTitle, 
             fontSize: "0.6rem", 
-            color: kleinBlue, 
+            color: cursorColor,
+            transition: "color 0.3s ease",
             textTransform: "lowercase",
-            // NUEVO: Layout en columna con ancho máximo
             display: "flex",
             flexDirection: "column",
             maxWidth: "200px" 
@@ -231,13 +246,30 @@ export default function Home() {
                   <motion.p key={i} animate={{ ...leftTextPositions[i], y: [0, -20, 0] }} transition={{ ...leftTextPositions[i], y: { duration: 6, repeat: Infinity, ease: "easeInOut", delay: i * 1.2 } }} style={{ position: "absolute", fontFamily: fontBody, fontSize: "0.65rem", maxWidth: "12vw", lineHeight: "1.6", opacity: 0.4, pointerEvents: "none", zIndex: 1 }}>{text}</motion.p>
                 ))}
               </div>
+
               <div style={{ width: "65vw", paddingTop: "25vh", paddingBottom: "25vh", display: "flex", flexDirection: "column", gap: "30vh" }}>
                 {selectedProject.gallery.map((item, i) => (
-                  <motion.div key={i} onMouseEnter={() => setHoveredIndex(i)} onMouseLeave={() => setHoveredIndex(null)} initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.8 }} style={{ width: (i + 1) % 3 === 0 ? "100%" : "70%", alignSelf: i % 2 === 0 ? "flex-end" : "flex-start" }}>
+                  <motion.div
+                    key={i}
+                    onMouseEnter={(e) => {
+                      setHoveredIndex(i);
+                      const img = e.currentTarget.querySelector("img");
+                      if (img) getImageBrightness(img);
+                    }}
+                    onMouseLeave={() => {
+                      setHoveredIndex(null);
+                      setCursorColor("#000000");
+                    }}
+                    initial={{ opacity: 0, y: 30 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ duration: 0.8 }}
+                    style={{ width: (i + 1) % 3 === 0 ? "100%" : "70%", alignSelf: i % 2 === 0 ? "flex-end" : "flex-start" }}
+                  >
                     {item.url.endsWith(".mp4") ? (
                       <video src={item.url} autoPlay muted loop playsInline style={{ width: "100%", height: "auto", display: "block" }} />
                     ) : (
-                      <img src={item.url} style={{ width: "100%", height: "auto", display: "block" }} />
+                      <img src={item.url} crossOrigin="anonymous" style={{ width: "100%", height: "auto", display: "block" }} />
                     )}
                   </motion.div>
                 ))}
