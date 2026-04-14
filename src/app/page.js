@@ -9,11 +9,9 @@ export default function Home() {
   const [projectPositions, setProjectPositions] = useState([]);
   const [hoveredIndex, setHoveredIndex] = useState(null); 
   const [detailInfoPositions, setDetailInfoPositions] = useState({});
+  const [cursorColor, setCursorColor] = useState("#000000");
   const containerRef = useRef(null);
 
-  // ========================================================
-  // GALERÍAS
-  // ========================================================
   const gallery1 = [
     { url: "/fotos_detalle/24_1.jpg", text: "frame 01" }, { url: "/fotos_detalle/24_2.jpg", text: "frame 02" },
     { url: "/fotos_detalle/24_3.mp4", text: "frame 03" }, { url: "/fotos_detalle/24_4.jpg", text: "frame 04" },
@@ -25,8 +23,8 @@ export default function Home() {
     { url: "/fotos_detalle/aria_3.jpg", text: "vuelo 03" }, { url: "/fotos_detalle/aria_4.jpg", text: "vuelo 04" },
     { url: "/fotos_detalle/aria_5.jpg", text: "vuelo 05" }, { url: "/fotos_detalle/aria_6.jpg", text: "vuelo 06" },
     { url: "/fotos_detalle/aria_7.jpg", text: "vuelo 07" }, { url: "/fotos_detalle/aria_8.jpg", text: "vuelo 08" },
-    { url: "/fotos_detalle/aria_9.jpg", text: "vuelo 09" }, { url: "/fotos_detalle/aria_10.jpg", text: "vuelo 10" },
-    { url: "/fotos_detalle/aria_11.jpg", text: "vuelo 11" }, { url: "/fotos_detalle/aria_12.jpg", text: "vuelo 12" },
+    { url: "/fotos_detalle/aria_9.jpg", text: "vuelo 07" }, { url: "/fotos_detalle/aria_10.jpg", text: "vuelo 08" },
+    { url: "/fotos_detalle/aria_11.jpg", text: "vuelo 07" }, { url: "/fotos_detalle/aria_12.jpg", text: "vuelo 08" },
   ];
   const gallery3 = [
     { url: "/fotos_detalle/bf_1.jpg", text: "fail 01" }, { url: "/fotos_detalle/bf_2.jpg", text: "fail 02" },
@@ -38,7 +36,11 @@ export default function Home() {
     { url: "/fotos_detalle/led_1.jpg", text: "light 01" }, { url: "/fotos_detalle/led_2.jpg", text: "light 02" },
     { url: "/fotos_detalle/led_3.jpg", text: "light 03" }, { url: "/fotos_detalle/led_4.jpg", text: "light 04" },
     { url: "/fotos_detalle/led_5.jpg", text: "light 05" }, { url: "/fotos_detalle/led_6.png", text: "light 06" },
-    { url: "/fotos_detalle/led_8.jpg", text: "light 08" },
+    { url: "/fotos_detalle/led_5.png", text: "light 07" }, { url: "/fotos_detalle/led_8.jpg", text: "light 08" },
+    { url: "/fotos_detalle/led_7.jpg", text: "light 07" }, { url: "/fotos_detalle/led_9.jpg", text: "light 08" },
+    { url: "/fotos_detalle/led_9.png", text: "light 07" }, { url: "/fotos_detalle/led_10.png", text: "light 08" },
+    { url: "/fotos_detalle/led_11.png", text: "light 07" },{ url: "/fotos_detalle/led_12.png", text: "light 07" },
+    { url: "/fotos_detalle/led_13.png", text: "light 07" },
   ];
   const gallery5 = [
     { url: "/fotos_detalle/moria_1.jpg", text: "moria 01" }, { url: "/fotos_detalle/moria_2.jpg", text: "moria 02" },
@@ -65,9 +67,6 @@ export default function Home() {
     { url: "/fotos_detalle/vora_7.jpg", text: "vora 07" }, { url: "/fotos_detalle/vora_8.jpg", text: "vora 08" },
   ];
 
-  // ========================================================
-  // PROYECTOS
-  // ========================================================
   const projects = [
     { id: 1, title: "24 seconds", img: "/fotos_portadas/Portada_24 seconds.jpg", gallery: gallery1, desc: "una búsqueda de la armonía en el error digital.", info: { date: "2024", location: "barcelona", role: "creative direction" }, extraTexts: ["la fragmentación del tiempo se convierte en una herramienta de diseño.", "exploramos cómo el código puede fallar de manera estética.", "simbiosis entre la máquina y el instinto visual."] },
     { id: 2, title: "aria libera", img: "/fotos_portadas/Portada_Aria libera.jpg", gallery: gallery2, desc: "la imperfección como lenguaje visual predominante.", info: { date: "2023", location: "milan", role: "art direction" }, extraTexts: ["espacios que respiran a través de la asimetría.", "una oda a la belleza de lo efímero.", "geometrías que se rompen para equilibrar."] },
@@ -84,14 +83,9 @@ export default function Home() {
   const [aboutPositions, setAboutPositions] = useState({ email: { top: "25vh", left: "15vw", rotate: "-5deg" }, phone: { bottom: "25vh", right: "15vw", rotate: "5deg" } });
   const [leftTextPositions, setLeftTextPositions] = useState([]);
   const [selectedProject, setSelectedProject] = useState(null);
-  
   const springConfig = { stiffness: 250, damping: 30 };
-  const mouseX = useSpring(0, springConfig); 
-  const mouseY = useSpring(0, springConfig);
-  
-  const kleinBlue = "#002FA7"; 
-  const fontTitle = "'Monor', monospace"; 
-  const fontBody = "'Roundo', sans-serif";
+  const mouseX = useSpring(0, springConfig); const mouseY = useSpring(0, springConfig);
+  const kleinBlue = "#002FA7"; const fontTitle = "'Monor', monospace"; const fontBody = "'Roundo', sans-serif";
 
   useEffect(() => {
     const handleMouseMove = (e) => { mouseX.set(e.clientX); mouseY.set(e.clientY); };
@@ -108,15 +102,42 @@ export default function Home() {
     }
     if (view === "detail") {
       setDetailInfoPositions({ 
-        date: { top: "3vh", right: "15vw", rotate: "0deg" }, 
-        location: { top: "5vh", right: "8vw", rotate: "1deg" }, 
-        role: { top: "3vh", right: "2vw", rotate: "-1deg" } 
+        date: { top: Math.floor(Math.random() * 5 + 3) + "vh", right: Math.floor(Math.random() * 5 + 15) + "vw", rotate: (Math.random() * 2 - 1) + "deg" }, 
+        location: { top: Math.floor(Math.random() * 5 + 5) + "vh", right: Math.floor(Math.random() * 5 + 8) + "vw", rotate: (Math.random() * 3 - 1) + "deg" }, 
+        role: { top: Math.floor(Math.random() * 5 + 3) + "vh", right: Math.floor(Math.random() * 5 + 2) + "vw", rotate: (Math.random() * 2 - 1) + "deg" } 
       });
       setLeftTextPositions([{ top: "15vh", left: "4vw", rotate: "-3deg" }, { top: "78vh", left: "12vw", rotate: "4deg" }, { top: "40vh", left: "20vw", rotate: "-2deg" }]);
     }
   }, [view]);
 
   const openProject = (proj) => { setSelectedProject(proj); setView("detail"); window.scrollTo({ top: 0, behavior: 'instant' }); };
+
+  const getImageBrightness = (imgElement) => {
+    const analyze = () => {
+      const canvas = document.createElement("canvas");
+      const ctx = canvas.getContext("2d");
+      canvas.width = 50;
+      canvas.height = 50;
+      try {
+        ctx.drawImage(imgElement, 0, 0, 50, 50);
+        const data = ctx.getImageData(0, 0, 50, 50).data;
+        let sum = 0;
+        for (let i = 0; i < data.length; i += 4) {
+          sum += 0.299 * data[i] + 0.587 * data[i + 1] + 0.114 * data[i + 2];
+        }
+        const avg = sum / (data.length / 4);
+        setCursorColor(avg > 128 ? "#000000" : "#ffffff");
+      } catch (e) {
+        setCursorColor("#000000");
+      }
+    };
+
+    if (imgElement.complete && imgElement.naturalWidth > 0) {
+      analyze();
+    } else {
+      imgElement.onload = analyze;
+    }
+  };
 
   return (
     <main style={{ backgroundColor: "white", minHeight: "100vh", width: "100vw", position: "relative", overflowX: "hidden" }}>
@@ -146,37 +167,36 @@ export default function Home() {
         </AnimatePresence>
       </nav>
 
-      {/* CURSOR DETALLE CON MODO DIFERENCIA (CONTRASTE AUTO) */}
+      {/* CURSOR DETALLE */}
       {view === "detail" && selectedProject && (
         <motion.div style={{ 
             position: "fixed", 
-            left: 0, top: 0, 
-            x: mouseX, y: mouseY, 
+            left: 0, 
+            top: 0, 
+            x: mouseX, 
+            y: mouseY, 
             pointerEvents: "none", 
-            zIndex: 99999, // Super alto para estar siempre arriba
+            zIndex: 9999, 
             padding: "12px", 
             fontFamily: fontTitle, 
             fontSize: "0.6rem", 
-            color: "white", // Blanco base + difference = negro sobre blanco
-            mixBlendMode: "difference",
+            color: cursorColor,
+            transition: "color 0.3s ease",
             textTransform: "lowercase",
             display: "flex",
             flexDirection: "column",
-            maxWidth: "250px" 
+            maxWidth: "200px" 
         }}>
           <AnimatePresence mode="wait">
             <motion.span 
               key={hoveredIndex !== null ? `text-${hoveredIndex}` : 'title'} 
-              initial={{ opacity: 0 }} 
-              animate={{ opacity: 1 }} 
-              exit={{ opacity: 0 }} 
-              transition={{ duration: 0.1 }}
-              style={{ lineHeight: "1.3" }}
+              initial={{ opacity: 0, y: 5 }} 
+              animate={{ opacity: 1, y: 0 }} 
+              exit={{ opacity: 0, y: -5 }} 
+              transition={{ duration: 0.15 }}
+              style={{ lineHeight: "1.4" }}
             >
-              {hoveredIndex !== null 
-                ? (selectedProject.gallery[hoveredIndex]?.text || "detalle") 
-                : selectedProject.title
-              }
+              {hoveredIndex !== null ? (selectedProject.gallery[hoveredIndex]?.text || "detalle") : selectedProject.title}
             </motion.span>
           </AnimatePresence>
         </motion.div>
@@ -191,7 +211,8 @@ export default function Home() {
             {projects.map((proj, index) => (
               <motion.div 
                 key={proj.id} 
-                drag dragConstraints={containerRef} 
+                drag 
+                dragConstraints={containerRef} 
                 onClick={() => openProject(proj)} 
                 style={{ position: "absolute", top: projectPositions[index]?.top, left: projectPositions[index]?.left, rotate: projectPositions[index]?.rotation, width: "150px", cursor: "pointer", zIndex: 10 }}>
                 <motion.img src={proj.img} whileHover={{ scale: 1.05 }} style={{ width: "100%", filter: "grayscale(100%)" }} onMouseOver={e => e.currentTarget.style.filter="grayscale(0%)"} onMouseOut={e => e.currentTarget.style.filter="grayscale(100%)"} />
@@ -217,9 +238,9 @@ export default function Home() {
             <Crosshair color={kleinBlue} />
             
             <div style={{ position: "fixed", top: 0, right: 0, width: "30vw", height: "15vh", zIndex: 500, fontFamily: fontTitle, fontSize: "0.65rem", textTransform: "lowercase", color: kleinBlue }}>
-              <motion.p animate={{ ...detailInfoPositions.role }} style={{ position: "absolute" }}>{selectedProject.info.role}</motion.p>
-              <motion.p animate={{ ...detailInfoPositions.location }} style={{ position: "absolute" }}>{selectedProject.info.location}</motion.p>
-              <motion.p animate={{ ...detailInfoPositions.date }} style={{ position: "absolute" }}>{selectedProject.info.date}</motion.p>
+              <motion.p initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0, ...detailInfoPositions.role }} transition={{ duration: 0.6 }} style={{ position: "absolute" }}>{selectedProject.info.role}</motion.p>
+              <motion.p initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0, ...detailInfoPositions.location }} transition={{ duration: 0.6, delay: 0.1 }} style={{ position: "absolute" }}>{selectedProject.info.location}</motion.p>
+              <motion.p initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0, ...detailInfoPositions.date }} transition={{ duration: 0.6, delay: 0.2 }} style={{ position: "absolute" }}>{selectedProject.info.date}</motion.p>
             </div>
 
             <div style={{ display: "flex", padding: "0 4vw" }}>
@@ -229,7 +250,7 @@ export default function Home() {
                   <p style={{ fontFamily: fontBody, fontSize: "0.9rem", marginTop: "1rem", maxWidth: "20vw", lineHeight: "1.4", opacity: 0.8 }}>{selectedProject.desc}</p>
                 </div>
                 {selectedProject.extraTexts?.map((text, i) => (
-                  <motion.p key={i} animate={{ ...leftTextPositions[i], y: [0, -20, 0] }} transition={{ y: { duration: 6, repeat: Infinity, ease: "easeInOut", delay: i * 1.2 } }} style={{ position: "absolute", fontFamily: fontBody, fontSize: "0.65rem", maxWidth: "12vw", lineHeight: "1.6", opacity: 0.4, pointerEvents: "none", zIndex: 1 }}>{text}</motion.p>
+                  <motion.p key={i} animate={{ ...leftTextPositions[i], y: [0, -20, 0] }} transition={{ ...leftTextPositions[i], y: { duration: 6, repeat: Infinity, ease: "easeInOut", delay: i * 1.2 } }} style={{ position: "absolute", fontFamily: fontBody, fontSize: "0.65rem", maxWidth: "12vw", lineHeight: "1.6", opacity: 0.4, pointerEvents: "none", zIndex: 1 }}>{text}</motion.p>
                 ))}
               </div>
 
@@ -237,8 +258,15 @@ export default function Home() {
                 {selectedProject.gallery.map((item, i) => (
                   <motion.div
                     key={i}
-                    onMouseEnter={() => setHoveredIndex(i)}
-                    onMouseLeave={() => setHoveredIndex(null)}
+                    onMouseEnter={(e) => {
+                      setHoveredIndex(i);
+                      const img = e.currentTarget.querySelector("img");
+                      if (img) getImageBrightness(img);
+                    }}
+                    onMouseLeave={() => {
+                      setHoveredIndex(null);
+                      setCursorColor("#000000");
+                    }}
                     initial={{ opacity: 0, y: 30 }}
                     whileInView={{ opacity: 1, y: 0 }}
                     viewport={{ once: true }}
@@ -248,7 +276,7 @@ export default function Home() {
                     {item.url.endsWith(".mp4") ? (
                       <video src={item.url} autoPlay muted loop playsInline style={{ width: "100%", height: "auto", display: "block" }} />
                     ) : (
-                      <img src={item.url} style={{ width: "100%", height: "auto", display: "block" }} />
+                      <img src={item.url} crossOrigin="anonymous" style={{ width: "100%", height: "auto", display: "block" }} />
                     )}
                   </motion.div>
                 ))}
