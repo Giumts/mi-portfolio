@@ -112,23 +112,30 @@ export default function Home() {
 
   const openProject = (proj) => { setSelectedProject(proj); setView("detail"); window.scrollTo({ top: 0, behavior: 'instant' }); };
 
-  // ── NUEVO: analiza el brillo de la imagen bajo el cursor ──────────────────
   const getImageBrightness = (imgElement) => {
-    const canvas = document.createElement("canvas");
-    const ctx = canvas.getContext("2d");
-    canvas.width = 50;
-    canvas.height = 50;
-    try {
-      ctx.drawImage(imgElement, 0, 0, 50, 50);
-      const data = ctx.getImageData(0, 0, 50, 50).data;
-      let sum = 0;
-      for (let i = 0; i < data.length; i += 4) {
-        sum += 0.299 * data[i] + 0.587 * data[i + 1] + 0.114 * data[i + 2];
+    const analyze = () => {
+      const canvas = document.createElement("canvas");
+      const ctx = canvas.getContext("2d");
+      canvas.width = 50;
+      canvas.height = 50;
+      try {
+        ctx.drawImage(imgElement, 0, 0, 50, 50);
+        const data = ctx.getImageData(0, 0, 50, 50).data;
+        let sum = 0;
+        for (let i = 0; i < data.length; i += 4) {
+          sum += 0.299 * data[i] + 0.587 * data[i + 1] + 0.114 * data[i + 2];
+        }
+        const avg = sum / (data.length / 4);
+        setCursorColor(avg > 128 ? "#000000" : "#ffffff");
+      } catch (e) {
+        setCursorColor("#000000");
       }
-      const avg = sum / (data.length / 4);
-      setCursorColor(avg > 128 ? "#000000" : "#ffffff");
-    } catch (e) {
-      setCursorColor("#000000");
+    };
+
+    if (imgElement.complete && imgElement.naturalWidth > 0) {
+      analyze();
+    } else {
+      imgElement.onload = analyze;
     }
   };
 
