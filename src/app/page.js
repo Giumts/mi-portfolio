@@ -11,7 +11,9 @@ export default function Home() {
   const [detailInfoPositions, setDetailInfoPositions] = useState({});
   const containerRef = useRef(null);
 
-  // --- Galerías ---
+  // ========================================================
+  // GALERÍAS
+  // ========================================================
   const gallery1 = [
     { url: "/fotos_detalle/24_1.jpg", text: "frame 01" }, { url: "/fotos_detalle/24_2.jpg", text: "frame 02" },
     { url: "/fotos_detalle/24_3.mp4", text: "frame 03" }, { url: "/fotos_detalle/24_4.jpg", text: "frame 04" },
@@ -63,6 +65,9 @@ export default function Home() {
     { url: "/fotos_detalle/vora_7.jpg", text: "vora 07" }, { url: "/fotos_detalle/vora_8.jpg", text: "vora 08" },
   ];
 
+  // ========================================================
+  // PROYECTOS
+  // ========================================================
   const projects = [
     { id: 1, title: "24 seconds", img: "/fotos_portadas/Portada_24 seconds.jpg", gallery: gallery1, desc: "una búsqueda de la armonía en el error digital.", info: { date: "2024", location: "barcelona", role: "creative direction" }, extraTexts: ["la fragmentación del tiempo se convierte en una herramienta de diseño.", "exploramos cómo el código puede fallar de manera estética.", "simbiosis entre la máquina y el instinto visual."] },
     { id: 2, title: "aria libera", img: "/fotos_portadas/Portada_Aria libera.jpg", gallery: gallery2, desc: "la imperfección como lenguaje visual predominante.", info: { date: "2023", location: "milan", role: "art direction" }, extraTexts: ["espacios que respiran a través de la asimetría.", "una oda a la belleza de lo efímero.", "geometrías que se rompen para equilibrar."] },
@@ -79,9 +84,14 @@ export default function Home() {
   const [aboutPositions, setAboutPositions] = useState({ email: { top: "25vh", left: "15vw", rotate: "-5deg" }, phone: { bottom: "25vh", right: "15vw", rotate: "5deg" } });
   const [leftTextPositions, setLeftTextPositions] = useState([]);
   const [selectedProject, setSelectedProject] = useState(null);
+  
   const springConfig = { stiffness: 250, damping: 30 };
-  const mouseX = useSpring(0, springConfig); const mouseY = useSpring(0, springConfig);
-  const kleinBlue = "#002FA7"; const fontTitle = "'Monor', monospace"; const fontBody = "'Roundo', sans-serif";
+  const mouseX = useSpring(0, springConfig); 
+  const mouseY = useSpring(0, springConfig);
+  
+  const kleinBlue = "#002FA7"; 
+  const fontTitle = "'Monor', monospace"; 
+  const fontBody = "'Roundo', sans-serif";
 
   useEffect(() => {
     const handleMouseMove = (e) => { mouseX.set(e.clientX); mouseY.set(e.clientY); };
@@ -117,6 +127,7 @@ export default function Home() {
         ::-webkit-scrollbar { display: none; }
       `}</style>
 
+      {/* NAV */}
       <nav>
         <AnimatePresence>
           {view === "home" ? (
@@ -135,34 +146,37 @@ export default function Home() {
         </AnimatePresence>
       </nav>
 
-      {/* CURSOR DETALLE CON CONTRASTE MÁGICO */}
+      {/* CURSOR DETALLE CON MODO DIFERENCIA (CONTRASTE AUTO) */}
       {view === "detail" && selectedProject && (
         <motion.div style={{ 
             position: "fixed", 
             left: 0, top: 0, 
             x: mouseX, y: mouseY, 
             pointerEvents: "none", 
-            zIndex: 9999, 
+            zIndex: 99999, // Super alto para estar siempre arriba
             padding: "12px", 
             fontFamily: fontTitle, 
             fontSize: "0.6rem", 
-            color: "white", // Color base blanco
-            mixBlendMode: "difference", // Esta es la clave del contraste
+            color: "white", // Blanco base + difference = negro sobre blanco
+            mixBlendMode: "difference",
             textTransform: "lowercase",
             display: "flex",
             flexDirection: "column",
-            maxWidth: "200px" 
+            maxWidth: "250px" 
         }}>
           <AnimatePresence mode="wait">
             <motion.span 
               key={hoveredIndex !== null ? `text-${hoveredIndex}` : 'title'} 
-              initial={{ opacity: 0, y: 5 }} 
-              animate={{ opacity: 1, y: 0 }} 
-              exit={{ opacity: 0, y: -5 }} 
-              transition={{ duration: 0.15 }}
-              style={{ lineHeight: "1.4" }}
+              initial={{ opacity: 0 }} 
+              animate={{ opacity: 1 }} 
+              exit={{ opacity: 0 }} 
+              transition={{ duration: 0.1 }}
+              style={{ lineHeight: "1.3" }}
             >
-              {hoveredIndex !== null ? (selectedProject.gallery[hoveredIndex]?.text || "detalle") : selectedProject.title}
+              {hoveredIndex !== null 
+                ? (selectedProject.gallery[hoveredIndex]?.text || "detalle") 
+                : selectedProject.title
+              }
             </motion.span>
           </AnimatePresence>
         </motion.div>
