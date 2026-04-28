@@ -4,21 +4,18 @@ import ImageTrail from "./ImageTrail";
 import Crosshair from "./Crosshair"; 
 import { motion, AnimatePresence, useSpring, useTransform } from "framer-motion";
 
-// --- COMPONENTE LOADER DE PALABRAS ---
+// --- LOADER ---
 const LoadingScreen = () => {
   const words = ["creative direction", "digital error", "visual harmony", "aria libera", "fragmentation", "beautiful failures", "loading...", "giulia studio"];
   const [index, setIndex] = useState(0);
 
   useEffect(() => {
-    const interval = setInterval(() => {
-      setIndex((prev) => (prev + 1) % words.length);
-    }, 250);
+    const interval = setInterval(() => setIndex((prev) => (prev + 1) % words.length), 250);
     return () => clearInterval(interval);
   }, [words.length]);
 
   return (
     <motion.div
-      initial={{ opacity: 1 }}
       exit={{ opacity: 0 }}
       transition={{ duration: 0.8 }}
       style={{
@@ -32,10 +29,7 @@ const LoadingScreen = () => {
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
         transition={{ duration: 0.1 }}
-        style={{
-          fontFamily: "'Monor', monospace", fontSize: "1.2rem",
-          color: "#002FA7", textTransform: "lowercase",
-        }}
+        style={{ fontFamily: "'Monor', monospace", fontSize: "1.2rem", color: "#002FA7", textTransform: "lowercase" }}
       >
         {words[index]}
       </motion.p>
@@ -43,53 +37,31 @@ const LoadingScreen = () => {
   );
 };
 
-// --- COMPONENTE DE SOMBRA REACTIVA (GRADIENT MEJORADO Y RESPONSIVE) ---
+// --- SOMBRA REACTIVA MEJORADA ---
 const MouseShadowEffect = ({ mouseX, mouseY }) => {
-  const scale = useTransform(
-    [mouseX, mouseY],
-    ([x, y]) => {
-      if (typeof window === 'undefined') return 1;
-      const centerX = window.innerWidth / 2;
-      const centerY = window.innerHeight / 2;
-      const dist = Math.sqrt(Math.pow(x - centerX, 2) + Math.pow(y - centerY, 2));
-      const maxDist = Math.sqrt(Math.pow(centerX, 2) + Math.pow(centerY, 2));
-      // La escala ahora es más sensible al movimiento
-      return 1 + (dist / maxDist) * 0.25;
-    }
-  );
+  const scale = useTransform([mouseX, mouseY], ([x, y]) => {
+    if (typeof window === 'undefined') return 1;
+    const dist = Math.sqrt(Math.pow(x - window.innerWidth / 2, 2) + Math.pow(y - window.innerHeight / 2, 2));
+    const maxDist = Math.sqrt(Math.pow(window.innerWidth / 2, 2) + Math.pow(window.innerHeight / 2, 2));
+    return 1 + (dist / maxDist) * 0.25;
+  });
 
   return (
     <motion.div
       style={{
-        position: "fixed", // Cambiado a fixed para que siga el viewport
-        left: "-50vw", 
-        top: "-50vh", 
-        x: mouseX, 
-        y: mouseY, 
-        scale: scale, 
-        width: "100vw", 
-        height: "100vh", 
-        pointerEvents: "none", 
-        zIndex: 1,
-        // Degradado más complejo y profundo
+        position: "fixed", left: "-50vw", top: "-50vh", x: mouseX, y: mouseY, scale,
+        width: "100vw", height: "100vh", pointerEvents: "none", zIndex: 1,
         backgroundImage: `
           radial-gradient(circle at 50% 50%, rgba(0, 47, 167, 0.25) 0%, rgba(0, 47, 167, 0.1) 30%, rgba(0, 255, 255, 0.05) 50%, transparent 75%),
           radial-gradient(circle at 40% 40%, rgba(128, 0, 128, 0.1) 0%, transparent 60%)
         `,
-        // El blur ahora es más grande para suavizar los bordes en pantallas grandes
-        filter: "blur(80px) saturate(150%) contrast(110%)", 
-        mixBlendMode: "multiply",
-        opacity: 0.8
+        filter: "blur(80px) saturate(150%) contrast(110%)", mixBlendMode: "multiply", opacity: 0.8
       }}
     >
-      {/* Capa de ruido orgánico */}
       <div style={{ 
-        position: "absolute", 
-        inset: 0, 
+        position: "absolute", inset: 0, 
         backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 400 400' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.6' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E")`, 
-        backgroundRepeat: "repeat", 
-        opacity: 0.15, 
-        mixBlendMode: "overlay" 
+        opacity: 0.15, mixBlendMode: "overlay" 
       }} />
     </motion.div>
   );
@@ -98,14 +70,14 @@ const MouseShadowEffect = ({ mouseX, mouseY }) => {
 export default function Home() {
   const [view, setView] = useState("home");
   const [isLoading, setIsLoading] = useState(true);
-  const [hasMounted, setHasMounted] = useState(false); // Para evitar errores de hidratación
+  const [hasMounted, setHasMounted] = useState(false);
   const [projectPositions, setProjectPositions] = useState([]);
   const [hoveredIndex, setHoveredIndex] = useState(null); 
   const [detailInfoPositions, setDetailInfoPositions] = useState({});
   const [cursorColor, setCursorColor] = useState("#000000");
   const containerRef = useRef(null);
 
-  // Galerías (Mantenidas intactas)
+  // Tus galerías y proyectos se mantienen igual...
   const gallery1 = [{ url: "/fotos_detalle/24_1.jpg", text: "frame 01" }, { url: "/fotos_detalle/24_2.jpg", text: "frame 02" }, { url: "/fotos_detalle/24_3.mp4", text: "frame 03" }, { url: "/fotos_detalle/24_4.jpg", text: "frame 04" }, { url: "/fotos_detalle/24_5.jpg", text: "frame 05" }, { url: "/fotos_detalle/24_6.jpg", text: "frame 06" }, { url: "/fotos_detalle/24_7.jpg", text: "frame 07" }, { url: "/fotos_detalle/24_8.jpg", text: "frame 08" }];
   const gallery2 = [{ url: "/fotos_detalle/aria_1.jpg", text: "vuelo 01" }, { url: "/fotos_detalle/aria_2.jpg", text: "vuelo 02" }, { url: "/fotos_detalle/aria_3.jpg", text: "vuelo 03" }, { url: "/fotos_detalle/aria_4.jpg", text: "vuelo 04" }, { url: "/fotos_detalle/aria_5.jpg", text: "vuelo 05" }, { url: "/fotos_detalle/aria_6.jpg", text: "vuelo 06" }, { url: "/fotos_detalle/aria_7.jpg", text: "vuelo 07" }, { url: "/fotos_detalle/aria_8.jpg", text: "vuelo 08" }, { url: "/fotos_detalle/aria_9.jpg", text: "vuelo 07" }, { url: "/fotos_detalle/aria_10.jpg", text: "vuelo 08" }, { url: "/fotos_detalle/aria_11.jpg", text: "vuelo 07" }, { url: "/fotos_detalle/aria_12.jpg", text: "vuelo 08" }];
   const gallery3 = [{ url: "/fotos_detalle/bf_1.jpg", text: "fail 01" }, { url: "/fotos_detalle/bf_2.jpg", text: "fail 02" }, { url: "/fotos_detalle/bf_3.jpg", text: "fail 03" }, { url: "/fotos_detalle/bf_4.jpg", text: "fail 04" }, { url: "/fotos_detalle/bf_5.png", text: "After studying..." }, { url: "/fotos_detalle/bf_6.png", text: "fail 06" }, { url: "/fotos_detalle/bf_7.png", text: "fail 07" }, { url: "/fotos_detalle/bf_8.jpg", text: "fail 08" }];
@@ -140,7 +112,6 @@ export default function Home() {
   const fontTitle = "'Monor', monospace"; 
   const fontBody = "'Roundo', sans-serif";
 
-  // --- EFECTOS ---
   useEffect(() => {
     setHasMounted(true);
     const timer = setTimeout(() => setIsLoading(false), 2500);
@@ -148,32 +119,27 @@ export default function Home() {
   }, []);
 
   useEffect(() => {
-    const handleMouseMove = (e) => { 
-        mouseX.set(e.clientX); 
-        mouseY.set(e.clientY); 
-    };
+    const handleMouseMove = (e) => { mouseX.set(e.clientX); mouseY.set(e.clientY); };
     window.addEventListener("mousemove", handleMouseMove);
     return () => window.removeEventListener("mousemove", handleMouseMove);
   }, [mouseX, mouseY]);
 
   useEffect(() => {
     if (view === "home") setNavPositions({ giulia: { top: "15vh", left: "40vw", rotate: "-2deg" }, projects: { top: "75vh", left: "15vw", rotate: "4deg" }, about: { top: "45vh", right: "12vw", rotate: "-3deg" } });
-    if (view === "about") setAboutPositions({ email: { top: "25vh", left: "15vw", rotate: "-5deg" }, phone: { bottom: "25vh", right: "15vw", rotate: "5deg" } });
     if (view === "projects") {
-      const positions = projects.map(() => ({ top: Math.floor(Math.random() * 60 + 15) + "vh", left: Math.floor(Math.random() * 70 + 10) + "vw", rotation: (Math.random() * 10 - 5) + "deg" }));
-      setProjectPositions(positions);
+      setProjectPositions(projects.map(() => ({ 
+        top: Math.floor(Math.random() * 60 + 15) + "vh", 
+        left: Math.floor(Math.random() * 70 + 10) + "vw", 
+        rotation: (Math.random() * 10 - 5) + "deg" 
+      })));
     }
     if (view === "detail") {
-      setDetailInfoPositions({ 
-        date: { top: "5vh", right: "15vw", rotate: "0deg" }, 
-        location: { top: "8vh", right: "8vw", rotate: "1deg" }, 
-        role: { top: "4vh", right: "2vw", rotate: "-1deg" } 
-      });
+      setDetailInfoPositions({ date: { top: "5vh", right: "15vw" }, location: { top: "8vh", right: "8vw" }, role: { top: "4vh", right: "2vw" } });
       setLeftTextPositions([{ top: "15vh", left: "4vw", rotate: "-3deg" }, { top: "78vh", left: "12vw", rotate: "4deg" }, { top: "40vh", left: "20vw", rotate: "-2deg" }]);
     }
   }, [view]);
 
-  const openProject = (proj) => { setSelectedProject(proj); setView("detail"); window.scrollTo({ top: 0, behavior: 'instant' }); };
+  const openProject = (proj) => { setSelectedProject(proj); setView("detail"); window.scrollTo(0,0); };
 
   const getImageBrightness = (imgElement) => {
     const analyze = () => {
@@ -184,20 +150,14 @@ export default function Home() {
         ctx.drawImage(imgElement, 0, 0, 50, 50);
         const data = ctx.getImageData(0, 0, 50, 50).data;
         let sum = 0;
-        for (let i = 0; i < data.length; i += 4) {
-          sum += 0.299 * data[i] + 0.587 * data[i + 1] + 0.114 * data[i + 2];
-        }
-        const avg = sum / (data.length / 4);
-        setCursorColor(avg > 128 ? "#000000" : "#ffffff");
-      } catch (e) {
-        setCursorColor("#000000");
-      }
+        for (let i = 0; i < data.length; i += 4) { sum += 0.299 * data[i] + 0.587 * data[i+1] + 0.114 * data[i+2]; }
+        setCursorColor(sum / (data.length/4) > 128 ? "#000000" : "#ffffff");
+      } catch (e) { setCursorColor("#000000"); }
     };
     if (imgElement.complete) analyze(); else imgElement.onload = analyze;
   };
 
-  // Prevenir renderizado hasta que el cliente esté listo
-  if (!hasMounted) return <div style={{backgroundColor: "white", height: "100vh"}} />;
+  if (!hasMounted) return null;
 
   return (
     <main style={{ backgroundColor: "white", minHeight: "100vh", width: "100vw", position: "relative", overflowX: "hidden" }}>
@@ -212,117 +172,90 @@ export default function Home() {
         {isLoading ? (
           <LoadingScreen key="loader" />
         ) : (
-          <motion.div key="content" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 1 }}>
-            {/* NAV */}
-            <nav>
-              <AnimatePresence>
-                {view === "home" ? (
-                  <>
-                    <motion.h1 onClick={() => setView("home")} animate={{ ...navPositions.giulia }} style={{ position: "fixed", fontFamily: fontTitle, fontSize: "0.9rem", textDecoration: "line-through", zIndex: 1000, cursor: "pointer" }}>giulia</motion.h1>
-                    <motion.div onClick={() => setView("projects")} animate={{ ...navPositions.projects }} whileHover={{ color: kleinBlue }} style={{ position: "fixed", fontFamily: fontTitle, fontSize: "0.8rem", zIndex: 1000, cursor: "pointer" }}>projects</motion.div>
-                    <motion.div onClick={() => setView("about")} animate={{ ...navPositions.about }} whileHover={{ color: kleinBlue }} style={{ position: "fixed", fontFamily: fontTitle, fontSize: "0.8rem", zIndex: 1000, cursor: "pointer" }}>about</motion.div>
-                  </>
-                ) : (
-                  <div style={{ fontFamily: fontTitle, fontSize: "0.8rem", textTransform: "lowercase" }}>
-                    <div onClick={() => {setView("home"); setSelectedProject(null);}} style={{ position: "fixed", top: "4vh", left: "4vw", zIndex: 1000, cursor: "pointer" }}>giulia</div>
-                    <div onClick={() => {setView("projects"); setSelectedProject(null);}} style={{ position: "fixed", bottom: "4vh", left: "4vw", zIndex: 1000, cursor: "pointer", textDecoration: view === "projects" ? "line-through" : "none" }}>projects</div>
-                    <div onClick={() => {setView("about"); setSelectedProject(null);}} style={{ position: "fixed", bottom: "4vh", right: "4vw", zIndex: 1000, cursor: "pointer", textDecoration: view === "about" ? "line-through" : "none" }}>about</div>
-                  </div>
-                )}
-              </AnimatePresence>
+          <motion.div key="main" initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
+            
+            {/* NAV GLOBAL */}
+            <nav style={{ fontFamily: fontTitle, fontSize: "0.8rem", textTransform: "lowercase", zIndex: 2000 }}>
+              <div onClick={() => {setView("home"); setSelectedProject(null);}} style={{ position: "fixed", top: "4vh", left: "4vw", cursor: "pointer", zIndex: 3000 }}>giulia</div>
+              <div onClick={() => {setView("projects"); setSelectedProject(null);}} style={{ position: "fixed", bottom: "4vh", left: "4vw", cursor: "pointer", zIndex: 3000, textDecoration: view === "projects" ? "line-through" : "none" }}>projects</div>
+              <div onClick={() => {setView("about"); setSelectedProject(null);}} style={{ position: "fixed", bottom: "4vh", right: "4vw", cursor: "pointer", zIndex: 3000, textDecoration: view === "about" ? "line-through" : "none" }}>about</div>
             </nav>
 
             {/* CURSOR DETALLE */}
-            {view === "detail" && selectedProject && (
-              <motion.div style={{ 
-                  position: "fixed", left: 0, top: 0, x: mouseX, y: mouseY, pointerEvents: "none", zIndex: 9999, 
-                  padding: "12px", fontFamily: fontTitle, fontSize: "0.6rem", color: cursorColor,
-                  textTransform: "lowercase", display: "flex", flexDirection: "column" 
-              }}>
-                <AnimatePresence mode="wait">
-                  <motion.span 
-                    key={hoveredIndex !== null ? `text-${hoveredIndex}` : 'title'} 
-                    initial={{ opacity: 0 }} animate={{ opacity: 1 }}
-                    transition={{ duration: 0.15 }}
-                  >
-                    {hoveredIndex !== null ? (selectedProject.gallery[hoveredIndex]?.text || "detalle") : selectedProject.title}
-                  </motion.span>
-                </AnimatePresence>
-              </motion.div>
-            )}
+            <AnimatePresence>
+              {view === "detail" && (
+                <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} style={{ position: "fixed", left: 0, top: 0, x: mouseX, y: mouseY, pointerEvents: "none", zIndex: 9999, padding: "12px", fontFamily: fontTitle, fontSize: "0.6rem", color: cursorColor, textTransform: "lowercase" }}>
+                  {hoveredIndex !== null ? (selectedProject.gallery[hoveredIndex]?.text || "detalle") : selectedProject?.title}
+                </motion.div>
+              )}
+            </AnimatePresence>
 
+            {/* CONTENEDOR DE TRANSICIÓN */}
             <AnimatePresence mode="wait">
-              {view === "home" && <motion.div key="home" style={{height: "100vh"}}><ImageTrail images={trailImages} /></motion.div>}
-
-              {view === "projects" && (
-                <motion.div key="projects" ref={containerRef} style={{ position: "relative", width: "100vw", height: "100vh", overflow: "hidden" }}>
-                  <MouseShadowEffect mouseX={mouseX} mouseY={mouseY} />
-                  <Crosshair containerRef={containerRef} color={kleinBlue} />
-                  {projects.map((proj, index) => (
-                    <motion.div 
-                      key={proj.id} drag dragConstraints={containerRef} onClick={() => openProject(proj)} 
-                      style={{ position: "absolute", top: projectPositions[index]?.top, left: projectPositions[index]?.left, rotate: projectPositions[index]?.rotation, width: "150px", cursor: "pointer", zIndex: 10 }}>
-                      <motion.img src={proj.img} whileHover={{ scale: 1.05 }} style={{ width: "100%", filter: "grayscale(100%)" }} onMouseEnter={e => e.currentTarget.style.filter="grayscale(0%)"} onMouseLeave={e => e.currentTarget.style.filter="grayscale(100%)"} />
-                      <p style={{ fontFamily: fontBody, marginTop: "10px", fontSize: "0.7rem" }}>{proj.title}</p>
-                    </motion.div>
-                  ))}
-                </motion.div>
-              )}
-
-              {view === "about" && (
-                <motion.div key="about" style={{ width: "100vw", height: "100vh", position: "relative" }}>
-                  <Crosshair color="#000" />
-                  <motion.p animate={{ ...aboutPositions.email }} style={{ position: "absolute", fontFamily: fontTitle, fontSize: "0.8rem", color: kleinBlue }}>giulia@studio.com</motion.p>
-                  <motion.p animate={{ ...aboutPositions.phone }} style={{ position: "absolute", fontFamily: fontTitle, fontSize: "0.8rem", color: kleinBlue }}>+34 600 000 000</motion.p>
-                  <div style={{ display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center", height: "100vh", padding: "0 20vw", textAlign: "center" }}>
-                    <p style={{ fontFamily: fontBody, fontSize: "0.9rem", maxWidth: "450px", lineHeight: "1.6" }}>Directora creativa explorando la intersección entre el error digital y la armonía orgánica.</p>
+              <motion.div
+                key={view}
+                initial={{ opacity: 0, y: 20, filter: "blur(10px)" }}
+                animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
+                exit={{ opacity: 0, y: -20, filter: "blur(10px)" }}
+                transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
+              >
+                {view === "home" && (
+                  <div style={{ height: "100vh" }}>
+                    <ImageTrail images={trailImages} />
                   </div>
-                </motion.div>
-              )}
+                )}
 
-              {view === "detail" && selectedProject && (
-                <motion.div key="detail" style={{ backgroundColor: "white", minHeight: "100vh" }}>
-                  <Crosshair color={kleinBlue} />
-                  <div style={{ position: "fixed", top: 0, right: 0, width: "30vw", height: "15vh", zIndex: 500, fontFamily: fontTitle, fontSize: "0.65rem", textTransform: "lowercase", color: kleinBlue }}>
-                    <motion.p animate={{ ...detailInfoPositions.role }} style={{ position: "absolute" }}>{selectedProject.info.role}</motion.p>
-                    <motion.p animate={{ ...detailInfoPositions.location }} style={{ position: "absolute" }}>{selectedProject.info.location}</motion.p>
-                    <motion.p animate={{ ...detailInfoPositions.date }} style={{ position: "absolute" }}>{selectedProject.info.date}</motion.p>
+                {view === "projects" && (
+                  <div ref={containerRef} style={{ position: "relative", width: "100vw", height: "100vh", overflow: "hidden" }}>
+                    <MouseShadowEffect mouseX={mouseX} mouseY={mouseY} />
+                    <Crosshair containerRef={containerRef} color={kleinBlue} />
+                    {projects.map((proj, index) => (
+                      <motion.div 
+                        key={proj.id} drag dragConstraints={containerRef} onClick={() => openProject(proj)} 
+                        initial={{ opacity: 0, scale: 0.8 }} animate={{ opacity: 1, scale: 1 }} transition={{ delay: index * 0.05 }}
+                        style={{ position: "absolute", top: projectPositions[index]?.top, left: projectPositions[index]?.left, rotate: projectPositions[index]?.rotation, width: "clamp(130px, 15vw, 200px)", cursor: "pointer", zIndex: 10 }}>
+                        <img src={proj.img} style={{ width: "100%", filter: "grayscale(100%)", transition: "filter 0.4s" }} onMouseEnter={e => e.currentTarget.style.filter="grayscale(0%)"} onMouseLeave={e => e.currentTarget.style.filter="grayscale(100%)"} />
+                        <p style={{ fontFamily: fontBody, marginTop: "10px", fontSize: "0.7rem" }}>{proj.title}</p>
+                      </motion.div>
+                    ))}
                   </div>
+                )}
 
-                  <div style={{ display: "flex", padding: "0 4vw" }}>
-                    <div style={{ width: "35vw", height: "100vh", position: "sticky", top: 0 }}>
-                      <div style={{ position: "absolute", top: "50%", transform: "translateY(-50%)", width: "100%" }}>
+                {view === "about" && (
+                  <div style={{ width: "100vw", height: "100vh", position: "relative", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                    <Crosshair color="#000" />
+                    <motion.p animate={{ ...aboutPositions.email }} style={{ position: "absolute", fontFamily: fontTitle, fontSize: "clamp(0.6rem, 1vw, 0.8rem)", color: kleinBlue }}>giulia@studio.com</motion.p>
+                    <motion.p animate={{ ...aboutPositions.phone }} style={{ position: "absolute", fontFamily: fontTitle, fontSize: "clamp(0.6rem, 1vw, 0.8rem)", color: kleinBlue }}>+34 600 000 000</motion.p>
+                    <div style={{ padding: "0 10vw", textAlign: "center" }}>
+                      <p style={{ fontFamily: fontBody, fontSize: "clamp(1.1rem, 2.2vw, 1.6rem)", maxWidth: "600px", lineHeight: "1.4" }}>Directora creativa explorando la intersección entre el error digital y la armonía orgánica.</p>
+                    </div>
+                  </div>
+                )}
+
+                {view === "detail" && selectedProject && (
+                  <div style={{ backgroundColor: "white", minHeight: "100vh", padding: "0 4vw" }}>
+                    <div style={{ display: "flex" }}>
+                      <div style={{ width: "35vw", height: "100vh", position: "sticky", top: 0, display: "flex", flexDirection: "column", justifyContent: "center" }}>
                         <h1 style={{ fontFamily: fontTitle, fontSize: "4.5vw", color: kleinBlue, lineHeight: "0.8" }}>{selectedProject.title}</h1>
-                        <p style={{ fontFamily: fontBody, fontSize: "0.9rem", marginTop: "1rem", maxWidth: "20vw", lineHeight: "1.4", opacity: 0.8 }}>{selectedProject.desc}</p>
+                        <p style={{ fontFamily: fontBody, fontSize: "0.9rem", marginTop: "1.5rem", maxWidth: "20vw", opacity: 0.8 }}>{selectedProject.desc}</p>
+                        {selectedProject.extraTexts?.map((text, i) => (
+                          <motion.p key={i} animate={{ ...leftTextPositions[i] }} transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }} style={{ position: "absolute", fontFamily: fontBody, fontSize: "0.65rem", maxWidth: "12vw", opacity: 0.4 }}>{text}</motion.p>
+                        ))}
                       </div>
-                      {selectedProject.extraTexts?.map((text, i) => (
-                        <motion.p key={i} animate={{ ...leftTextPositions[i] }} transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }} style={{ position: "absolute", fontFamily: fontBody, fontSize: "0.65rem", maxWidth: "12vw", opacity: 0.4 }}>{text}</motion.p>
-                      ))}
-                    </div>
-
-                    <div style={{ width: "65vw", paddingTop: "25vh", paddingBottom: "25vh", display: "flex", flexDirection: "column", gap: "30vh" }}>
-                      {selectedProject.gallery.map((item, i) => (
-                        <motion.div
-                          key={i}
-                          onMouseEnter={(e) => {
-                            setHoveredIndex(i);
-                            const img = e.currentTarget.querySelector("img");
-                            if (img) getImageBrightness(img);
-                          }}
-                          onMouseLeave={() => { setHoveredIndex(null); setCursorColor("#000000"); }}
-                          style={{ width: (i + 1) % 3 === 0 ? "100%" : "70%", alignSelf: i % 2 === 0 ? "flex-end" : "flex-start" }}
-                        >
-                          {item.url.endsWith(".mp4") ? (
-                            <video src={item.url} autoPlay muted loop playsInline style={{ width: "100%" }} />
-                          ) : (
-                            <img src={item.url} crossOrigin="anonymous" style={{ width: "100%" }} />
-                          )}
-                        </motion.div>
-                      ))}
+                      <div style={{ width: "65vw", paddingTop: "25vh", paddingBottom: "25vh", display: "flex", flexDirection: "column", gap: "30vh" }}>
+                        {selectedProject.gallery.map((item, i) => (
+                          <motion.div key={i} 
+                            onMouseEnter={(e) => { setHoveredIndex(i); const img = e.currentTarget.querySelector("img"); if (img) getImageBrightness(img); }}
+                            onMouseLeave={() => { setHoveredIndex(null); setCursorColor("#000000"); }}
+                            style={{ width: (i+1)%3 === 0 ? "100%" : "75%", alignSelf: i%2 === 0 ? "flex-end" : "flex-start" }}>
+                            {item.url.endsWith(".mp4") ? <video src={item.url} autoPlay muted loop playsInline style={{ width: "100%" }} /> : <img src={item.url} crossOrigin="anonymous" style={{ width: "100%" }} />}
+                          </motion.div>
+                        ))}
+                      </div>
                     </div>
                   </div>
-                </motion.div>
-              )}
+                )}
+              </motion.div>
             </AnimatePresence>
           </motion.div>
         )}
