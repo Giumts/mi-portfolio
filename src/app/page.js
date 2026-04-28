@@ -4,7 +4,49 @@ import ImageTrail from "./ImageTrail";
 import Crosshair from "./Crosshair"; 
 import { motion, AnimatePresence, useSpring } from "framer-motion";
 
+export default function Home() {// ... (tus otros imports)
+import UnicornScene from "unicornstudio-react";
+
 export default function Home() {
+  // ... (tus estados)
+
+  return (
+    <main style={{ backgroundColor: "white", minHeight: "100vh", width: "100vw", position: "relative", overflowX: "hidden" }}>
+      {/* ... (tus estilos y nav) */}
+
+      <AnimatePresence mode="wait">
+        {view === "home" && (
+          <motion.div 
+            key="home" 
+            initial={{ opacity: 0 }} 
+            animate={{ opacity: 1 }} 
+            exit={{ opacity: 0 }} 
+            onClick={() => setView("projects")} 
+            style={{ height: "100vh", cursor: "pointer", position: "relative" }}
+          >
+            {/* ESCENA DE UNICORN STUDIO COMO FONDO */}
+            <div style={{ position: "absolute", top: 0, left: 0, width: "100%", height: "100%", zIndex: 0 }}>
+              <UnicornScene 
+                projectId="TU_ID_AQUÍ" // <--- Sustituye esto por el ID que te da Unicorn Studio
+                className="unicorn-canvas"
+                style={{ width: "100%", height: "100%" }}
+              />
+            </div>
+
+            {/* TU CONTENIDO ENCIMA DEL EFECTO */}
+            <ImageTrail images={trailImages} />
+            <div style={{ position: "absolute", top: "50%", left: "50%", transform: "translate(-50%, -50%)", zIndex: 10, textAlign: "center" }}>
+                <h1 style={{ fontFamily: fontTitle, fontSize: "1.2rem", letterSpacing: "2px" }}>GIULIA STUDIO</h1>
+                <p style={{ fontFamily: fontBody, fontSize: "0.7rem", marginTop: "8px", opacity: 0.5 }}>click to enter</p>
+            </div>
+          </motion.div>
+        )}
+        
+        {/* ... (resto de las vistas: projects, detail, etc) */}
+      </AnimatePresence>
+    </main>
+  );
+}
   const [view, setView] = useState("home");
   const [projectPositions, setProjectPositions] = useState([]);
   const [hoveredIndex, setHoveredIndex] = useState(null); 
