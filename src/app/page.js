@@ -59,9 +59,47 @@ const LoadingScreen = () => {
   );
 };
 
+// --- COMPONENTE DE SOMBRA GRANULAR (MOUSE) ---
+const MouseShadowEffect = ({ mouseX, mouseY }) => {
+  return (
+    <motion.div
+      style={{
+        position: "absolute",
+        left: "-50vw",
+        top: "-50vh",
+        x: mouseX,
+        y: mouseY,
+        width: "100vw",
+        height: "100vh",
+        pointerEvents: "none",
+        zIndex: 1,
+        // Sombra suave multiply
+        background: "radial-gradient(circle, rgba(0, 0, 0, 0.18) 0%, rgba(255, 255, 255, 0) 70%)",
+        filter: "blur(100px) contrast(150%)",
+        mixBlendMode: "multiply",
+      }}
+    >
+      {/* Capa de grano/ruido estático dentro de la sombra */}
+      <div
+        style={{
+          position: "absolute",
+          top: 0,
+          left: 0,
+          width: "100%",
+          height: "100%",
+          backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 400 400' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E")`,
+          backgroundRepeat: "repeat",
+          opacity: 0.15,
+          mixBlendMode: "overlay",
+        }}
+      />
+    </motion.div>
+  );
+};
+
 export default function Home() {
   const [view, setView] = useState("home");
-  const [isLoading, setIsLoading] = useState(true); // Estado de carga
+  const [isLoading, setIsLoading] = useState(true);
   const [projectPositions, setProjectPositions] = useState([]);
   const [hoveredIndex, setHoveredIndex] = useState(null); 
   const [detailInfoPositions, setDetailInfoPositions] = useState({});
@@ -144,13 +182,15 @@ export default function Home() {
   const kleinBlue = "#002FA7"; const fontTitle = "'Monor', monospace"; const fontBody = "'Roundo', sans-serif";
 
   useEffect(() => {
-    // Temporizador para el loader
     const timer = setTimeout(() => setIsLoading(false), 2500);
     return () => clearTimeout(timer);
   }, []);
 
   useEffect(() => {
-    const handleMouseMove = (e) => { mouseX.set(e.clientX); mouseY.set(e.clientY); };
+    const handleMouseMove = (e) => { 
+        mouseX.set(e.clientX); 
+        mouseY.set(e.clientY); 
+    };
     window.addEventListener("mousemove", handleMouseMove);
     return () => window.removeEventListener("mousemove", handleMouseMove);
   }, [mouseX, mouseY]);
@@ -258,6 +298,10 @@ export default function Home() {
 
               {view === "projects" && (
                 <motion.div key="projects" ref={containerRef} initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} style={{ position: "relative", width: "100vw", height: "100vh", overflow: "hidden" }}>
+                  
+                  {/* AQUÍ ESTÁ EL NUEVO EFECTO DE SOMBRA QUE PEDISTE */}
+                  <MouseShadowEffect mouseX={mouseX} mouseY={mouseY} />
+                  
                   <Crosshair containerRef={containerRef} color={kleinBlue} />
                   {projects.map((proj, index) => (
                     <motion.div 
