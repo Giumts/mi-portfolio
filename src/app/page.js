@@ -59,8 +59,20 @@ const LoadingScreen = () => {
   );
 };
 
-// --- COMPONENTE DE SOMBRA GRANULAR (MOUSE) ---
+// --- COMPONENTE DE SOMBRA REACTIVA A COLOR ---
 const MouseShadowEffect = ({ mouseX, mouseY }) => {
+  // Escala reactiva: aumenta cuando el mouse se aleja del centro
+  const scale = useTransform(
+    [mouseX, mouseY],
+    ([x, y]) => {
+      const centerX = typeof window !== 'undefined' ? window.innerWidth / 2 : 0;
+      const centerY = typeof window !== 'undefined' ? window.innerHeight / 2 : 0;
+      const dist = Math.sqrt(Math.pow(x - centerX, 2) + Math.pow(y - centerY, 2));
+      const maxDist = Math.sqrt(Math.pow(centerX, 2) + Math.pow(centerY, 2));
+      return 1 + (dist / maxDist) * 0.15; // Crece hasta un 15%
+    }
+  );
+
   return (
     <motion.div
       style={{
@@ -69,27 +81,29 @@ const MouseShadowEffect = ({ mouseX, mouseY }) => {
         top: "-50vh",
         x: mouseX,
         y: mouseY,
+        scale: scale,
         width: "100vw",
         height: "100vh",
         pointerEvents: "none",
         zIndex: 1,
-        // Sombra suave multiply
-        background: "radial-gradient(circle, rgba(0, 0, 0, 0.18) 0%, rgba(255, 255, 255, 0) 70%)",
-        filter: "blur(100px) contrast(150%)",
+        // Mezcla de colores reactivos (Azul Klein + Cyan + Purple)
+        backgroundImage: `
+          radial-gradient(circle at 45% 45%, rgba(0, 47, 167, 0.22) 0%, rgba(0, 47, 167, 0) 50%),
+          radial-gradient(circle at 55% 55%, rgba(0, 255, 255, 0.12) 0%, rgba(0, 255, 255, 0) 45%),
+          radial-gradient(circle at 50% 50%, rgba(128, 0, 128, 0.08) 0%, rgba(128, 0, 128, 0) 60%)
+        `,
+        filter: "blur(100px) contrast(140%)",
         mixBlendMode: "multiply",
       }}
     >
-      {/* Capa de grano/ruido estático dentro de la sombra */}
+      {/* Textura de ruido granular integrada */}
       <div
         style={{
           position: "absolute",
-          top: 0,
-          left: 0,
-          width: "100%",
-          height: "100%",
-          backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 400 400' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E")`,
+          inset: 0,
+          backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 400 400' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E")`,
           backgroundRepeat: "repeat",
-          opacity: 0.15,
+          opacity: 0.12,
           mixBlendMode: "overlay",
         }}
       />
