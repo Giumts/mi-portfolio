@@ -4,8 +4,64 @@ import ImageTrail from "./ImageTrail";
 import Crosshair from "./Crosshair"; 
 import { motion, AnimatePresence, useSpring } from "framer-motion";
 
+// --- COMPONENTE LOADER DE PALABRAS ---
+const LoadingScreen = () => {
+  const words = [
+    "creative direction",
+    "digital error",
+    "visual harmony",
+    "aria libera",
+    "fragmentation",
+    "beautiful failures",
+    "loading...",
+    "giulia studio"
+  ];
+  const [index, setIndex] = useState(0);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setIndex((prev) => (prev + 1) % words.length);
+    }, 250);
+    return () => clearInterval(interval);
+  }, []);
+
+  return (
+    <motion.div
+      initial={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      transition={{ duration: 0.8 }}
+      style={{
+        position: "fixed",
+        inset: 0,
+        backgroundColor: "white",
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
+        zIndex: 10000,
+      }}
+    >
+      <motion.p
+        key={index}
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
+        transition={{ duration: 0.1 }}
+        style={{
+          fontFamily: "'Monor', monospace",
+          fontSize: "1.2rem",
+          color: "#002FA7",
+          textTransform: "lowercase",
+        }}
+      >
+        {words[index]}
+      </motion.p>
+    </motion.div>
+  );
+};
+
 export default function Home() {
   const [view, setView] = useState("home");
+  const [isLoading, setIsLoading] = useState(true); // Estado de carga
   const [projectPositions, setProjectPositions] = useState([]);
   const [hoveredIndex, setHoveredIndex] = useState(null); 
   const [detailInfoPositions, setDetailInfoPositions] = useState({});
@@ -88,6 +144,12 @@ export default function Home() {
   const kleinBlue = "#002FA7"; const fontTitle = "'Monor', monospace"; const fontBody = "'Roundo', sans-serif";
 
   useEffect(() => {
+    // Temporizador para el loader
+    const timer = setTimeout(() => setIsLoading(false), 2500);
+    return () => clearTimeout(timer);
+  }, []);
+
+  useEffect(() => {
     const handleMouseMove = (e) => { mouseX.set(e.clientX); mouseY.set(e.clientY); };
     window.addEventListener("mousemove", handleMouseMove);
     return () => window.removeEventListener("mousemove", handleMouseMove);
@@ -116,8 +178,7 @@ export default function Home() {
     const analyze = () => {
       const canvas = document.createElement("canvas");
       const ctx = canvas.getContext("2d");
-      canvas.width = 50;
-      canvas.height = 50;
+      canvas.width = 50; canvas.height = 50;
       try {
         ctx.drawImage(imgElement, 0, 0, 50, 50);
         const data = ctx.getImageData(0, 0, 50, 50).data;
@@ -131,12 +192,8 @@ export default function Home() {
         setCursorColor("#000000");
       }
     };
-
-    if (imgElement.complete && imgElement.naturalWidth > 0) {
-      analyze();
-    } else {
-      imgElement.onload = analyze;
-    }
+    if (imgElement.complete && imgElement.naturalWidth > 0) analyze();
+    else imgElement.onload = analyze;
   };
 
   return (
@@ -148,140 +205,134 @@ export default function Home() {
         ::-webkit-scrollbar { display: none; }
       `}</style>
 
-      {/* NAV */}
-      <nav>
-        <AnimatePresence>
-          {view === "home" ? (
-            <>
-              <motion.h1 onClick={() => setView("home")} initial={{ opacity: 0 }} animate={{ opacity: 1, ...navPositions.giulia }} style={{ position: "fixed", fontFamily: fontTitle, fontSize: "0.9rem", textDecoration: "line-through", zIndex: 1000, cursor: "pointer" }}>giulia</motion.h1>
-              <motion.div onClick={() => setView("projects")} initial={{ opacity: 0 }} animate={{ opacity: 1, ...navPositions.projects }} whileHover={{ color: kleinBlue }} style={{ position: "fixed", fontFamily: fontTitle, fontSize: "0.8rem", zIndex: 1000, cursor: "pointer" }}>projects</motion.div>
-              <motion.div onClick={() => setView("about")} initial={{ opacity: 0 }} animate={{ opacity: 1, ...navPositions.about }} whileHover={{ color: kleinBlue }} style={{ position: "fixed", fontFamily: fontTitle, fontSize: "0.8rem", zIndex: 1000, cursor: "pointer" }}>about</motion.div>
-            </>
-          ) : (
-            <div style={{ fontFamily: fontTitle, fontSize: "0.8rem", textTransform: "lowercase" }}>
-              <div onClick={() => {setView("home"); setSelectedProject(null);}} style={{ position: "fixed", top: "4vh", left: "4vw", zIndex: 1000, cursor: "pointer" }}>giulia</div>
-              <div onClick={() => {setView("projects"); setSelectedProject(null);}} style={{ position: "fixed", bottom: "4vh", left: "4vw", zIndex: 1000, cursor: "pointer", textDecoration: view === "projects" ? "line-through" : "none" }}>projects</div>
-              <div onClick={() => {setView("about"); setSelectedProject(null);}} style={{ position: "fixed", bottom: "4vh", right: "4vw", zIndex: 1000, cursor: "pointer", textDecoration: view === "about" ? "line-through" : "none" }}>about</div>
-            </div>
-          )}
-        </AnimatePresence>
-      </nav>
-
-      {/* CURSOR DETALLE */}
-      {view === "detail" && selectedProject && (
-        <motion.div style={{ 
-            position: "fixed", 
-            left: 0, 
-            top: 0, 
-            x: mouseX, 
-            y: mouseY, 
-            pointerEvents: "none", 
-            zIndex: 9999, 
-            padding: "12px", 
-            fontFamily: fontTitle, 
-            fontSize: "0.6rem", 
-            color: cursorColor,
-            transition: "color 0.3s ease",
-            textTransform: "lowercase",
-            display: "flex",
-            flexDirection: "column",
-            maxWidth: "200px" 
-        }}>
-          <AnimatePresence mode="wait">
-            <motion.span 
-              key={hoveredIndex !== null ? `text-${hoveredIndex}` : 'title'} 
-              initial={{ opacity: 0, y: 5 }} 
-              animate={{ opacity: 1, y: 0 }} 
-              exit={{ opacity: 0, y: -5 }} 
-              transition={{ duration: 0.15 }}
-              style={{ lineHeight: "1.4" }}
-            >
-              {hoveredIndex !== null ? (selectedProject.gallery[hoveredIndex]?.text || "detalle") : selectedProject.title}
-            </motion.span>
-          </AnimatePresence>
-        </motion.div>
-      )}
-
       <AnimatePresence mode="wait">
-        {view === "home" && <motion.div key="home" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} style={{height: "100vh"}}><ImageTrail images={trailImages} /></motion.div>}
+        {isLoading ? (
+          <LoadingScreen key="loader" />
+        ) : (
+          <motion.div
+            key="content"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 1 }}
+          >
+            {/* NAV */}
+            <nav>
+              <AnimatePresence>
+                {view === "home" ? (
+                  <>
+                    <motion.h1 onClick={() => setView("home")} initial={{ opacity: 0 }} animate={{ opacity: 1, ...navPositions.giulia }} style={{ position: "fixed", fontFamily: fontTitle, fontSize: "0.9rem", textDecoration: "line-through", zIndex: 1000, cursor: "pointer" }}>giulia</motion.h1>
+                    <motion.div onClick={() => setView("projects")} initial={{ opacity: 0 }} animate={{ opacity: 1, ...navPositions.projects }} whileHover={{ color: kleinBlue }} style={{ position: "fixed", fontFamily: fontTitle, fontSize: "0.8rem", zIndex: 1000, cursor: "pointer" }}>projects</motion.div>
+                    <motion.div onClick={() => setView("about")} initial={{ opacity: 0 }} animate={{ opacity: 1, ...navPositions.about }} whileHover={{ color: kleinBlue }} style={{ position: "fixed", fontFamily: fontTitle, fontSize: "0.8rem", zIndex: 1000, cursor: "pointer" }}>about</motion.div>
+                  </>
+                ) : (
+                  <div style={{ fontFamily: fontTitle, fontSize: "0.8rem", textTransform: "lowercase" }}>
+                    <div onClick={() => {setView("home"); setSelectedProject(null);}} style={{ position: "fixed", top: "4vh", left: "4vw", zIndex: 1000, cursor: "pointer" }}>giulia</div>
+                    <div onClick={() => {setView("projects"); setSelectedProject(null);}} style={{ position: "fixed", bottom: "4vh", left: "4vw", zIndex: 1000, cursor: "pointer", textDecoration: view === "projects" ? "line-through" : "none" }}>projects</div>
+                    <div onClick={() => {setView("about"); setSelectedProject(null);}} style={{ position: "fixed", bottom: "4vh", right: "4vw", zIndex: 1000, cursor: "pointer", textDecoration: view === "about" ? "line-through" : "none" }}>about</div>
+                  </div>
+                )}
+              </AnimatePresence>
+            </nav>
 
-        {view === "projects" && (
-          <motion.div key="projects" ref={containerRef} initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} style={{ position: "relative", width: "100vw", height: "100vh", overflow: "hidden" }}>
-            <Crosshair containerRef={containerRef} color={kleinBlue} />
-            {projects.map((proj, index) => (
-              <motion.div 
-                key={proj.id} 
-                drag 
-                dragConstraints={containerRef} 
-                onClick={() => openProject(proj)} 
-                style={{ position: "absolute", top: projectPositions[index]?.top, left: projectPositions[index]?.left, rotate: projectPositions[index]?.rotation, width: "150px", cursor: "pointer", zIndex: 10 }}>
-                <motion.img src={proj.img} whileHover={{ scale: 1.05 }} style={{ width: "100%", filter: "grayscale(100%)" }} onMouseOver={e => e.currentTarget.style.filter="grayscale(0%)"} onMouseOut={e => e.currentTarget.style.filter="grayscale(100%)"} />
-                <p style={{ fontFamily: fontBody, marginTop: "10px", fontSize: "0.7rem" }}>{proj.title}</p>
-              </motion.div>
-            ))}
-          </motion.div>
-        )}
-
-        {view === "about" && (
-          <motion.div key="about" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} style={{ width: "100vw", height: "100vh", position: "relative" }}>
-            <Crosshair color="#000" />
-            <motion.p animate={{ ...aboutPositions.email }} style={{ position: "absolute", fontFamily: fontTitle, fontSize: "0.8rem", color: kleinBlue }}>giulia@studio.com</motion.p>
-            <motion.p animate={{ ...aboutPositions.phone }} style={{ position: "absolute", fontFamily: fontTitle, fontSize: "0.8rem", color: kleinBlue }}>+34 600 000 000</motion.p>
-            <div style={{ display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center", height: "100vh", gap: "2rem", padding: "0 20vw", textAlign: "center" }}>
-              <p style={{ fontFamily: fontBody, fontSize: "0.8rem", maxWidth: "400px", lineHeight: "1.6" }}>Directora creativa explorando la intersección entre el error digital y la armonía orgánica.</p>
-            </div>
-          </motion.div>
-        )}
-
-        {view === "detail" && selectedProject && (
-          <motion.div key="detail" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} style={{ backgroundColor: "white", minHeight: "100vh" }}>
-            <Crosshair color={kleinBlue} />
-            
-            <div style={{ position: "fixed", top: 0, right: 0, width: "30vw", height: "15vh", zIndex: 500, fontFamily: fontTitle, fontSize: "0.65rem", textTransform: "lowercase", color: kleinBlue }}>
-              <motion.p initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0, ...detailInfoPositions.role }} transition={{ duration: 0.6 }} style={{ position: "absolute" }}>{selectedProject.info.role}</motion.p>
-              <motion.p initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0, ...detailInfoPositions.location }} transition={{ duration: 0.6, delay: 0.1 }} style={{ position: "absolute" }}>{selectedProject.info.location}</motion.p>
-              <motion.p initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0, ...detailInfoPositions.date }} transition={{ duration: 0.6, delay: 0.2 }} style={{ position: "absolute" }}>{selectedProject.info.date}</motion.p>
-            </div>
-
-            <div style={{ display: "flex", padding: "0 4vw" }}>
-              <div style={{ width: "35vw", height: "100vh", position: "sticky", top: 0 }}>
-                <div style={{ position: "absolute", top: "50%", transform: "translateY(-50%)", zIndex: 10, width: "100%" }}>
-                  <h1 style={{ fontFamily: fontTitle, fontSize: "4.5vw", color: kleinBlue, lineHeight: "0.8" }}>{selectedProject.title}</h1>
-                  <p style={{ fontFamily: fontBody, fontSize: "0.9rem", marginTop: "1rem", maxWidth: "20vw", lineHeight: "1.4", opacity: 0.8 }}>{selectedProject.desc}</p>
-                </div>
-                {selectedProject.extraTexts?.map((text, i) => (
-                  <motion.p key={i} animate={{ ...leftTextPositions[i], y: [0, -20, 0] }} transition={{ ...leftTextPositions[i], y: { duration: 6, repeat: Infinity, ease: "easeInOut", delay: i * 1.2 } }} style={{ position: "absolute", fontFamily: fontBody, fontSize: "0.65rem", maxWidth: "12vw", lineHeight: "1.6", opacity: 0.4, pointerEvents: "none", zIndex: 1 }}>{text}</motion.p>
-                ))}
-              </div>
-
-              <div style={{ width: "65vw", paddingTop: "25vh", paddingBottom: "25vh", display: "flex", flexDirection: "column", gap: "30vh" }}>
-                {selectedProject.gallery.map((item, i) => (
-                  <motion.div
-                    key={i}
-                    onMouseEnter={(e) => {
-                      setHoveredIndex(i);
-                      const img = e.currentTarget.querySelector("img");
-                      if (img) getImageBrightness(img);
-                    }}
-                    onMouseLeave={() => {
-                      setHoveredIndex(null);
-                      setCursorColor("#000000");
-                    }}
-                    initial={{ opacity: 0, y: 30 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    viewport={{ once: true }}
-                    transition={{ duration: 0.8 }}
-                    style={{ width: (i + 1) % 3 === 0 ? "100%" : "70%", alignSelf: i % 2 === 0 ? "flex-end" : "flex-start" }}
+            {/* CURSOR DETALLE */}
+            {view === "detail" && selectedProject && (
+              <motion.div style={{ 
+                  position: "fixed", left: 0, top: 0, x: mouseX, y: mouseY, pointerEvents: "none", zIndex: 9999, 
+                  padding: "12px", fontFamily: fontTitle, fontSize: "0.6rem", color: cursorColor,
+                  transition: "color 0.3s ease", textTransform: "lowercase", display: "flex", flexDirection: "column", maxWidth: "200px" 
+              }}>
+                <AnimatePresence mode="wait">
+                  <motion.span 
+                    key={hoveredIndex !== null ? `text-${hoveredIndex}` : 'title'} 
+                    initial={{ opacity: 0, y: 5 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -5 }} 
+                    transition={{ duration: 0.15 }} style={{ lineHeight: "1.4" }}
                   >
-                    {item.url.endsWith(".mp4") ? (
-                      <video src={item.url} autoPlay muted loop playsInline style={{ width: "100%", height: "auto", display: "block" }} />
-                    ) : (
-                      <img src={item.url} crossOrigin="anonymous" style={{ width: "100%", height: "auto", display: "block" }} />
-                    )}
-                  </motion.div>
-                ))}
-              </div>
-            </div>
+                    {hoveredIndex !== null ? (selectedProject.gallery[hoveredIndex]?.text || "detalle") : selectedProject.title}
+                  </motion.span>
+                </AnimatePresence>
+              </motion.div>
+            )}
+
+            <AnimatePresence mode="wait">
+              {view === "home" && <motion.div key="home" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} style={{height: "100vh"}}><ImageTrail images={trailImages} /></motion.div>}
+
+              {view === "projects" && (
+                <motion.div key="projects" ref={containerRef} initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} style={{ position: "relative", width: "100vw", height: "100vh", overflow: "hidden" }}>
+                  <Crosshair containerRef={containerRef} color={kleinBlue} />
+                  {projects.map((proj, index) => (
+                    <motion.div 
+                      key={proj.id} drag dragConstraints={containerRef} onClick={() => openProject(proj)} 
+                      style={{ position: "absolute", top: projectPositions[index]?.top, left: projectPositions[index]?.left, rotate: projectPositions[index]?.rotation, width: "150px", cursor: "pointer", zIndex: 10 }}>
+                      <motion.img src={proj.img} whileHover={{ scale: 1.05 }} style={{ width: "100%", filter: "grayscale(100%)" }} onMouseOver={e => e.currentTarget.style.filter="grayscale(0%)"} onMouseOut={e => e.currentTarget.style.filter="grayscale(100%)"} />
+                      <p style={{ fontFamily: fontBody, marginTop: "10px", fontSize: "0.7rem" }}>{proj.title}</p>
+                    </motion.div>
+                  ))}
+                </motion.div>
+              )}
+
+              {view === "about" && (
+                <motion.div key="about" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} style={{ width: "100vw", height: "100vh", position: "relative" }}>
+                  <Crosshair color="#000" />
+                  <motion.p animate={{ ...aboutPositions.email }} style={{ position: "absolute", fontFamily: fontTitle, fontSize: "0.8rem", color: kleinBlue }}>giulia@studio.com</motion.p>
+                  <motion.p animate={{ ...aboutPositions.phone }} style={{ position: "absolute", fontFamily: fontTitle, fontSize: "0.8rem", color: kleinBlue }}>+34 600 000 000</motion.p>
+                  <div style={{ display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center", height: "100vh", gap: "2rem", padding: "0 20vw", textAlign: "center" }}>
+                    <p style={{ fontFamily: fontBody, fontSize: "0.8rem", maxWidth: "400px", lineHeight: "1.6" }}>Directora creativa explorando la intersección entre el error digital y la armonía orgánica.</p>
+                  </div>
+                </motion.div>
+              )}
+
+              {view === "detail" && selectedProject && (
+                <motion.div key="detail" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} style={{ backgroundColor: "white", minHeight: "100vh" }}>
+                  <Crosshair color={kleinBlue} />
+                  
+                  <div style={{ position: "fixed", top: 0, right: 0, width: "30vw", height: "15vh", zIndex: 500, fontFamily: fontTitle, fontSize: "0.65rem", textTransform: "lowercase", color: kleinBlue }}>
+                    <motion.p initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0, ...detailInfoPositions.role }} transition={{ duration: 0.6 }} style={{ position: "absolute" }}>{selectedProject.info.role}</motion.p>
+                    <motion.p initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0, ...detailInfoPositions.location }} transition={{ duration: 0.6, delay: 0.1 }} style={{ position: "absolute" }}>{selectedProject.info.location}</motion.p>
+                    <motion.p initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0, ...detailInfoPositions.date }} transition={{ duration: 0.6, delay: 0.2 }} style={{ position: "absolute" }}>{selectedProject.info.date}</motion.p>
+                  </div>
+
+                  <div style={{ display: "flex", padding: "0 4vw" }}>
+                    <div style={{ width: "35vw", height: "100vh", position: "sticky", top: 0 }}>
+                      <div style={{ position: "absolute", top: "50%", transform: "translateY(-50%)", zIndex: 10, width: "100%" }}>
+                        <h1 style={{ fontFamily: fontTitle, fontSize: "4.5vw", color: kleinBlue, lineHeight: "0.8" }}>{selectedProject.title}</h1>
+                        <p style={{ fontFamily: fontBody, fontSize: "0.9rem", marginTop: "1rem", maxWidth: "20vw", lineHeight: "1.4", opacity: 0.8 }}>{selectedProject.desc}</p>
+                      </div>
+                      {selectedProject.extraTexts?.map((text, i) => (
+                        <motion.p key={i} animate={{ ...leftTextPositions[i], y: [0, -20, 0] }} transition={{ ...leftTextPositions[i], y: { duration: 6, repeat: Infinity, ease: "easeInOut", delay: i * 1.2 } }} style={{ position: "absolute", fontFamily: fontBody, fontSize: "0.65rem", maxWidth: "12vw", lineHeight: "1.6", opacity: 0.4, pointerEvents: "none", zIndex: 1 }}>{text}</motion.p>
+                      ))}
+                    </div>
+
+                    <div style={{ width: "65vw", paddingTop: "25vh", paddingBottom: "25vh", display: "flex", flexDirection: "column", gap: "30vh" }}>
+                      {selectedProject.gallery.map((item, i) => (
+                        <motion.div
+                          key={i}
+                          onMouseEnter={(e) => {
+                            setHoveredIndex(i);
+                            const img = e.currentTarget.querySelector("img");
+                            if (img) getImageBrightness(img);
+                          }}
+                          onMouseLeave={() => {
+                            setHoveredIndex(null);
+                            setCursorColor("#000000");
+                          }}
+                          initial={{ opacity: 0, y: 30 }}
+                          whileInView={{ opacity: 1, y: 0 }}
+                          viewport={{ once: true }}
+                          transition={{ duration: 0.8 }}
+                          style={{ width: (i + 1) % 3 === 0 ? "100%" : "70%", alignSelf: i % 2 === 0 ? "flex-end" : "flex-start" }}
+                        >
+                          {item.url.endsWith(".mp4") ? (
+                            <video src={item.url} autoPlay muted loop playsInline style={{ width: "100%", height: "auto", display: "block" }} />
+                          ) : (
+                            <img src={item.url} crossOrigin="anonymous" style={{ width: "100%", height: "auto", display: "block" }} />
+                          )}
+                        </motion.div>
+                      ))}
+                    </div>
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
           </motion.div>
         )}
       </AnimatePresence>
