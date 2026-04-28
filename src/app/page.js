@@ -43,9 +43,8 @@ const LoadingScreen = () => {
   );
 };
 
-// --- COMPONENTE DE SOMBRA REACTIVA ---
+// --- COMPONENTE DE SOMBRA REACTIVA (GRADIENT MEJORADO Y RESPONSIVE) ---
 const MouseShadowEffect = ({ mouseX, mouseY }) => {
-  // Ajuste para evitar errores de SSR en Vercel
   const scale = useTransform(
     [mouseX, mouseY],
     ([x, y]) => {
@@ -54,27 +53,43 @@ const MouseShadowEffect = ({ mouseX, mouseY }) => {
       const centerY = window.innerHeight / 2;
       const dist = Math.sqrt(Math.pow(x - centerX, 2) + Math.pow(y - centerY, 2));
       const maxDist = Math.sqrt(Math.pow(centerX, 2) + Math.pow(centerY, 2));
-      return 1 + (dist / maxDist) * 0.15;
+      // La escala ahora es más sensible al movimiento
+      return 1 + (dist / maxDist) * 0.25;
     }
   );
 
   return (
     <motion.div
       style={{
-        position: "absolute", left: "-50vw", top: "-50vh", x: mouseX, y: mouseY, scale: scale, 
-        width: "100vw", height: "100vh", pointerEvents: "none", zIndex: 1,
+        position: "fixed", // Cambiado a fixed para que siga el viewport
+        left: "-50vw", 
+        top: "-50vh", 
+        x: mouseX, 
+        y: mouseY, 
+        scale: scale, 
+        width: "100vw", 
+        height: "100vh", 
+        pointerEvents: "none", 
+        zIndex: 1,
+        // Degradado más complejo y profundo
         backgroundImage: `
-          radial-gradient(circle at 45% 45%, rgba(0, 47, 167, 0.22) 0%, rgba(0, 47, 167, 0) 50%),
-          radial-gradient(circle at 55% 55%, rgba(0, 255, 255, 0.12) 0%, rgba(0, 255, 255, 0) 45%),
-          radial-gradient(circle at 50% 50%, rgba(128, 0, 128, 0.08) 0%, rgba(128, 0, 128, 0) 60%)
+          radial-gradient(circle at 50% 50%, rgba(0, 47, 167, 0.25) 0%, rgba(0, 47, 167, 0.1) 30%, rgba(0, 255, 255, 0.05) 50%, transparent 75%),
+          radial-gradient(circle at 40% 40%, rgba(128, 0, 128, 0.1) 0%, transparent 60%)
         `,
-        filter: "blur(100px) contrast(140%)", mixBlendMode: "multiply",
+        // El blur ahora es más grande para suavizar los bordes en pantallas grandes
+        filter: "blur(80px) saturate(150%) contrast(110%)", 
+        mixBlendMode: "multiply",
+        opacity: 0.8
       }}
     >
+      {/* Capa de ruido orgánico */}
       <div style={{ 
-        position: "absolute", inset: 0, 
-        backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 400 400' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E")`, 
-        backgroundRepeat: "repeat", opacity: 0.12, mixBlendMode: "overlay" 
+        position: "absolute", 
+        inset: 0, 
+        backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 400 400' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.6' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E")`, 
+        backgroundRepeat: "repeat", 
+        opacity: 0.15, 
+        mixBlendMode: "overlay" 
       }} />
     </motion.div>
   );
