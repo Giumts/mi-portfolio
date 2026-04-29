@@ -2,34 +2,27 @@
 import { useState, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 
-export default function ImageTrail({ children, images = [] }) {
+export default function ImageTrail({ images = [] }) {
   const [trail, setTrail] = useState([]);
-  const imageIndexRef = useRef(0); // Referencia para el índice de la imagen actual
-  const lastPositionRef = useRef({ x: 0, y: 0 }); // Referencia para la última posición del ratón
+  const imageIndexRef = useRef(0);
+  const lastPositionRef = useRef({ x: 0, y: 0 });
 
-  const handleMouseMove = (e) => {
-    const { clientX, clientY } = e;
-
-    // Calcular la distancia movida desde la última imagen
+  const handleMove = (clientX, clientY) => {
     const distance = Math.sqrt(
       Math.pow(clientX - lastPositionRef.current.x, 2) +
       Math.pow(clientY - lastPositionRef.current.y, 2)
     );
 
-    // Solo añadir una nueva imagen si el ratón se ha movido una distancia mínima
-    // Aumenta este número para que las imágenes estén más separadas (más lento)
-    if (distance > 50) {
+    if (distance > 70) {
       const newImage = {
         x: clientX,
         y: clientY,
         id: Date.now(),
-        // Usar el índice actual y luego incrementarlo, volviendo a 0 al final
         src: images[imageIndexRef.current],
+        rotate: Math.random() * 20 - 10,
       };
 
-      setTrail((prev) => [...prev.slice(-15), newImage]); // Guardar las últimas 15 imágenes
-
-      // Actualizar la referencia de posición y el índice de imagen
+      setTrail((prev) => [...prev.slice(-20), newImage]);
       lastPositionRef.current = { x: clientX, y: clientY };
       imageIndexRef.current = (imageIndexRef.current + 1) % images.length;
     }
@@ -37,46 +30,24 @@ export default function ImageTrail({ children, images = [] }) {
 
   return (
     <div
-      onMouseMove={handleMouseMove}
-      style={{
-        height: "100vh",
-        width: "100vw",
-        position: "relative",
-        overflow: "hidden",
-        backgroundColor: "white", // Asegurar fondo blanco para el contraste
-      }}
+      onMouseMove={(e) => handleMove(e.clientX, e.clientY)}
+      onTouchMove={(e) => handleMove(e.touches[0].clientX, e.touches[0].clientY)}
+      style={{ height: "100vh", width: "100vw", position: "relative", overflow: "hidden" }}
     >
-      {children} {/* Renderizar el contenido fijo (nombre) */}
       <AnimatePresence>
         {trail.map((img) => (
           <motion.img
             key={img.id}
             src={img.src}
-            alt="Trail"
-            initial={{ opacity: 0, scale: 0.8, filter: "blur(10px)" }} // Empezar invisible, pequeño y muy borroso
-            animate={{ opacity: 1, scale: 1, filter: "blur(0px)" }}    // Aparecer nítido y a tamaño real
-            exit={{ opacity: 0, scale: 1.2, filter: "blur(15px)" }}    // Desaparecer grande, invisible y muy borroso
-            transition={{
-              // Configurar la duración de cada fase (más alto = más lento)
-              opacity: { duration: 1.5, ease: "easeOut" }, 
-              scale: { duration: 1.5, ease: "easeOut" },
-              filter: { duration: 2, ease: "easeOut" }, // El blur tarda más en quitarse/ponerse
-              
-              // Ajuste fino para la desaparición (exit)
-              exit: {
-                  opacity: { duration: 2.5, ease: "easeInOut" },
-                  filter: { duration: 3, ease: "easeInOut" }
-              }
-            }}
+            initial={{ opacity: 0, scale: 0.6, filter: "blur(15px)" }}
+            animate={{ opacity: 1, scale: 1, filter: "blur(0px)" }}
+            exit={{ opacity: 0, scale: 1.4, filter: "blur(20px)" }}
+            transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
             style={{
-              position: "absolute",
-              left: img.x,
-              top: img.y,
-              width: "150px", // Tamaño de las imágenes del rastro
-              height: "auto",
-              pointerEvents: "none",
-              transform: "translate(-50%, -50%)", // Centrar la imagen en el cursor
-              zIndex: 1, // Asegurar que estén por debajo del nombre
+              position: "absolute", left: img.x, top: img.y,
+              width: "160px", pointerEvents: "none",
+              transform: "translate(-50%, -50%)",
+              rotate: img.rotate, zIndex: 1
             }}
           />
         ))}
