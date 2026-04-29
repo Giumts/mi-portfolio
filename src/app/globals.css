@@ -29,14 +29,3 @@ body {
   border-bottom: 1px solid #444;
   padding: 2px 0;
 }
-@media (max-width: 768px) {
-  /* Ocultamos el rastro de imágenes en móvil porque funciona con mouseMove */
-  .image-trail-container {
-    display: none;
-  }
-  
-  /* El cursor personalizado no es necesario en pantallas táctiles */
-  .custom-crosshair {
-    display: none;
-  }
-}
