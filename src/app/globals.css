@@ -18,23 +18,14 @@ html, body {
   -webkit-font-smoothing: antialiased;
 }
 
-/* Ocultar Scrollbar */
-::-webkit-scrollbar {
-  display: none;
-}
+::-webkit-scrollbar { display: none; }
 
 * {
   box-sizing: border-box;
-  -ms-overflow-style: none;
   scrollbar-width: none;
 }
 
 ::selection {
   background: #002FA7;
   color: white;
-}
-
-img, video {
-  display: block;
-  user-select: none;
 }

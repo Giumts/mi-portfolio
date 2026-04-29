@@ -7,13 +7,14 @@ export default function ImageTrail({ images = [] }) {
   const imageIndexRef = useRef(0);
   const lastPositionRef = useRef({ x: 0, y: 0 });
 
-  const handleMove = (clientX, clientY) => {
+  const handleMouseMove = (e) => {
+    const { clientX, clientY } = e;
     const distance = Math.sqrt(
       Math.pow(clientX - lastPositionRef.current.x, 2) +
       Math.pow(clientY - lastPositionRef.current.y, 2)
     );
 
-    if (distance > 70) {
+    if (distance > 60) {
       const newImage = {
         x: clientX,
         y: clientY,
@@ -22,30 +23,26 @@ export default function ImageTrail({ images = [] }) {
         rotate: Math.random() * 20 - 10,
       };
 
-      setTrail((prev) => [...prev.slice(-20), newImage]);
+      setTrail((prev) => [...prev.slice(-15), newImage]);
       lastPositionRef.current = { x: clientX, y: clientY };
       imageIndexRef.current = (imageIndexRef.current + 1) % images.length;
     }
   };
 
   return (
-    <div
-      onMouseMove={(e) => handleMove(e.clientX, e.clientY)}
-      onTouchMove={(e) => handleMove(e.touches[0].clientX, e.touches[0].clientY)}
-      style={{ height: "100vh", width: "100vw", position: "relative", overflow: "hidden" }}
-    >
+    <div onMouseMove={handleMouseMove} style={{ height: "100vh", width: "100vw", position: "relative", overflow: "hidden" }}>
       <AnimatePresence>
         {trail.map((img) => (
           <motion.img
             key={img.id}
             src={img.src}
-            initial={{ opacity: 0, scale: 0.6, filter: "blur(15px)" }}
+            initial={{ opacity: 0, scale: 0.8, filter: "blur(10px)" }}
             animate={{ opacity: 1, scale: 1, filter: "blur(0px)" }}
-            exit={{ opacity: 0, scale: 1.4, filter: "blur(20px)" }}
-            transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+            exit={{ opacity: 0, scale: 1.2, filter: "blur(15px)" }}
+            transition={{ duration: 1.5 }}
             style={{
               position: "absolute", left: img.x, top: img.y,
-              width: "160px", pointerEvents: "none",
+              width: "150px", pointerEvents: "none",
               transform: "translate(-50%, -50%)",
               rotate: img.rotate, zIndex: 1
             }}
