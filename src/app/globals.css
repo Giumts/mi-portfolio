@@ -1,31 +1,42 @@
-@font-face {
-  font-family: 'Monor';
-  src: url('/fonts/Monor_Regular.otf') format('opentype');
-}
-
-@font-face {
-  font-family: 'Roundo';
-  src: url('/fonts/Roundo-Regular.otf') format('opentype');
-}
-
-html, body {
+body {
   margin: 0;
   padding: 0;
-  background-color: white;
-  color: black;
-  overflow-x: hidden;
-  cursor: crosshair !important;
-  -webkit-font-smoothing: antialiased;
+  background-color: white; /* Esto asegura el fondo blanco */
+}
+/* Estilos para el contenedor y el tooltip */
+.contenedor-imagen {
+  position: relative;
+  display: inline-block;
 }
 
-::-webkit-scrollbar { display: none; }
-
-* {
-  box-sizing: border-box;
-  scrollbar-width: none;
-}
-
-::selection {
-  background: #002FA7;
+.tooltip-columna {
+  position: fixed; /* Para que siga al ratón con precisión */
+  display: none;   /* Se activa con el JS */
+  flex-direction: column; /* ¡Aquí se hace la columna! */
+  gap: 4px;
+  background-color: rgba(0, 0, 0, 0.85);
   color: white;
+  padding: 10px;
+  border-radius: 6px;
+  pointer-events: none;
+  z-index: 9999;
+  font-size: 14px;
+  min-width: 120px;
+}
+
+.tooltip-columna span {
+  display: block; /* Asegura que cada texto ocupe su propia línea */
+  border-bottom: 1px solid #444;
+  padding: 2px 0;
+}
+@media (max-width: 768px) {
+  /* Ocultamos el rastro de imágenes en móvil porque funciona con mouseMove */
+  .image-trail-container {
+    display: none;
+  }
+  
+  /* El cursor personalizado no es necesario en pantallas táctiles */
+  .custom-crosshair {
+    display: none;
+  }
 }
