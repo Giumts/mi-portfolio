@@ -100,10 +100,12 @@ export default function Home() {
   const [isLoading, setIsLoading] = useState(true);
   const [hasMounted, setHasMounted] = useState(false); // Para evitar errores de hidratación
   const [projectPositions, setProjectPositions] = useState([]);
-  const [hoveredIndex, setHoveredIndex] = useState(null); 
-  const [detailInfoPositions, setDetailInfoPositions] = useState({});
+  const [hoveredIndex, setHoveredIndex] = useState(null);
   const [cursorColor, setCursorColor] = useState("#000000");
+  const [detailInfoPositions, setDetailInfoPositions] = useState({});
+  const [isMobile, setIsMobile] = useState(false);
   const containerRef = useRef(null);
+  const carouselRef = useRef(null);
 
   // Galerías (Mantenidas intactas)
   const gallery1 = [{ url: "/fotos_detalle/24_1.jpg", text: "frame 01" }, { url: "/fotos_detalle/24_2.jpg", text: "frame 02" }, { url: "/fotos_detalle/24_3.mp4", text: "frame 03" }, { url: "/fotos_detalle/24_4.jpg", text: "frame 04" }, { url: "/fotos_detalle/24_5.jpg", text: "frame 05" }, { url: "/fotos_detalle/24_6.jpg", text: "frame 06" }, { url: "/fotos_detalle/24_7.jpg", text: "frame 07" }, { url: "/fotos_detalle/24_8.jpg", text: "frame 08" }];
@@ -134,7 +136,6 @@ export default function Home() {
   const trailImages = ["/BEAUTIFUL_FAILURES_AY1.jpg", "/BEAUTIFUL_FAILURES_AY3.jpg", "/BEAUTIFUL_FAILURES_AY15.jpg", "/BEAUTIFUL_FAILURES_AY37.jpg", "/BEAUTIFUL_FAILURES_AY42.jpg"];
   const [navPositions, setNavPositions] = useState({ giulia: { top: "15vh", left: "40vw", rotate: "-2deg" }, projects: { top: "75vh", left: "15vw", rotate: "4deg" }, about: { top: "45vh", right: "12vw", rotate: "-3deg" } });
   const [aboutPositions, setAboutPositions] = useState({ email: { top: "25vh", left: "15vw", rotate: "-5deg" }, phone: { bottom: "25vh", right: "15vw", rotate: "5deg" } });
-  const [leftTextPositions, setLeftTextPositions] = useState([]);
   const [selectedProject, setSelectedProject] = useState(null);
   
   const springConfig = { stiffness: 250, damping: 30 };
@@ -153,10 +154,14 @@ export default function Home() {
   }, []);
 
   useEffect(() => {
-    const handleMouseMove = (e) => { 
-        mouseX.set(e.clientX); 
-        mouseY.set(e.clientY); 
-    };
+    const check = () => setIsMobile(window.innerWidth < 768);
+    check();
+    window.addEventListener("resize", check);
+    return () => window.removeEventListener("resize", check);
+  }, []);
+
+  useEffect(() => {
+    const handleMouseMove = (e) => { mouseX.set(e.clientX); mouseY.set(e.clientY); };
     window.addEventListener("mousemove", handleMouseMove);
     return () => window.removeEventListener("mousemove", handleMouseMove);
   }, [mouseX, mouseY]);
@@ -174,32 +179,11 @@ export default function Home() {
         location: { top: "8vh", right: "8vw", rotate: "1deg" }, 
         role: { top: "4vh", right: "2vw", rotate: "-1deg" } 
       });
-      setLeftTextPositions([{ top: "15vh", left: "4vw", rotate: "-3deg" }, { top: "78vh", left: "12vw", rotate: "4deg" }, { top: "40vh", left: "20vw", rotate: "-2deg" }]);
     }
   }, [view]);
 
   const openProject = (proj) => { setSelectedProject(proj); setView("detail"); window.scrollTo({ top: 0, behavior: 'instant' }); };
 
-  const getImageBrightness = (imgElement) => {
-    const analyze = () => {
-      const canvas = document.createElement("canvas");
-      const ctx = canvas.getContext("2d");
-      canvas.width = 50; canvas.height = 50;
-      try {
-        ctx.drawImage(imgElement, 0, 0, 50, 50);
-        const data = ctx.getImageData(0, 0, 50, 50).data;
-        let sum = 0;
-        for (let i = 0; i < data.length; i += 4) {
-          sum += 0.299 * data[i] + 0.587 * data[i + 1] + 0.114 * data[i + 2];
-        }
-        const avg = sum / (data.length / 4);
-        setCursorColor(avg > 128 ? "#000000" : "#ffffff");
-      } catch (e) {
-        setCursorColor("#000000");
-      }
-    };
-    if (imgElement.complete) analyze(); else imgElement.onload = analyze;
-  };
 
   // Prevenir renderizado hasta que el cliente esté listo
   if (!hasMounted) return <div style={{backgroundColor: "white", height: "100vh"}} />;
@@ -211,6 +195,18 @@ export default function Home() {
         @font-face { font-family: 'Roundo'; src: url('/fonts/Roundo-Regular.otf') format('opentype'); }
         body, html, * { margin: 0; padding: 0; color: #000; -webkit-font-smoothing: antialiased; cursor: crosshair !important; }
         ::-webkit-scrollbar { display: none; }
+        @media (max-width: 768px) { body, html, * { cursor: auto !important; } }
+        @keyframes floatDown {
+          0%   { transform: translateY(0)     scale(0.85); opacity: 0;    }
+          6%   { transform: translateY(15vh)  scale(0.9);  opacity: 0.38; }
+          28%  { transform: translateY(70vh)  scale(1.0);  opacity: 0.4;  }
+          44%  { transform: translateY(110vh) scale(1.55); opacity: 0.42; }
+          58%  { transform: translateY(145vh) scale(1.0);  opacity: 0.4;  }
+          70%  { transform: translateY(175vh) scale(1.35); opacity: 0.38; }
+          90%  { transform: translateY(225vh) scale(0.8);  opacity: 0.2;  }
+          97%  { transform: translateY(248vh) scale(0.7);  opacity: 0;    }
+          100% { transform: translateY(252vh) scale(0.7);  opacity: 0;    }
+        }
       `}</style>
 
       <AnimatePresence mode="wait">
@@ -238,16 +234,17 @@ export default function Home() {
             </nav>
 
             {/* CURSOR DETALLE */}
-            {view === "detail" && selectedProject && (
-              <motion.div style={{ 
-                  position: "fixed", left: 0, top: 0, x: mouseX, y: mouseY, pointerEvents: "none", zIndex: 9999, 
+            {view === "detail" && selectedProject && !isMobile && (
+              <motion.div style={{
+                  position: "fixed", left: 0, top: 0, x: mouseX, y: mouseY, pointerEvents: "none", zIndex: 9999,
                   padding: "12px", fontFamily: fontTitle, fontSize: "0.6rem", color: cursorColor,
-                  textTransform: "lowercase", display: "flex", flexDirection: "column" 
+                  textTransform: "lowercase", display: "flex", flexDirection: "column"
               }}>
                 <AnimatePresence mode="wait">
-                  <motion.span 
-                    key={hoveredIndex !== null ? `text-${hoveredIndex}` : 'title'} 
+                  <motion.span
+                    key={hoveredIndex !== null ? `text-${hoveredIndex}` : 'title'}
                     initial={{ opacity: 0 }} animate={{ opacity: 1 }}
+                    style={{ color: cursorColor }}
                     transition={{ duration: 0.15 }}
                   >
                     {hoveredIndex !== null ? (selectedProject.gallery[hoveredIndex]?.text || "detalle") : selectedProject.title}
@@ -286,47 +283,132 @@ export default function Home() {
               )}
 
               {view === "detail" && selectedProject && (
-                <motion.div key="detail" style={{ backgroundColor: "white", minHeight: "100vh" }}>
-                  <Crosshair color={kleinBlue} />
-                  <div style={{ position: "fixed", top: 0, right: 0, width: "30vw", height: "15vh", zIndex: 500, fontFamily: fontTitle, fontSize: "0.65rem", textTransform: "lowercase", color: kleinBlue }}>
-                    <motion.p animate={{ ...detailInfoPositions.role }} style={{ position: "absolute" }}>{selectedProject.info.role}</motion.p>
-                    <motion.p animate={{ ...detailInfoPositions.location }} style={{ position: "absolute" }}>{selectedProject.info.location}</motion.p>
-                    <motion.p animate={{ ...detailInfoPositions.date }} style={{ position: "absolute" }}>{selectedProject.info.date}</motion.p>
-                  </div>
-
-                  <div style={{ display: "flex", padding: "0 4vw" }}>
-                    <div style={{ width: "35vw", height: "100vh", position: "sticky", top: 0 }}>
-                      <div style={{ position: "absolute", top: "50%", transform: "translateY(-50%)", width: "100%" }}>
-                        <h1 style={{ fontFamily: fontTitle, fontSize: "4.5vw", color: kleinBlue, lineHeight: "0.8" }}>{selectedProject.title}</h1>
-                        <p style={{ fontFamily: fontBody, fontSize: "0.9rem", marginTop: "1rem", maxWidth: "20vw", lineHeight: "1.4", opacity: 0.8 }}>{selectedProject.desc}</p>
+                isMobile ? (
+                  <motion.div key="detail" style={{ backgroundColor: "white", minHeight: "100vh" }}>
+                    <div style={{ padding: "14vh 6vw 4vh" }}>
+                      <h1 style={{ fontFamily: fontTitle, fontSize: "12vw", color: kleinBlue, lineHeight: "0.85" }}>{selectedProject.title}</h1>
+                      <p style={{ fontFamily: fontBody, fontSize: "0.85rem", marginTop: "1.2rem", lineHeight: "1.5", opacity: 0.8 }}>{selectedProject.desc}</p>
+                      <div style={{ display: "flex", gap: "5vw", marginTop: "1rem", fontFamily: fontTitle, fontSize: "0.6rem", color: kleinBlue, textTransform: "lowercase", flexWrap: "wrap" }}>
+                        <span>{selectedProject.info.role}</span>
+                        <span>{selectedProject.info.location}</span>
+                        <span>{selectedProject.info.date}</span>
                       </div>
-                      {selectedProject.extraTexts?.map((text, i) => (
-                        <motion.p key={i} animate={{ ...leftTextPositions[i] }} transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }} style={{ position: "absolute", fontFamily: fontBody, fontSize: "0.65rem", maxWidth: "12vw", opacity: 0.4 }}>{text}</motion.p>
-                      ))}
                     </div>
 
-                    <div style={{ width: "65vw", paddingTop: "25vh", paddingBottom: "25vh", display: "flex", flexDirection: "column", gap: "30vh" }}>
+                    <div ref={carouselRef} style={{ width: "100vw", height: "65vw", overflow: "hidden", marginTop: "4vh" }}>
+                      <motion.div
+                        drag="x"
+                        dragConstraints={carouselRef}
+                        dragElastic={0.05}
+                        dragTransition={{ bounceStiffness: 300, bounceDamping: 30 }}
+                        style={{ display: "flex", height: "100%", width: `${selectedProject.gallery.length * 100}%` }}
+                      >
+                        {selectedProject.gallery.map((item, i) => (
+                          <div key={i} style={{ flex: 1, height: "100%", display: "flex", alignItems: "center", justifyContent: "center", padding: "2vw 3vw" }}>
+                            {item.url.endsWith(".mp4") ? (
+                              <video src={item.url} autoPlay muted loop playsInline style={{ maxHeight: "100%", maxWidth: "100%", objectFit: "contain", pointerEvents: "none" }} />
+                            ) : (
+                              <img src={item.url} draggable={false} style={{ maxHeight: "100%", maxWidth: "100%", objectFit: "contain", userSelect: "none" }} />
+                            )}
+                          </div>
+                        ))}
+                      </motion.div>
+                    </div>
+
+                    <div style={{ padding: "8vh 6vw", display: "flex", flexDirection: "column", gap: "8vh" }}>
                       {selectedProject.gallery.map((item, i) => (
-                        <motion.div
-                          key={i}
-                          onMouseEnter={(e) => {
-                            setHoveredIndex(i);
-                            const img = e.currentTarget.querySelector("img");
-                            if (img) getImageBrightness(img);
-                          }}
-                          onMouseLeave={() => { setHoveredIndex(null); setCursorColor("#000000"); }}
-                          style={{ width: (i + 1) % 3 === 0 ? "100%" : "70%", alignSelf: i % 2 === 0 ? "flex-end" : "flex-start" }}
-                        >
+                        <div key={i}>
                           {item.url.endsWith(".mp4") ? (
                             <video src={item.url} autoPlay muted loop playsInline style={{ width: "100%" }} />
                           ) : (
-                            <img src={item.url} crossOrigin="anonymous" style={{ width: "100%" }} />
+                            <img src={item.url} style={{ width: "100%" }} />
                           )}
-                        </motion.div>
+                        </div>
                       ))}
                     </div>
-                  </div>
-                </motion.div>
+                  </motion.div>
+                ) : (
+                  <motion.div key="detail" style={{ backgroundColor: "white", minHeight: "100vh", position: "relative" }}>
+                    <Crosshair color={kleinBlue} />
+                    <div style={{ position: "fixed", top: 0, right: 0, width: "30vw", height: "15vh", zIndex: 500, fontFamily: fontTitle, fontSize: "0.65rem", textTransform: "lowercase", color: kleinBlue }}>
+                      <motion.p animate={{ ...detailInfoPositions.role }} style={{ position: "absolute" }}>{selectedProject.info.role}</motion.p>
+                      <motion.p animate={{ ...detailInfoPositions.location }} style={{ position: "absolute" }}>{selectedProject.info.location}</motion.p>
+                      <motion.p animate={{ ...detailInfoPositions.date }} style={{ position: "absolute" }}>{selectedProject.info.date}</motion.p>
+                    </div>
+
+                    <div style={{ position: "absolute", top: 0, left: 0, width: "35vw", height: "100%", pointerEvents: "none", zIndex: 10, overflow: "hidden" }}>
+                      {selectedProject.extraTexts?.map((text, i) => {
+                        const fc = [
+                          { left: "5vw",  rotate: "-3deg", delay: "0s"   },
+                          { left: "21vw", rotate: "4deg",  delay: "-18s" },
+                          { left: "12vw", rotate: "-2deg", delay: "-36s" }
+                        ][i] || { left: "6vw", rotate: "0deg", delay: "0s" };
+                        return (
+                          <div
+                            key={i}
+                            style={{ position: "absolute", top: 0, left: fc.left, rotate: fc.rotate, fontFamily: fontBody, fontSize: "0.65rem", maxWidth: "13vw", animation: `floatDown 55s linear ${fc.delay} infinite` }}
+                          >
+                            {text}
+                          </div>
+                        );
+                      })}
+                    </div>
+
+                    <div style={{ display: "flex", padding: "0 4vw" }}>
+                      <div style={{ width: "35vw", height: "100vh", position: "sticky", top: 0 }}>
+                        <div style={{ position: "absolute", top: "50%", transform: "translateY(-50%)", width: "100%" }}>
+                          <h1 style={{ fontFamily: fontTitle, fontSize: "4.5vw", color: kleinBlue, lineHeight: "0.8" }}>{selectedProject.title}</h1>
+                          <p style={{ fontFamily: fontBody, fontSize: "0.9rem", marginTop: "1rem", maxWidth: "20vw", lineHeight: "1.4", opacity: 0.8 }}>{selectedProject.desc}</p>
+                        </div>
+                      </div>
+
+                      <div style={{ width: "65vw" }}>
+                        <div ref={carouselRef} style={{ height: "100vh", overflow: "hidden" }}>
+                          <motion.div
+                            drag="x"
+                            dragConstraints={carouselRef}
+                            dragElastic={0.05}
+                            dragTransition={{ bounceStiffness: 300, bounceDamping: 30 }}
+                            whileDrag={{ cursor: "grabbing" }}
+                            style={{ display: "flex", height: "100%", width: `${selectedProject.gallery.length * 100}%` }}
+                          >
+                            {selectedProject.gallery.map((item, i) => (
+                              <div
+                                key={i}
+                                onMouseEnter={() => { setHoveredIndex(i); setCursorColor("#ffffff"); }}
+                                onMouseLeave={() => { setHoveredIndex(null); setCursorColor("#000000"); }}
+                                style={{ flex: 1, height: "100%", display: "flex", alignItems: "center", justifyContent: "center", padding: "8vh 3vw" }}
+                              >
+                                {item.url.endsWith(".mp4") ? (
+                                  <video src={item.url} autoPlay muted loop playsInline style={{ maxHeight: "100%", maxWidth: "100%", objectFit: "contain", pointerEvents: "none" }} />
+                                ) : (
+                                  <img src={item.url} crossOrigin="anonymous" draggable={false} style={{ maxHeight: "100%", maxWidth: "100%", objectFit: "contain", userSelect: "none" }} />
+                                )}
+                              </div>
+                            ))}
+                          </motion.div>
+                        </div>
+
+                        <div style={{ paddingTop: "25vh", paddingBottom: "25vh", display: "flex", flexDirection: "column", gap: "30vh" }}>
+                          {selectedProject.gallery.map((item, i) => (
+                            <motion.div
+                              key={i}
+                              onMouseEnter={() => { setHoveredIndex(i); setCursorColor("#ffffff"); }}
+                              onMouseLeave={() => { setHoveredIndex(null); setCursorColor("#000000"); }}
+                              style={{ width: (i + 1) % 3 === 0 ? "100%" : "70%", alignSelf: i % 2 === 0 ? "flex-end" : "flex-start" }}
+                            >
+                              {item.url.endsWith(".mp4") ? (
+                                <video src={item.url} autoPlay muted loop playsInline style={{ width: "100%" }} />
+                              ) : (
+                                <img src={item.url} crossOrigin="anonymous" style={{ width: "100%" }} />
+                              )}
+                            </motion.div>
+                          ))}
+                        </div>
+                      </div>
+                    </div>
+                  </motion.div>
+                )
               )}
             </AnimatePresence>
           </motion.div>
