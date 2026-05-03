@@ -77,7 +77,8 @@ const MouseShadowEffect = ({ mouseX, mouseY }) => {
           radial-gradient(circle at 40% 40%, rgba(128, 0, 128, 0.1) 0%, transparent 60%)
         `,
         // El blur ahora es más grande para suavizar los bordes en pantallas grandes
-        filter: "blur(80px) saturate(150%) contrast(110%)", 
+        filter: "blur(25px) saturate(130%)",
+        willChange: "transform",
         mixBlendMode: "multiply",
         opacity: 0.8
       }}
@@ -106,7 +107,6 @@ export default function Home() {
   const [isMobile, setIsMobile] = useState(false);
   const containerRef = useRef(null);
   const carouselRef = useRef(null);
-  const carouselWrapperRef = useRef(null);
 
   // Galerías (Mantenidas intactas)
   const gallery1 = [{ url: "/fotos_detalle/24_1.jpg", text: "frame 01" }, { url: "/fotos_detalle/24_2.jpg", text: "frame 02" }, { url: "/fotos_detalle/24_3.mp4", text: "frame 03" }, { url: "/fotos_detalle/24_4.jpg", text: "frame 04" }, { url: "/fotos_detalle/24_5.jpg", text: "frame 05" }, { url: "/fotos_detalle/24_6.jpg", text: "frame 06" }, { url: "/fotos_detalle/24_7.jpg", text: "frame 07" }, { url: "/fotos_detalle/24_8.jpg", text: "frame 08" }];
@@ -174,22 +174,14 @@ export default function Home() {
       const positions = projects.map(() => ({ top: Math.floor(Math.random() * 60 + 15) + "vh", left: Math.floor(Math.random() * 70 + 10) + "vw", rotation: (Math.random() * 10 - 5) + "deg" }));
       setProjectPositions(positions);
     }
-    if (view === "detail") {
-      const r = (min, max) => (Math.random() * (max - min) + min).toFixed(1);
-      setDetailInfoPositions({
-        role:     { top: `${r(5,  14)}vh`, right: `${r(1, 8)}vw`, rotate: `${r(-3, 3)}deg` },
-        location: { top: `${r(40, 58)}vh`, right: `${r(1, 8)}vw`, rotate: `${r(-3, 3)}deg` },
-        date:     { top: `${r(74, 88)}vh`, right: `${r(1, 8)}vw`, rotate: `${r(-3, 3)}deg` },
-      });
-    }
   }, [view]);
 
   const openProject = (proj) => {
     const r = (min, max) => (Math.random() * (max - min) + min).toFixed(1);
     setDetailInfoPositions({
-      role:     { top: `${r(5,  14)}vh`, left: `${r(1, 26)}vw`, rotate: `${r(-3, 3)}deg` },
-      location: { top: `${r(40, 58)}vh`, left: `${r(1, 26)}vw`, rotate: `${r(-3, 3)}deg` },
-      date:     { top: `${r(74, 88)}vh`, left: `${r(1, 26)}vw`, rotate: `${r(-3, 3)}deg` },
+      role:     { top: `${r(5,  14)}vh`, right: `${r(1, 8)}vw`, rotate: `${r(-3, 3)}deg` },
+      location: { top: `${r(40, 58)}vh`, right: `${r(1, 8)}vw`, rotate: `${r(-3, 3)}deg` },
+      date:     { top: `${r(74, 88)}vh`, right: `${r(1, 8)}vw`, rotate: `${r(-3, 3)}deg` },
     });
     setSelectedProject(proj);
     setView("detail");
@@ -205,9 +197,11 @@ export default function Home() {
       <style jsx global>{`
         @font-face { font-family: 'Monor'; src: url('/fonts/Monor_Regular.otf') format('opentype'); }
         @font-face { font-family: 'Roundo'; src: url('/fonts/Roundo-Regular.otf') format('opentype'); }
-        body, html, * { margin: 0; padding: 0; color: #000; -webkit-font-smoothing: antialiased; cursor: crosshair !important; }
-        ::-webkit-scrollbar { display: none; }
+        body, html, * { margin: 0; padding: 0; color: #000; -webkit-font-smoothing: antialiased; cursor: none !important; }
         @media (max-width: 768px) { body, html, * { cursor: auto !important; } }
+        ::-webkit-scrollbar { display: none; }
+        .proj-thumb { filter: grayscale(100%); transition: filter 0.35s ease; will-change: transform; }
+        .proj-thumb:hover { filter: grayscale(0%); }
         @keyframes floatDown {
           0%   { transform: translateY(0)       scale(0.85); opacity: 0;    }
           5%   { transform: translateY(60vh)    scale(0.9);  opacity: 0.38; }
@@ -231,6 +225,7 @@ export default function Home() {
           <LoadingScreen key="loader" />
         ) : (
           <motion.div key="content" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 1 }}>
+            {!isMobile && <Crosshair color="#ffffff" showLines={view !== "home"} />}
             {/* NAV */}
             <nav>
               <AnimatePresence>
@@ -276,12 +271,12 @@ export default function Home() {
               {view === "projects" && (
                 <motion.div key="projects" ref={containerRef} style={{ position: "relative", width: "100vw", height: "100vh", overflow: "hidden" }}>
                   <MouseShadowEffect mouseX={mouseX} mouseY={mouseY} />
-                  <Crosshair containerRef={containerRef} color={kleinBlue} />
                   {projects.map((proj, index) => (
-                    <motion.div 
-                      key={proj.id} drag dragConstraints={containerRef} onClick={() => openProject(proj)} 
-                      style={{ position: "absolute", top: projectPositions[index]?.top, left: projectPositions[index]?.left, rotate: projectPositions[index]?.rotation, width: "150px", cursor: "pointer", zIndex: 10 }}>
-                      <motion.img src={proj.img} whileHover={{ scale: 1.05 }} style={{ width: "100%", filter: "grayscale(100%)" }} onMouseEnter={e => e.currentTarget.style.filter="grayscale(0%)"} onMouseLeave={e => e.currentTarget.style.filter="grayscale(100%)"} />
+                    <motion.div
+                      key={proj.id} drag dragConstraints={containerRef} onClick={() => openProject(proj)}
+                      whileHover={{ scale: 1.05 }}
+                      style={{ position: "absolute", top: projectPositions[index]?.top, left: projectPositions[index]?.left, rotate: projectPositions[index]?.rotation, width: "150px", cursor: "pointer", zIndex: 10, willChange: "transform" }}>
+                      <img src={proj.img} className="proj-thumb" style={{ width: "100%" }} />
                       <p style={{ fontFamily: fontBody, marginTop: "10px", fontSize: "0.7rem" }}>{proj.title}</p>
                     </motion.div>
                   ))}
@@ -290,7 +285,6 @@ export default function Home() {
 
               {view === "about" && (
                 <motion.div key="about" style={{ width: "100vw", height: "100vh", position: "relative" }}>
-                  <Crosshair color="#000" />
                   <motion.p animate={{ ...aboutPositions.email }} style={{ position: "absolute", fontFamily: fontTitle, fontSize: "0.8rem", color: kleinBlue }}>giulia@studio.com</motion.p>
                   <motion.p animate={{ ...aboutPositions.phone }} style={{ position: "absolute", fontFamily: fontTitle, fontSize: "0.8rem", color: kleinBlue }}>+34 600 000 000</motion.p>
                   <div style={{ display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center", height: "100vh", padding: "0 20vw", textAlign: "center" }}>
@@ -346,12 +340,11 @@ export default function Home() {
                   </motion.div>
                 ) : (
                   <motion.div key="detail" style={{ backgroundColor: "white", minHeight: "100vh", position: "relative" }}>
-                    <Crosshair color={kleinBlue} />
-                    <motion.p key={selectedProject.title + "-role"} initial={{ scale: 1.8, opacity: 0, top: "50vh", right: "2vw" }} animate={{ scale: 1, opacity: 1, top: detailInfoPositions.role?.top, right: detailInfoPositions.role?.right }} transition={{ scale: { type: "spring", stiffness: 35, damping: 18, mass: 1.2, delay: 0 }, top: { type: "spring", stiffness: 35, damping: 18, mass: 1.2, delay: 0 }, right: { type: "spring", stiffness: 35, damping: 18, mass: 1.2, delay: 0 }, opacity: { duration: 1.2, ease: "easeOut", delay: 0 } }} style={{ position: "fixed", rotate: detailInfoPositions.role?.rotate, zIndex: 500, fontFamily: fontTitle, fontSize: "0.9rem", textTransform: "lowercase", color: "#000000", pointerEvents: "none" }}>{selectedProject.info.role}</motion.p>
-                    <motion.p key={selectedProject.title + "-location"} initial={{ scale: 1.8, opacity: 0, top: "50vh", right: "2vw" }} animate={{ scale: 1, opacity: 1, top: detailInfoPositions.location?.top, right: detailInfoPositions.location?.right }} transition={{ scale: { type: "spring", stiffness: 35, damping: 18, mass: 1.2, delay: 0.2 }, top: { type: "spring", stiffness: 35, damping: 18, mass: 1.2, delay: 0.2 }, right: { type: "spring", stiffness: 35, damping: 18, mass: 1.2, delay: 0.2 }, opacity: { duration: 1.2, ease: "easeOut", delay: 0.2 } }} style={{ position: "fixed", rotate: detailInfoPositions.location?.rotate, zIndex: 500, fontFamily: fontTitle, fontSize: "0.9rem", textTransform: "lowercase", color: "#000000", pointerEvents: "none" }}>{selectedProject.info.location}</motion.p>
-                    <motion.p key={selectedProject.title + "-date"} initial={{ scale: 1.8, opacity: 0, top: "50vh", right: "2vw" }} animate={{ scale: 1, opacity: 1, top: detailInfoPositions.date?.top, right: detailInfoPositions.date?.right }} transition={{ scale: { type: "spring", stiffness: 35, damping: 18, mass: 1.2, delay: 0.38 }, top: { type: "spring", stiffness: 35, damping: 18, mass: 1.2, delay: 0.38 }, right: { type: "spring", stiffness: 35, damping: 18, mass: 1.2, delay: 0.38 }, opacity: { duration: 1.2, ease: "easeOut", delay: 0.38 } }} style={{ position: "fixed", rotate: detailInfoPositions.date?.rotate, zIndex: 500, fontFamily: fontTitle, fontSize: "0.9rem", textTransform: "lowercase", color: "#000000", pointerEvents: "none" }}>{selectedProject.info.date}</motion.p>
+                    <motion.p key={selectedProject.title + "-role"} initial={{ scale: 1.8, opacity: 0, top: "50vh", right: "2vw" }} animate={{ scale: 1, opacity: 1, top: detailInfoPositions.role?.top, right: detailInfoPositions.role?.right }} transition={{ scale: { type: "spring", stiffness: 35, damping: 18, mass: 1.2, delay: 0 }, top: { type: "spring", stiffness: 35, damping: 18, mass: 1.2, delay: 0 }, right: { type: "spring", stiffness: 35, damping: 18, mass: 1.2, delay: 0 }, opacity: { duration: 1.2, ease: "easeOut", delay: 0 } }} style={{ position: "fixed", rotate: detailInfoPositions.role?.rotate, zIndex: 500, fontFamily: fontTitle, fontSize: "0.9rem", textTransform: "lowercase", color: "#ffffff", mixBlendMode: "difference", pointerEvents: "none" }}>{selectedProject.info.role}</motion.p>
+                    <motion.p key={selectedProject.title + "-location"} initial={{ scale: 1.8, opacity: 0, top: "50vh", right: "2vw" }} animate={{ scale: 1, opacity: 1, top: detailInfoPositions.location?.top, right: detailInfoPositions.location?.right }} transition={{ scale: { type: "spring", stiffness: 35, damping: 18, mass: 1.2, delay: 0.2 }, top: { type: "spring", stiffness: 35, damping: 18, mass: 1.2, delay: 0.2 }, right: { type: "spring", stiffness: 35, damping: 18, mass: 1.2, delay: 0.2 }, opacity: { duration: 1.2, ease: "easeOut", delay: 0.2 } }} style={{ position: "fixed", rotate: detailInfoPositions.location?.rotate, zIndex: 500, fontFamily: fontTitle, fontSize: "0.9rem", textTransform: "lowercase", color: "#ffffff", mixBlendMode: "difference", pointerEvents: "none" }}>{selectedProject.info.location}</motion.p>
+                    <motion.p key={selectedProject.title + "-date"} initial={{ scale: 1.8, opacity: 0, top: "50vh", right: "2vw" }} animate={{ scale: 1, opacity: 1, top: detailInfoPositions.date?.top, right: detailInfoPositions.date?.right }} transition={{ scale: { type: "spring", stiffness: 35, damping: 18, mass: 1.2, delay: 0.38 }, top: { type: "spring", stiffness: 35, damping: 18, mass: 1.2, delay: 0.38 }, right: { type: "spring", stiffness: 35, damping: 18, mass: 1.2, delay: 0.38 }, opacity: { duration: 1.2, ease: "easeOut", delay: 0.38 } }} style={{ position: "fixed", rotate: detailInfoPositions.date?.rotate, zIndex: 500, fontFamily: fontTitle, fontSize: "0.9rem", textTransform: "lowercase", color: "#ffffff", mixBlendMode: "difference", pointerEvents: "none" }}>{selectedProject.info.date}</motion.p>
 
-                    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 2, duration: 2, ease: "easeIn" }} style={{ position: "absolute", top: 0, left: 0, width: "100%", height: "100%", pointerEvents: "none", zIndex: 10, overflow: "hidden" }}>
+                    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 2, duration: 2, ease: "easeIn" }} style={{ position: "absolute", top: 0, left: 0, width: "100%", height: "100%", pointerEvents: "none", zIndex: 10, overflow: "hidden", mixBlendMode: "difference", color: "#ffffff" }}>
                       {(() => {
                         const texts = selectedProject.extraTexts || [];
                         const slots = [

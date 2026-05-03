@@ -7,18 +7,16 @@ const lerp = (a, b, n) => (1 - n) * a + n * b;
 const getMousePos = (e, container) => {
   if (container) {
     const bounds = container.getBoundingClientRect();
-    return {
-      x: e.clientX - bounds.left,
-      y: e.clientY - bounds.top
-    };
+    return { x: e.clientX - bounds.left, y: e.clientY - bounds.top };
   }
   return { x: e.clientX, y: e.clientY };
 };
 
-const Crosshair = ({ color = 'black', containerRef = null }) => {
+const Crosshair = ({ color = 'white', containerRef = null, showLines = true }) => {
   const cursorRef = useRef(null);
   const lineHorizontalRef = useRef(null);
   const lineVerticalRef = useRef(null);
+  const smallCrossRef = useRef(null);
   const filterXRef = useRef(null);
   const filterYRef = useRef(null);
 
@@ -28,17 +26,27 @@ const Crosshair = ({ color = 'black', containerRef = null }) => {
     const handleMouseMove = ev => {
       mouse.current = getMousePos(ev, containerRef?.current);
 
+      // Mover la pequeña cruz exactamente con el cursor (sin lerp)
+      if (smallCrossRef.current) {
+        gsap.set(smallCrossRef.current, {
+          x: mouse.current.x,
+          y: mouse.current.y,
+          opacity: 1
+        });
+      }
+
       if (containerRef?.current) {
         const bounds = containerRef.current.getBoundingClientRect();
-        if (
-          ev.clientX < bounds.left ||
-          ev.clientX > bounds.right ||
-          ev.clientY < bounds.top ||
-          ev.clientY > bounds.bottom
-        ) {
-          gsap.to([lineHorizontalRef.current, lineVerticalRef.current], { opacity: 0 });
-        } else {
-          gsap.to([lineHorizontalRef.current, lineVerticalRef.current], { opacity: 0.4 }); // Opacidad suave
+        const lines = [lineHorizontalRef.current, lineVerticalRef.current].filter(Boolean);
+        if (lines.length) {
+          if (
+            ev.clientX < bounds.left || ev.clientX > bounds.right ||
+            ev.clientY < bounds.top  || ev.clientY > bounds.bottom
+          ) {
+            gsap.to(lines, { opacity: 0 });
+          } else {
+            gsap.to(lines, { opacity: 0.4 });
+          }
         }
       }
     };
@@ -51,20 +59,17 @@ const Crosshair = ({ color = 'black', containerRef = null }) => {
       ty: { previous: 0, current: 0, amt: 0.15 }
     };
 
-    gsap.set([lineHorizontalRef.current, lineVerticalRef.current], { opacity: 0 });
+    const lines = [lineHorizontalRef.current, lineVerticalRef.current].filter(Boolean);
+    if (lines.length) gsap.set(lines, { opacity: 0 });
+    if (smallCrossRef.current) gsap.set(smallCrossRef.current, { opacity: 0 });
 
     const onFirstMove = () => {
       renderedStyles.tx.previous = renderedStyles.tx.current = mouse.current.x;
       renderedStyles.ty.previous = renderedStyles.ty.current = mouse.current.y;
-      gsap.to([lineHorizontalRef.current, lineVerticalRef.current], {
-        duration: 0.9,
-        ease: 'Power3.easeOut',
-        opacity: 0.4
-      });
+      if (lines.length) gsap.to(lines, { duration: 0.9, ease: 'Power3.easeOut', opacity: 0.4 });
       requestAnimationFrame(render);
       target.removeEventListener('mousemove', onFirstMove);
     };
-
     target.addEventListener('mousemove', onFirstMove);
 
     const primitiveValues = { turbulence: 0 };
@@ -83,10 +88,8 @@ const Crosshair = ({ color = 'black', containerRef = null }) => {
         if (lineVerticalRef.current) lineVerticalRef.current.style.filter = 'none';
       }
     }).to(primitiveValues, {
-      duration: 0.4,
-      ease: 'power1',
-      startAt: { turbulence: 0.04 },
-      turbulence: 0
+      duration: 0.4, ease: 'power1',
+      startAt: { turbulence: 0.04 }, turbulence: 0
     });
 
     const enter = () => tl.restart();
@@ -95,7 +98,6 @@ const Crosshair = ({ color = 'black', containerRef = null }) => {
     const render = () => {
       renderedStyles.tx.current = mouse.current.x;
       renderedStyles.ty.current = mouse.current.y;
-
       for (const key in renderedStyles) {
         renderedStyles[key].previous = lerp(
           renderedStyles[key].previous,
@@ -103,7 +105,6 @@ const Crosshair = ({ color = 'black', containerRef = null }) => {
           renderedStyles[key].amt
         );
       }
-
       if (lineVerticalRef.current && lineHorizontalRef.current) {
         gsap.set(lineVerticalRef.current, { x: renderedStyles.tx.previous });
         gsap.set(lineHorizontalRef.current, { y: renderedStyles.ty.previous });
@@ -111,10 +112,9 @@ const Crosshair = ({ color = 'black', containerRef = null }) => {
       requestAnimationFrame(render);
     };
 
-    const links = containerRef?.current 
-      ? containerRef.current.querySelectorAll('.project-item') 
+    const links = containerRef?.current
+      ? containerRef.current.querySelectorAll('.project-item')
       : document.querySelectorAll('.project-item');
-
     links.forEach(link => {
       link.addEventListener('mouseenter', enter);
       link.addEventListener('mouseleave', leave);
@@ -128,10 +128,10 @@ const Crosshair = ({ color = 'black', containerRef = null }) => {
         link.removeEventListener('mouseleave', leave);
       });
     };
-  }, [containerRef]);
+  }, [containerRef, showLines]);
 
   return (
-    <div ref={cursorRef} style={{ position: 'fixed', top: 0, left: 0, width: '100%', height: '100%', pointerEvents: 'none', zIndex: 9999 }}>
+    <div ref={cursorRef} style={{ position: 'fixed', top: 0, left: 0, width: '100%', height: '100%', pointerEvents: 'none', zIndex: 9999, mixBlendMode: 'difference' }}>
       <svg style={{ position: 'absolute', width: 0, height: 0 }}>
         <defs>
           <filter id="filter-noise-x">
@@ -144,9 +144,16 @@ const Crosshair = ({ color = 'black', containerRef = null }) => {
           </filter>
         </defs>
       </svg>
-      {/* LÍNEAS MÁS FINAS (0.5px) Y SUTILES */}
-      <div ref={lineHorizontalRef} style={{ position: 'absolute', width: '100%', height: '0.5px', background: color, top: 0, opacity: 0 }} />
-      <div ref={lineVerticalRef} style={{ position: 'absolute', height: '100%', width: '0.5px', background: color, left: 0, opacity: 0 }} />
+
+      {/* Líneas largas del crosshair */}
+      <div ref={lineHorizontalRef} style={{ position: 'absolute', width: '100%', height: '0.5px', background: color, top: 0, opacity: 0, visibility: showLines ? 'visible' : 'hidden' }} />
+      <div ref={lineVerticalRef} style={{ position: 'absolute', height: '100%', width: '0.5px', background: color, left: 0, opacity: 0, visibility: showLines ? 'visible' : 'hidden' }} />
+
+      {/* Cruz pequeña que sigue el cursor exactamente */}
+      <div ref={smallCrossRef} style={{ position: 'absolute', top: 0, left: 0, width: 0, height: 0, opacity: 0 }}>
+        <div style={{ position: 'absolute', width: '12px', height: '1px', background: color, top: 0, left: '-6px' }} />
+        <div style={{ position: 'absolute', width: '1px', height: '12px', background: color, top: '-6px', left: 0 }} />
+      </div>
     </div>
   );
 };
