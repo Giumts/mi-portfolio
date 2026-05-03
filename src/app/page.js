@@ -203,17 +203,18 @@ export default function Home() {
         .proj-thumb { filter: grayscale(100%); transition: filter 0.35s ease; will-change: transform; }
         .proj-thumb:hover { filter: grayscale(0%); }
         @keyframes floatDown {
-          0%   { transform: translateY(0)       scale(0.85); opacity: 0;    }
-          5%   { transform: translateY(60vh)    scale(0.9);  opacity: 0.38; }
-          25%  { transform: translateY(320vh)   scale(1.0);  opacity: 0.4;  }
-          42%  { transform: translateY(520vh)   scale(1.4);  opacity: 0.42; }
-          58%  { transform: translateY(700vh)   scale(1.0);  opacity: 0.4;  }
-          72%  { transform: translateY(850vh)   scale(1.3);  opacity: 0.38; }
-          90%  { transform: translateY(1050vh)  scale(0.8);  opacity: 0.18; }
-          97%  { transform: translateY(1150vh)  scale(0.7);  opacity: 0;    }
-          100% { transform: translateY(1200vh)  scale(0.7);  opacity: 0;    }
+          0%   { transform: translateY(0)       scale(0.85); opacity: 0;   }
+          5%   { transform: translateY(60vh)    scale(0.9);  opacity: 0.7; }
+          25%  { transform: translateY(320vh)   scale(1.0);  opacity: 0.7; }
+          42%  { transform: translateY(520vh)   scale(1.4);  opacity: 0.7; }
+          58%  { transform: translateY(700vh)   scale(1.0);  opacity: 0.7; }
+          72%  { transform: translateY(850vh)   scale(1.3);  opacity: 0.7; }
+          90%  { transform: translateY(1050vh)  scale(0.8);  opacity: 0.3; }
+          97%  { transform: translateY(1150vh)  scale(0.7);  opacity: 0;   }
+          100% { transform: translateY(1200vh)  scale(0.7);  opacity: 0;   }
         }
         .falling-text { cursor: crosshair; }
+        .falling-text, .falling-text * { color: #222; }
         .falling-text .text-normal { opacity: 1; transition: opacity 0.08s, transform 0.08s; }
         .falling-text .text-split  { opacity: 0; transition: opacity 0.08s; }
         .falling-text:hover .text-normal { opacity: 0; transform: scaleX(1.18) skewX(-8deg); }
@@ -344,31 +345,29 @@ export default function Home() {
                     <motion.p key={selectedProject.title + "-location"} initial={{ scale: 1.8, opacity: 0, top: "50vh", right: "2vw" }} animate={{ scale: 1, opacity: 1, top: detailInfoPositions.location?.top, right: detailInfoPositions.location?.right }} transition={{ scale: { type: "spring", stiffness: 35, damping: 18, mass: 1.2, delay: 0.2 }, top: { type: "spring", stiffness: 35, damping: 18, mass: 1.2, delay: 0.2 }, right: { type: "spring", stiffness: 35, damping: 18, mass: 1.2, delay: 0.2 }, opacity: { duration: 1.2, ease: "easeOut", delay: 0.2 } }} style={{ position: "fixed", rotate: detailInfoPositions.location?.rotate, zIndex: 500, fontFamily: fontTitle, fontSize: "0.9rem", textTransform: "lowercase", color: "#ffffff", mixBlendMode: "difference", pointerEvents: "none" }}>{selectedProject.info.location}</motion.p>
                     <motion.p key={selectedProject.title + "-date"} initial={{ scale: 1.8, opacity: 0, top: "50vh", right: "2vw" }} animate={{ scale: 1, opacity: 1, top: detailInfoPositions.date?.top, right: detailInfoPositions.date?.right }} transition={{ scale: { type: "spring", stiffness: 35, damping: 18, mass: 1.2, delay: 0.38 }, top: { type: "spring", stiffness: 35, damping: 18, mass: 1.2, delay: 0.38 }, right: { type: "spring", stiffness: 35, damping: 18, mass: 1.2, delay: 0.38 }, opacity: { duration: 1.2, ease: "easeOut", delay: 0.38 } }} style={{ position: "fixed", rotate: detailInfoPositions.date?.rotate, zIndex: 500, fontFamily: fontTitle, fontSize: "0.9rem", textTransform: "lowercase", color: "#ffffff", mixBlendMode: "difference", pointerEvents: "none" }}>{selectedProject.info.date}</motion.p>
 
-                    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 2, duration: 2, ease: "easeIn" }} style={{ position: "absolute", top: 0, left: 0, width: "100%", height: "100%", pointerEvents: "none", zIndex: 10, overflow: "hidden", mixBlendMode: "difference", color: "#ffffff" }}>
+                    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 2, duration: 2, ease: "easeIn" }} style={{ position: "absolute", top: 0, left: 0, width: "100%", height: "100%", pointerEvents: "none", zIndex: 10, overflow: "hidden" }}>
                       {(() => {
                         const texts = selectedProject.extraTexts || [];
                         const slots = [
-                          { left: "4vw",  rotate: "-3deg", delay: "0s"    },
-                          { left: "38vw", rotate: "2deg",  delay: "-16s"  },
-                          { left: "61vw", rotate: "-2deg", delay: "-32s"  },
-                          { left: "18vw", rotate: "3deg",  delay: "-48s"  },
-                          { left: "50vw", rotate: "-1deg", delay: "-65s"  },
-                          { left: "10vw", rotate: "4deg",  delay: "-81s"  },
-                          { left: "44vw", rotate: "-3deg", delay: "-97s"  },
-                          { left: "28vw", rotate: "1deg",  delay: "-113s" },
+                          { left: "2vw",  rotate: "-2deg", delay: "0s"    },
+                          { left: "24vw", rotate: "3deg",  delay: "-25s"  },
+                          { left: "11vw", rotate: "-1deg", delay: "-50s"  },
+                          { left: "17vw", rotate: "2deg",  delay: "-75s"  },
+                          { left: "5vw",  rotate: "1deg",  delay: "-100s" },
+                          { left: "28vw", rotate: "-2deg", delay: "-15s"  },
                         ];
                         return slots.map((fc, j) => {
                           const text = texts[j % texts.length];
                           return (
                             <div key={j} className="falling-text" style={{ position: "absolute", top: 0, left: fc.left, rotate: fc.rotate, animation: `floatDown 130s linear ${fc.delay} infinite`, pointerEvents: "auto" }}>
-                              <div className="text-normal" style={{ fontFamily: fontBody, fontSize: "0.9rem", maxWidth: "14vw" }}>
+                              <div className="text-normal" style={{ fontFamily: "'Almendra Display', serif", fontSize: "1.1rem", maxWidth: "14vw" }}>
                                 {text}
                               </div>
                               <div className="text-split" style={{ position: "absolute", top: 0, left: "-3vw", display: "flex", gap: "2.5vw" }}>
-                                <div style={{ fontFamily: fontBody, fontSize: "0.85rem", maxWidth: "3.5vw", rotate: "-4deg" }}>{text}</div>
-                                <div style={{ fontFamily: fontBody, fontSize: "0.7rem",  maxWidth: "3vw",   rotate: "2deg",  opacity: 0.75, marginTop: "1.5rem" }}>{text}</div>
-                                <div style={{ fontFamily: fontBody, fontSize: "0.9rem",  maxWidth: "4vw",   rotate: "-1deg", opacity: 0.9 }}>{text}</div>
-                                <div style={{ fontFamily: fontBody, fontSize: "0.65rem", maxWidth: "2.5vw", rotate: "5deg",  opacity: 0.5, marginTop: "2.5rem" }}>{text}</div>
+                                <div style={{ fontFamily: "'Almendra Display', serif", fontSize: "1rem", maxWidth: "3.5vw", rotate: "-4deg" }}>{text}</div>
+                                <div style={{ fontFamily: "'Almendra Display', serif", fontSize: "0.9rem", maxWidth: "3vw",   rotate: "2deg",  opacity: 0.75, marginTop: "1.5rem" }}>{text}</div>
+                                <div style={{ fontFamily: "'Almendra Display', serif", fontSize: "1.1rem", maxWidth: "4vw",   rotate: "-1deg", opacity: 0.9 }}>{text}</div>
+                                <div style={{ fontFamily: "'Almendra Display', serif", fontSize: "0.85rem", maxWidth: "2.5vw", rotate: "5deg",  opacity: 0.5, marginTop: "2.5rem" }}>{text}</div>
                               </div>
                             </div>
                           );
