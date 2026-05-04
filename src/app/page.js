@@ -1,5 +1,6 @@
 "use client";
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, Fragment } from "react";
+import { gsap } from "gsap";
 import ImageTrail from "./ImageTrail";
 import Crosshair from "./Crosshair"; 
 import { motion, AnimatePresence, useSpring, useTransform } from "framer-motion";
@@ -96,6 +97,67 @@ const MouseShadowEffect = ({ mouseX, mouseY }) => {
   );
 };
 
+const KNOT_BASE = "M 15,75 C 15,38 38,10 58,32 C 78,54 76,78 56,66 C 36,54 22,30 46,18 C 70,6 92,32 92,65 C 92,76 80,80 68,74";
+const KNOT_W1  = "M 17,73 C 17,40 40,12 56,34 C 72,56 74,76 54,64 C 34,52 24,32 48,20 C 72,8 90,34 90,63 C 90,74 78,78 66,72";
+const KNOT_W2  = "M 13,77 C 13,36 36,8 60,30 C 84,52 78,80 58,68 C 38,56 20,28 44,16 C 68,4 94,30 94,67 C 94,78 82,82 70,76";
+const KNOT_OUT = "M 50,0 C 50,20 50,40 50,60 C 50,40 50,20 50,0 C 50,20 50,40 50,60 C 50,40 50,20 50,0 C 50,20 50,40 50,60";
+
+const KnotThread = ({ onReveal }) => {
+  const svgRef  = useRef(null);
+  const pathRef = useRef(null);
+  const idleTL  = useRef(null);
+  const timer   = useRef(null);
+  const done    = useRef(false);
+
+  useEffect(() => {
+    if (!pathRef.current) return;
+    idleTL.current = gsap.timeline({ repeat: -1 })
+      .to(pathRef.current, { duration: 1.6, attr: { d: KNOT_W1 }, ease: "sine.inOut" })
+      .to(pathRef.current, { duration: 1.3, attr: { d: KNOT_W2 }, ease: "sine.inOut" })
+      .to(pathRef.current, { duration: 1.8, attr: { d: KNOT_BASE }, ease: "sine.inOut" });
+    return () => { idleTL.current?.kill(); clearTimeout(timer.current); };
+  }, []);
+
+  const distort = (e) => {
+    if (done.current) return;
+    const r  = e.currentTarget.getBoundingClientRect();
+    const dx = ((e.clientX - r.left) / r.width  - 0.5) * 22;
+    const dy = ((e.clientY - r.top)  / r.height - 0.5) * 16;
+    idleTL.current?.pause();
+    gsap.to(pathRef.current, { duration: 0.12, ease: "power2.out", attr: { d:
+      `M ${15+dx*.3},${75+dy*.2} C ${15+dx*.4},${38+dy*.3} ${38+dx*.2},${10+dy*.4} ${58+dx*.3},${32+dy*.3} C ${78+dx*.2},${54+dy*.2} ${76+dx*.2},${78+dy*.2} ${56+dx*.3},${66+dy*.2} C ${36+dx*.4},${54+dy*.3} ${22+dx*.3},${30+dy*.4} ${46+dx*.2},${18+dy*.3} C ${70+dx*.2},${6+dy*.2} ${92+dx*.2},${32+dy*.2} ${92+dx*.2},${65+dy*.2} C ${92+dx*.1},${76+dy*.1} ${80+dx*.1},${80+dy*.1} ${68+dx*.1},${74+dy*.1}`
+    }});
+  };
+
+  const onEnter = () => {
+    if (done.current) return;
+    timer.current = setTimeout(() => {
+      if (done.current) return;
+      done.current = true;
+      idleTL.current?.kill();
+      gsap.to(pathRef.current, { attr: { d: KNOT_OUT }, duration: 0.55, ease: "power2.out" });
+      gsap.to(svgRef.current,  { opacity: 0, duration: 0.4, delay: 0.25, onComplete: onReveal });
+    }, 350);
+  };
+
+  const onLeave = () => {
+    if (done.current) return;
+    clearTimeout(timer.current);
+    gsap.to(pathRef.current, { duration: 0.45, attr: { d: KNOT_BASE }, ease: "power2.out",
+      onComplete: () => idleTL.current?.resume() });
+  };
+
+  return (
+    <div onMouseMove={distort} onMouseEnter={onEnter} onMouseLeave={onLeave}
+      style={{ marginTop: "4rem", cursor: "crosshair", padding: "1rem" }}>
+      <svg ref={svgRef} width="140" height="115" viewBox="0 0 100 90"
+        style={{ overflow: "visible", display: "block", opacity: 0.45 }}>
+        <path ref={pathRef} d={KNOT_BASE} stroke="#002FA7" strokeWidth="1.5" fill="none" vectorEffect="non-scaling-stroke" />
+      </svg>
+    </div>
+  );
+};
+
 export default function Home() {
   const [view, setView] = useState("home");
   const [isLoading, setIsLoading] = useState(true);
@@ -104,6 +166,7 @@ export default function Home() {
   const [hoveredIndex, setHoveredIndex] = useState(null);
   const [cursorColor, setCursorColor] = useState("#000000");
   const [detailInfoPositions, setDetailInfoPositions] = useState({});
+  const [detailShowImages, setDetailShowImages] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
   const containerRef = useRef(null);
   const carouselRef = useRef(null);
@@ -184,6 +247,7 @@ export default function Home() {
       date:     { top: `${r(74, 88)}vh`, right: `${r(1, 8)}vw`, rotate: `${r(-3, 3)}deg` },
     });
     setSelectedProject(proj);
+    setDetailShowImages(false);
     setView("detail");
     window.scrollTo({ top: 0, behavior: 'instant' });
   };
@@ -340,12 +404,12 @@ export default function Home() {
                     </div>
                   </motion.div>
                 ) : (
-                  <motion.div key="detail" style={{ backgroundColor: "white", minHeight: "100vh", position: "relative" }}>
+                  <motion.div key="detail" style={{ backgroundColor: "white", minHeight: "100vh", position: "relative",  }}>
                     <motion.p key={selectedProject.title + "-role"} initial={{ scale: 1.8, opacity: 0, top: "50vh", right: "2vw" }} animate={{ scale: 1, opacity: 1, top: detailInfoPositions.role?.top, right: detailInfoPositions.role?.right }} transition={{ scale: { type: "spring", stiffness: 35, damping: 18, mass: 1.2, delay: 0 }, top: { type: "spring", stiffness: 35, damping: 18, mass: 1.2, delay: 0 }, right: { type: "spring", stiffness: 35, damping: 18, mass: 1.2, delay: 0 }, opacity: { duration: 1.2, ease: "easeOut", delay: 0 } }} style={{ position: "fixed", rotate: detailInfoPositions.role?.rotate, zIndex: 500, fontFamily: fontTitle, fontSize: "0.9rem", textTransform: "lowercase", color: "#ffffff", mixBlendMode: "difference", pointerEvents: "none" }}>{selectedProject.info.role}</motion.p>
                     <motion.p key={selectedProject.title + "-location"} initial={{ scale: 1.8, opacity: 0, top: "50vh", right: "2vw" }} animate={{ scale: 1, opacity: 1, top: detailInfoPositions.location?.top, right: detailInfoPositions.location?.right }} transition={{ scale: { type: "spring", stiffness: 35, damping: 18, mass: 1.2, delay: 0.2 }, top: { type: "spring", stiffness: 35, damping: 18, mass: 1.2, delay: 0.2 }, right: { type: "spring", stiffness: 35, damping: 18, mass: 1.2, delay: 0.2 }, opacity: { duration: 1.2, ease: "easeOut", delay: 0.2 } }} style={{ position: "fixed", rotate: detailInfoPositions.location?.rotate, zIndex: 500, fontFamily: fontTitle, fontSize: "0.9rem", textTransform: "lowercase", color: "#ffffff", mixBlendMode: "difference", pointerEvents: "none" }}>{selectedProject.info.location}</motion.p>
                     <motion.p key={selectedProject.title + "-date"} initial={{ scale: 1.8, opacity: 0, top: "50vh", right: "2vw" }} animate={{ scale: 1, opacity: 1, top: detailInfoPositions.date?.top, right: detailInfoPositions.date?.right }} transition={{ scale: { type: "spring", stiffness: 35, damping: 18, mass: 1.2, delay: 0.38 }, top: { type: "spring", stiffness: 35, damping: 18, mass: 1.2, delay: 0.38 }, right: { type: "spring", stiffness: 35, damping: 18, mass: 1.2, delay: 0.38 }, opacity: { duration: 1.2, ease: "easeOut", delay: 0.38 } }} style={{ position: "fixed", rotate: detailInfoPositions.date?.rotate, zIndex: 500, fontFamily: fontTitle, fontSize: "0.9rem", textTransform: "lowercase", color: "#ffffff", mixBlendMode: "difference", pointerEvents: "none" }}>{selectedProject.info.date}</motion.p>
 
-                    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 2, duration: 2, ease: "easeIn" }} style={{ position: "absolute", top: 0, left: 0, width: "100%", height: "100%", pointerEvents: "none", zIndex: 10, overflow: "hidden" }}>
+                    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 2, duration: 2, ease: "easeIn" }} style={{ position: "absolute", top: 0, left: 0, width: "35vw", height: "100%", pointerEvents: "none", zIndex: 10, overflow: "hidden" }}>
                       {(() => {
                         const texts = selectedProject.extraTexts || [];
                         const slots = [
@@ -364,10 +428,10 @@ export default function Home() {
                                 {text}
                               </div>
                               <div className="text-split" style={{ position: "absolute", top: 0, left: "-3vw", display: "flex", gap: "2.5vw" }}>
-                                <div style={{ fontFamily: "'Almendra Display', serif", fontSize: "1rem", maxWidth: "3.5vw", rotate: "-4deg" }}>{text}</div>
+                                <div style={{ fontFamily: "'Almendra Display', serif", fontSize: "1rem",   maxWidth: "3.5vw", rotate: "-4deg" }}>{text}</div>
                                 <div style={{ fontFamily: "'Almendra Display', serif", fontSize: "0.9rem", maxWidth: "3vw",   rotate: "2deg",  opacity: 0.75, marginTop: "1.5rem" }}>{text}</div>
                                 <div style={{ fontFamily: "'Almendra Display', serif", fontSize: "1.1rem", maxWidth: "4vw",   rotate: "-1deg", opacity: 0.9 }}>{text}</div>
-                                <div style={{ fontFamily: "'Almendra Display', serif", fontSize: "0.85rem", maxWidth: "2.5vw", rotate: "5deg",  opacity: 0.5, marginTop: "2.5rem" }}>{text}</div>
+                                <div style={{ fontFamily: "'Almendra Display', serif", fontSize: "0.85rem",maxWidth: "2.5vw", rotate: "5deg",  opacity: 0.5, marginTop: "2.5rem" }}>{text}</div>
                               </div>
                             </div>
                           );
@@ -375,59 +439,91 @@ export default function Home() {
                       })()}
                     </motion.div>
 
-                    <div style={{ display: "flex", padding: "0 4vw" }}>
-                      <div style={{ width: "35vw", height: "100vh", position: "sticky", top: 0 }}>
-                        <div style={{ position: "absolute", top: "50%", transform: "translateY(-50%)", width: "100%" }}>
-                          <h1 style={{ fontFamily: fontTitle, fontSize: "4.5vw", color: kleinBlue, lineHeight: "0.8" }}>{selectedProject.title}</h1>
-                          <p style={{ fontFamily: fontBody, fontSize: "0.75rem", marginTop: "1.4rem", maxWidth: "18vw", lineHeight: "1.6", opacity: 0.7 }}>{selectedProject.desc}</p>
-                        </div>
-                      </div>
+                    {/* Header centrado */}
+                    <div style={{ display: "flex", flexDirection: "column", alignItems: "center", textAlign: "center", padding: "20vh 10vw 0" }}>
+                      <span style={{ fontFamily: fontTitle, fontSize: "0.58rem", letterSpacing: "0.2em", textTransform: "uppercase", opacity: 0.3, marginBottom: "3rem" }}>
+                        {String(selectedProject.id).padStart(2, "0")} / {String(projects.length).padStart(2, "0")}
+                      </span>
+                      <h1 style={{ fontFamily: fontTitle, fontSize: "9vw", color: kleinBlue, lineHeight: "0.85", letterSpacing: "-0.025em", maxWidth: "80vw" }}>
+                        {selectedProject.title}
+                      </h1>
+                      <p style={{ fontFamily: fontBody, fontSize: "0.75rem", maxWidth: "36vw", lineHeight: "1.8", opacity: 0.55, marginTop: "2.5rem" }}>
+                        {selectedProject.desc}
+                      </p>
 
-                      <div style={{ width: "65vw" }}>
-                        <div ref={carouselRef} style={{ height: "100vh", overflow: "hidden" }}>
-                          <motion.div
-                            drag="x"
-                            dragConstraints={carouselRef}
-                            dragElastic={0.05}
-                            dragTransition={{ bounceStiffness: 300, bounceDamping: 30 }}
-                            whileDrag={{ cursor: "grabbing" }}
-                            style={{ display: "flex", height: "100%", width: `${selectedProject.gallery.length * 100}%` }}
-                          >
-                            {selectedProject.gallery.map((item, i) => (
-                              <div
-                                key={i}
-                                onMouseEnter={() => { setHoveredIndex(i); setCursorColor("#ffffff"); }}
-                                onMouseLeave={() => { setHoveredIndex(null); setCursorColor("#000000"); }}
-                                style={{ flex: 1, height: "100%", display: "flex", alignItems: "center", justifyContent: "center", padding: "8vh 3vw" }}
-                              >
-                                {item.url.endsWith(".mp4") ? (
-                                  <video src={item.url} autoPlay muted loop playsInline style={{ maxHeight: "100%", maxWidth: "100%", objectFit: "contain", pointerEvents: "none" }} />
-                                ) : (
-                                  <img src={item.url} crossOrigin="anonymous" draggable={false} style={{ maxHeight: "100%", maxWidth: "100%", objectFit: "contain", userSelect: "none" }} />
-                                )}
-                              </div>
-                            ))}
-                          </motion.div>
-                        </div>
-
-                        <div style={{ paddingTop: "25vh", paddingBottom: "25vh", display: "flex", flexDirection: "column", gap: "30vh" }}>
-                          {selectedProject.gallery.map((item, i) => (
-                            <motion.div
-                              key={i}
-                              onMouseEnter={() => { setHoveredIndex(i); setCursorColor("#ffffff"); }}
-                              onMouseLeave={() => { setHoveredIndex(null); setCursorColor("#000000"); }}
-                              style={{ width: (i + 1) % 3 === 0 ? "100%" : "70%", alignSelf: i % 2 === 0 ? "flex-end" : "flex-start" }}
-                            >
-                              {item.url.endsWith(".mp4") ? (
-                                <video src={item.url} autoPlay muted loop playsInline style={{ width: "100%" }} />
-                              ) : (
-                                <img src={item.url} crossOrigin="anonymous" style={{ width: "100%" }} />
-                              )}
-                            </motion.div>
-                          ))}
-                        </div>
-                      </div>
+                      {/* Hilo enredado — click para revelar imágenes */}
+                      {!detailShowImages && (
+                        <KnotThread onReveal={() => setDetailShowImages(true)} />
+                      )}
                     </div>
+
+                    {/* Imágenes en scroll conectadas por hilos */}
+                    <AnimatePresence>
+                      {detailShowImages && (
+                        <div style={{ width: "80vw", margin: "0 auto", display: "flex", flexDirection: "column", paddingBottom: "25vh" }}>
+                          {(() => {
+                            const layouts = [
+                              { width: "44vw", alignSelf: "flex-start", ml: "4vw",  cx: 30 },
+                              { width: "50vw", alignSelf: "flex-end",   mr: "2vw",  cx: 66 },
+                              { width: "38vw", alignSelf: "flex-start", ml: "18vw", cx: 47 },
+                              { width: "56vw", alignSelf: "flex-end",   mr: "4vw",  cx: 58 },
+                              { width: "46vw", alignSelf: "flex-start", ml: "6vw",  cx: 35 },
+                              { width: "40vw", alignSelf: "flex-end",   mr: "12vw", cx: 62 },
+                              { width: "52vw", alignSelf: "flex-start", ml: "0vw",  cx: 33 },
+                              { width: "42vw", alignSelf: "flex-end",   mr: "6vw",  cx: 67 },
+                            ];
+                            return selectedProject.gallery.map((item, i) => {
+                              const lay = layouts[i % layouts.length];
+                              const x1 = 50;
+                              const x2 = 50;
+                              const mx = 50;
+                              const delay = i * 0.45;
+                              return (
+                                <Fragment key={i}>
+                                  {/* hilo conector */}
+                                  <motion.svg
+                                    width="100%" height={i === 0 ? "10vh" : "18vh"}
+                                    viewBox="0 0 100 100" preserveAspectRatio="none"
+                                    initial={{ opacity: 0 }} animate={{ opacity: 1 }}
+                                    transition={{ duration: 0.4, delay }}
+                                    style={{ display: "block", overflow: "visible", cursor: "crosshair" }}
+                                    onMouseEnter={(e) => {
+                                      const path = e.currentTarget.querySelector("path");
+                                      if (!path) return;
+                                      gsap.killTweensOf(path);
+                                      gsap.to(path, { keyframes: [
+                                        { attr: { d: `M ${x1},0 Q ${mx + 16},50 ${x2},100` }, duration: 0.07 },
+                                        { attr: { d: `M ${x1},0 Q ${mx - 16},50 ${x2},100` }, duration: 0.07 },
+                                        { attr: { d: `M ${x1},0 Q ${mx + 10},50 ${x2},100` }, duration: 0.07 },
+                                        { attr: { d: `M ${x1},0 Q ${mx - 7},50 ${x2},100`  }, duration: 0.07 },
+                                        { attr: { d: `M ${x1},0 Q ${mx},50 ${x2},100`      }, duration: 0.07 },
+                                      ]});
+                                    }}
+                                  >
+                                    <path d={`M ${x1},0 Q ${mx},50 ${x2},100`} stroke="#002FA7" strokeWidth="1" fill="none" opacity="0.5" vectorEffect="non-scaling-stroke" />
+                                  </motion.svg>
+                                  {/* imagen */}
+                                  <motion.div
+                                    initial={{ opacity: 0, y: 30 }}
+                                    animate={{ opacity: 1, y: [30, 0, -5, 0] }}
+                                    transition={{ opacity: { duration: 0.6, delay: delay + 0.15 }, y: { duration: 0.8, ease: "easeOut", delay: delay + 0.15, times: [0, 0.7, 0.85, 1] } }}
+                                    onMouseEnter={() => { setHoveredIndex(i); setCursorColor("#ffffff"); }}
+                                    onMouseLeave={() => { setHoveredIndex(null); setCursorColor("#000000"); }}
+                                    style={{ width: lay.width, alignSelf: lay.alignSelf, marginLeft: lay.ml, marginRight: lay.mr }}
+                                  >
+                                    {item.url.endsWith(".mp4") ? (
+                                      <video src={item.url} autoPlay muted loop playsInline style={{ width: "100%", display: "block" }} />
+                                    ) : (
+                                      <img src={item.url} crossOrigin="anonymous" style={{ width: "100%", display: "block" }} />
+                                    )}
+                                  </motion.div>
+                                </Fragment>
+                              );
+                            });
+                          })()}
+                        </div>
+                      )}
+                    </AnimatePresence>
                   </motion.div>
                 )
               )}
