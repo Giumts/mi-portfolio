@@ -2,8 +2,9 @@
 import { useState, useEffect, useRef, Fragment } from "react";
 import { gsap } from "gsap";
 import ImageTrail from "./ImageTrail";
-import Crosshair from "./Crosshair"; 
-import { motion, AnimatePresence, useSpring, useTransform } from "framer-motion";
+import Crosshair from "./Crosshair";
+import ScrambledText from "./ScrambledText";
+import { motion, AnimatePresence, useSpring } from "framer-motion";
 
 // --- COMPONENTE LOADER DE PALABRAS ---
 const LoadingScreen = () => {
@@ -44,119 +45,7 @@ const LoadingScreen = () => {
   );
 };
 
-// --- COMPONENTE DE SOMBRA REACTIVA (GRADIENT MEJORADO Y RESPONSIVE) ---
-const MouseShadowEffect = ({ mouseX, mouseY }) => {
-  const scale = useTransform(
-    [mouseX, mouseY],
-    ([x, y]) => {
-      if (typeof window === 'undefined') return 1;
-      const centerX = window.innerWidth / 2;
-      const centerY = window.innerHeight / 2;
-      const dist = Math.sqrt(Math.pow(x - centerX, 2) + Math.pow(y - centerY, 2));
-      const maxDist = Math.sqrt(Math.pow(centerX, 2) + Math.pow(centerY, 2));
-      // La escala ahora es más sensible al movimiento
-      return 1 + (dist / maxDist) * 0.25;
-    }
-  );
 
-  return (
-    <motion.div
-      style={{
-        position: "fixed", // Cambiado a fixed para que siga el viewport
-        left: "-50vw", 
-        top: "-50vh", 
-        x: mouseX, 
-        y: mouseY, 
-        scale: scale, 
-        width: "100vw", 
-        height: "100vh", 
-        pointerEvents: "none", 
-        zIndex: 1,
-        // Degradado más complejo y profundo
-        backgroundImage: `
-          radial-gradient(circle at 50% 50%, rgba(0, 47, 167, 0.25) 0%, rgba(0, 47, 167, 0.1) 30%, rgba(0, 255, 255, 0.05) 50%, transparent 75%),
-          radial-gradient(circle at 40% 40%, rgba(128, 0, 128, 0.1) 0%, transparent 60%)
-        `,
-        // El blur ahora es más grande para suavizar los bordes en pantallas grandes
-        filter: "blur(25px) saturate(130%)",
-        willChange: "transform",
-        mixBlendMode: "multiply",
-        opacity: 0.8
-      }}
-    >
-      {/* Capa de ruido orgánico */}
-      <div style={{ 
-        position: "absolute", 
-        inset: 0, 
-        backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 400 400' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.6' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E")`, 
-        backgroundRepeat: "repeat", 
-        opacity: 0.15, 
-        mixBlendMode: "overlay" 
-      }} />
-    </motion.div>
-  );
-};
-
-const KNOT_BASE = "M 15,75 C 15,38 38,10 58,32 C 78,54 76,78 56,66 C 36,54 22,30 46,18 C 70,6 92,32 92,65 C 92,76 80,80 68,74";
-const KNOT_W1  = "M 17,73 C 17,40 40,12 56,34 C 72,56 74,76 54,64 C 34,52 24,32 48,20 C 72,8 90,34 90,63 C 90,74 78,78 66,72";
-const KNOT_W2  = "M 13,77 C 13,36 36,8 60,30 C 84,52 78,80 58,68 C 38,56 20,28 44,16 C 68,4 94,30 94,67 C 94,78 82,82 70,76";
-const KNOT_OUT = "M 50,0 C 50,20 50,40 50,60 C 50,40 50,20 50,0 C 50,20 50,40 50,60 C 50,40 50,20 50,0 C 50,20 50,40 50,60";
-
-const KnotThread = ({ onReveal }) => {
-  const svgRef  = useRef(null);
-  const pathRef = useRef(null);
-  const idleTL  = useRef(null);
-  const timer   = useRef(null);
-  const done    = useRef(false);
-
-  useEffect(() => {
-    if (!pathRef.current) return;
-    idleTL.current = gsap.timeline({ repeat: -1 })
-      .to(pathRef.current, { duration: 1.6, attr: { d: KNOT_W1 }, ease: "sine.inOut" })
-      .to(pathRef.current, { duration: 1.3, attr: { d: KNOT_W2 }, ease: "sine.inOut" })
-      .to(pathRef.current, { duration: 1.8, attr: { d: KNOT_BASE }, ease: "sine.inOut" });
-    return () => { idleTL.current?.kill(); clearTimeout(timer.current); };
-  }, []);
-
-  const distort = (e) => {
-    if (done.current) return;
-    const r  = e.currentTarget.getBoundingClientRect();
-    const dx = ((e.clientX - r.left) / r.width  - 0.5) * 22;
-    const dy = ((e.clientY - r.top)  / r.height - 0.5) * 16;
-    idleTL.current?.pause();
-    gsap.to(pathRef.current, { duration: 0.12, ease: "power2.out", attr: { d:
-      `M ${15+dx*.3},${75+dy*.2} C ${15+dx*.4},${38+dy*.3} ${38+dx*.2},${10+dy*.4} ${58+dx*.3},${32+dy*.3} C ${78+dx*.2},${54+dy*.2} ${76+dx*.2},${78+dy*.2} ${56+dx*.3},${66+dy*.2} C ${36+dx*.4},${54+dy*.3} ${22+dx*.3},${30+dy*.4} ${46+dx*.2},${18+dy*.3} C ${70+dx*.2},${6+dy*.2} ${92+dx*.2},${32+dy*.2} ${92+dx*.2},${65+dy*.2} C ${92+dx*.1},${76+dy*.1} ${80+dx*.1},${80+dy*.1} ${68+dx*.1},${74+dy*.1}`
-    }});
-  };
-
-  const onEnter = () => {
-    if (done.current) return;
-    timer.current = setTimeout(() => {
-      if (done.current) return;
-      done.current = true;
-      idleTL.current?.kill();
-      gsap.to(pathRef.current, { attr: { d: KNOT_OUT }, duration: 0.55, ease: "power2.out" });
-      gsap.to(svgRef.current,  { opacity: 0, duration: 0.4, delay: 0.25, onComplete: onReveal });
-    }, 350);
-  };
-
-  const onLeave = () => {
-    if (done.current) return;
-    clearTimeout(timer.current);
-    gsap.to(pathRef.current, { duration: 0.45, attr: { d: KNOT_BASE }, ease: "power2.out",
-      onComplete: () => idleTL.current?.resume() });
-  };
-
-  return (
-    <div onMouseMove={distort} onMouseEnter={onEnter} onMouseLeave={onLeave}
-      style={{ marginTop: "4rem", cursor: "crosshair", padding: "1rem" }}>
-      <svg ref={svgRef} width="140" height="115" viewBox="0 0 100 90"
-        style={{ overflow: "visible", display: "block", opacity: 0.45 }}>
-        <path ref={pathRef} d={KNOT_BASE} stroke="#002FA7" strokeWidth="1.5" fill="none" vectorEffect="non-scaling-stroke" />
-      </svg>
-    </div>
-  );
-};
 
 export default function Home() {
   const [view, setView] = useState("home");
@@ -165,8 +54,9 @@ export default function Home() {
   const [projectPositions, setProjectPositions] = useState([]);
   const [hoveredIndex, setHoveredIndex] = useState(null);
   const [cursorColor, setCursorColor] = useState("#000000");
-  const [detailInfoPositions, setDetailInfoPositions] = useState({});
-  const [detailShowImages, setDetailShowImages] = useState(false);
+  const [imagesHovered, setImagesHovered] = useState(false);
+  const [hoveredProjectId, setHoveredProjectId] = useState(null);
+  const [filterRole, setFilterRole] = useState(null);
   const [isMobile, setIsMobile] = useState(false);
   const containerRef = useRef(null);
   const carouselRef = useRef(null);
@@ -234,20 +124,19 @@ export default function Home() {
     if (view === "home") setNavPositions({ giulia: { top: "15vh", left: "40vw", rotate: "-2deg" }, projects: { top: "75vh", left: "15vw", rotate: "4deg" }, about: { top: "45vh", right: "12vw", rotate: "-3deg" } });
     if (view === "about") setAboutPositions({ email: { top: "25vh", left: "15vw", rotate: "-5deg" }, phone: { bottom: "25vh", right: "15vw", rotate: "5deg" } });
     if (view === "projects") {
-      const positions = projects.map(() => ({ top: Math.floor(Math.random() * 60 + 15) + "vh", left: Math.floor(Math.random() * 70 + 10) + "vw", rotation: (Math.random() * 10 - 5) + "deg" }));
+      const positions = projects.map(() => ({
+        top: Math.floor(Math.random() * 52 + 18) + "vh",
+        left: Math.floor(Math.random() * 52 + 20) + "vw",
+        rotation: (Math.random() * 24 - 12) + "deg",
+        width: Math.floor(Math.random() * 90 + 75) + "px",
+      }));
       setProjectPositions(positions);
     }
   }, [view]);
 
+
   const openProject = (proj) => {
-    const r = (min, max) => (Math.random() * (max - min) + min).toFixed(1);
-    setDetailInfoPositions({
-      role:     { top: `${r(5,  14)}vh`, right: `${r(1, 8)}vw`, rotate: `${r(-3, 3)}deg` },
-      location: { top: `${r(40, 58)}vh`, right: `${r(1, 8)}vw`, rotate: `${r(-3, 3)}deg` },
-      date:     { top: `${r(74, 88)}vh`, right: `${r(1, 8)}vw`, rotate: `${r(-3, 3)}deg` },
-    });
     setSelectedProject(proj);
-    setDetailShowImages(false);
     setView("detail");
     window.scrollTo({ top: 0, behavior: 'instant' });
   };
@@ -277,12 +166,7 @@ export default function Home() {
           97%  { transform: translateY(1150vh)  scale(0.7);  opacity: 0;   }
           100% { transform: translateY(1200vh)  scale(0.7);  opacity: 0;   }
         }
-        .falling-text { cursor: crosshair; }
-        .falling-text, .falling-text * { color: #222; }
-        .falling-text .text-normal { opacity: 1; transition: opacity 0.08s, transform 0.08s; }
-        .falling-text .text-split  { opacity: 0; transition: opacity 0.08s; }
-        .falling-text:hover .text-normal { opacity: 0; transform: scaleX(1.18) skewX(-8deg); }
-        .falling-text:hover .text-split  { opacity: 1; }
+        .sc-char { will-change: transform; }
       `}</style>
 
       <AnimatePresence mode="wait">
@@ -290,7 +174,7 @@ export default function Home() {
           <LoadingScreen key="loader" />
         ) : (
           <motion.div key="content" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 1 }}>
-            {!isMobile && <Crosshair color="#ffffff" showLines={view !== "home"} />}
+            {!isMobile && <Crosshair color="#ffffff" showLines={view !== "home" && !imagesHovered} />}
             {/* NAV */}
             <nav>
               <AnimatePresence>
@@ -303,7 +187,7 @@ export default function Home() {
                 ) : (
                   <div style={{ fontFamily: fontTitle, fontSize: "0.8rem", textTransform: "lowercase" }}>
                     <div onClick={() => {setView("home"); setSelectedProject(null);}} style={{ position: "fixed", top: "4vh", left: "4vw", zIndex: 1000, cursor: "pointer" }}>giulia</div>
-                    <div onClick={() => {setView("projects"); setSelectedProject(null);}} style={{ position: "fixed", bottom: "4vh", left: "4vw", zIndex: 1000, cursor: "pointer", textDecoration: view === "projects" ? "line-through" : "none" }}>projects</div>
+                    <div onClick={() => {setView("projects"); setSelectedProject(null); setFilterRole(null);}} style={{ position: "fixed", bottom: "4vh", left: "4vw", zIndex: 1000, cursor: "pointer", textDecoration: view === "projects" ? "line-through" : "none" }}>projects</div>
                     <div onClick={() => {setView("about"); setSelectedProject(null);}} style={{ position: "fixed", bottom: "4vh", right: "4vw", zIndex: 1000, cursor: "pointer", textDecoration: view === "about" ? "line-through" : "none" }}>about</div>
                   </div>
                 )}
@@ -335,16 +219,53 @@ export default function Home() {
 
               {view === "projects" && (
                 <motion.div key="projects" ref={containerRef} style={{ position: "relative", width: "100vw", height: "100vh", overflow: "hidden" }}>
-                  <MouseShadowEffect mouseX={mouseX} mouseY={mouseY} />
-                  {projects.map((proj, index) => (
+
+                  {/* Indicador de filtro */}
+                  {filterRole && (
                     <motion.div
-                      key={proj.id} drag dragConstraints={containerRef} onClick={() => openProject(proj)}
-                      whileHover={{ scale: 1.05 }}
-                      style={{ position: "absolute", top: projectPositions[index]?.top, left: projectPositions[index]?.left, rotate: projectPositions[index]?.rotation, width: "150px", cursor: "pointer", zIndex: 10, willChange: "transform" }}>
-                      <img src={proj.img} className="proj-thumb" style={{ width: "100%" }} />
-                      <p style={{ fontFamily: fontBody, marginTop: "10px", fontSize: "0.7rem" }}>{proj.title}</p>
+                      initial={{ opacity: 0, y: -8 }} animate={{ opacity: 1, y: 0 }}
+                      style={{ position: "absolute", top: "7vh", left: "50%", transform: "translateX(-50%)", zIndex: 600, fontFamily: fontTitle, fontSize: "0.65rem", textTransform: "lowercase", color: "#aaa", display: "flex", alignItems: "center", gap: "0.6rem" }}
+                    >
+                      <span>{filterRole}</span>
+                      <span onClick={() => setFilterRole(null)} style={{ cursor: "pointer", color: kleinBlue, fontSize: "0.8rem", lineHeight: 1 }}>×</span>
                     </motion.div>
-                  ))}
+                  )}
+
+                  {/* Nube de imágenes */}
+                  {projects.map((proj, index) => {
+                    const isHidden = filterRole && proj.info.role !== filterRole;
+                    return (
+                      <motion.div
+                        key={proj.id} drag dragConstraints={containerRef} onClick={() => openProject(proj)}
+                        initial={{ opacity: 0, scale: 0.7 }}
+                        animate={{ opacity: isHidden ? 0 : 1, scale: isHidden ? 0.7 : 1, pointerEvents: isHidden ? "none" : "auto" }}
+                        transition={{ type: "spring", stiffness: 60, damping: 14, delay: index * 0.06 }}
+                        whileHover={{ scale: 1.08, zIndex: 200 }}
+                        onMouseEnter={() => !isHidden && setHoveredProjectId(proj.id)}
+                        onMouseLeave={() => setHoveredProjectId(null)}
+                        style={{ position: "absolute", top: projectPositions[index]?.top, left: projectPositions[index]?.left, rotate: projectPositions[index]?.rotation, width: projectPositions[index]?.width || "120px", cursor: "pointer", zIndex: 10 + index, willChange: "transform" }}
+                      >
+                        <img src={proj.img} className="proj-thumb" style={{ width: "100%", display: "block" }} />
+                      </motion.div>
+                    );
+                  })}
+
+                  {/* Línea de títulos */}
+                  <motion.div
+                    initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.4, duration: 0.8 }}
+                    style={{ position: "absolute", bottom: "9vh", left: 0, right: 0, display: "flex", justifyContent: "center", flexWrap: "wrap", gap: "0 2.5rem", padding: "0 6vw", fontFamily: fontTitle, fontSize: "0.72rem", textTransform: "lowercase", zIndex: 500, pointerEvents: "none" }}
+                  >
+                    {projects.map((proj, i) => (
+                      <motion.span
+                        key={proj.id}
+                        onClick={() => openProject(proj)}
+                        animate={{ y: [0, -5, 0], color: hoveredProjectId === proj.id ? kleinBlue : (filterRole && proj.info.role !== filterRole ? "#ccc" : "#000"), opacity: hoveredProjectId === proj.id ? 1 : (filterRole && proj.info.role !== filterRole ? 0.25 : 0.55) }}
+                        transition={{ y: { repeat: Infinity, duration: 3.2 + i * 0.25, ease: "easeInOut", delay: i * 0.4 }, color: { duration: 0.2 }, opacity: { duration: 0.2 } }}
+                        whileHover={{ opacity: 1, color: kleinBlue }}
+                        style={{ cursor: "pointer", pointerEvents: "auto", display: "inline-block" }}
+                      >{proj.title}</motion.span>
+                    ))}
+                  </motion.div>
                 </motion.div>
               )}
 
@@ -405,9 +326,21 @@ export default function Home() {
                   </motion.div>
                 ) : (
                   <motion.div key="detail" style={{ backgroundColor: "white", minHeight: "100vh", position: "relative",  }}>
-                    <motion.p key={selectedProject.title + "-role"} initial={{ scale: 1.8, opacity: 0, top: "50vh", right: "2vw" }} animate={{ scale: 1, opacity: 1, top: detailInfoPositions.role?.top, right: detailInfoPositions.role?.right }} transition={{ scale: { type: "spring", stiffness: 35, damping: 18, mass: 1.2, delay: 0 }, top: { type: "spring", stiffness: 35, damping: 18, mass: 1.2, delay: 0 }, right: { type: "spring", stiffness: 35, damping: 18, mass: 1.2, delay: 0 }, opacity: { duration: 1.2, ease: "easeOut", delay: 0 } }} style={{ position: "fixed", rotate: detailInfoPositions.role?.rotate, zIndex: 500, fontFamily: fontTitle, fontSize: "0.9rem", textTransform: "lowercase", color: "#ffffff", mixBlendMode: "difference", pointerEvents: "none" }}>{selectedProject.info.role}</motion.p>
-                    <motion.p key={selectedProject.title + "-location"} initial={{ scale: 1.8, opacity: 0, top: "50vh", right: "2vw" }} animate={{ scale: 1, opacity: 1, top: detailInfoPositions.location?.top, right: detailInfoPositions.location?.right }} transition={{ scale: { type: "spring", stiffness: 35, damping: 18, mass: 1.2, delay: 0.2 }, top: { type: "spring", stiffness: 35, damping: 18, mass: 1.2, delay: 0.2 }, right: { type: "spring", stiffness: 35, damping: 18, mass: 1.2, delay: 0.2 }, opacity: { duration: 1.2, ease: "easeOut", delay: 0.2 } }} style={{ position: "fixed", rotate: detailInfoPositions.location?.rotate, zIndex: 500, fontFamily: fontTitle, fontSize: "0.9rem", textTransform: "lowercase", color: "#ffffff", mixBlendMode: "difference", pointerEvents: "none" }}>{selectedProject.info.location}</motion.p>
-                    <motion.p key={selectedProject.title + "-date"} initial={{ scale: 1.8, opacity: 0, top: "50vh", right: "2vw" }} animate={{ scale: 1, opacity: 1, top: detailInfoPositions.date?.top, right: detailInfoPositions.date?.right }} transition={{ scale: { type: "spring", stiffness: 35, damping: 18, mass: 1.2, delay: 0.38 }, top: { type: "spring", stiffness: 35, damping: 18, mass: 1.2, delay: 0.38 }, right: { type: "spring", stiffness: 35, damping: 18, mass: 1.2, delay: 0.38 }, opacity: { duration: 1.2, ease: "easeOut", delay: 0.38 } }} style={{ position: "fixed", rotate: detailInfoPositions.date?.rotate, zIndex: 500, fontFamily: fontTitle, fontSize: "0.9rem", textTransform: "lowercase", color: "#ffffff", mixBlendMode: "difference", pointerEvents: "none" }}>{selectedProject.info.date}</motion.p>
+                    <motion.div
+                      key={selectedProject.title + "-info"}
+                      style={{ position: "fixed", right: "3vw", top: "50vh", transform: "translateY(-50%)", zIndex: 500, display: "flex", flexDirection: "column", gap: "0.5rem", fontFamily: fontTitle, fontSize: "0.75rem", textTransform: "lowercase", color: "#aaa", pointerEvents: "none", textAlign: "right" }}
+                    >
+                      {[selectedProject.info.role, selectedProject.info.location, selectedProject.info.date].map((val, i) => (
+                        <motion.span
+                          key={val}
+                          initial={{ scale: 1.8, opacity: 0 }}
+                          animate={{ scale: 1, opacity: 1 }}
+                          transition={{ type: "spring", stiffness: 35, damping: 18, mass: 1.2, delay: i * 0.18, opacity: { duration: 1.2, ease: "easeOut", delay: i * 0.18 } }}
+                          onClick={i === 0 ? () => { setFilterRole(val); setSelectedProject(null); setView("projects"); } : undefined}
+                          style={i === 0 ? { cursor: "pointer", pointerEvents: "auto", textDecoration: "underline", textUnderlineOffset: "3px" } : {}}
+                        >{val}</motion.span>
+                      ))}
+                    </motion.div>
 
                     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 2, duration: 2, ease: "easeIn" }} style={{ position: "absolute", top: 0, left: 0, width: "35vw", height: "100%", pointerEvents: "none", zIndex: 10, overflow: "hidden" }}>
                       {(() => {
@@ -423,16 +356,15 @@ export default function Home() {
                         return slots.map((fc, j) => {
                           const text = texts[j % texts.length];
                           return (
-                            <div key={j} className="falling-text" style={{ position: "absolute", top: 0, left: fc.left, rotate: fc.rotate, animation: `floatDown 130s linear ${fc.delay} infinite`, pointerEvents: "auto" }}>
-                              <div className="text-normal" style={{ fontFamily: "'Almendra Display', serif", fontSize: "1.1rem", maxWidth: "14vw" }}>
+                            <div key={j} style={{ position: "absolute", top: 0, left: fc.left, rotate: fc.rotate, animation: `floatDown 130s linear ${fc.delay} infinite`, pointerEvents: "auto", cursor: "crosshair" }}>
+                              <ScrambledText
+                                radius={90}
+                                duration={0.9}
+                                scrambleChars=".:"
+                                style={{ fontFamily: "'Almendra Display', serif", fontSize: "1.1rem", maxWidth: "14vw", color: "#222", lineHeight: 1.4 }}
+                              >
                                 {text}
-                              </div>
-                              <div className="text-split" style={{ position: "absolute", top: 0, left: "-3vw", display: "flex", gap: "2.5vw" }}>
-                                <div style={{ fontFamily: "'Almendra Display', serif", fontSize: "1rem",   maxWidth: "3.5vw", rotate: "-4deg" }}>{text}</div>
-                                <div style={{ fontFamily: "'Almendra Display', serif", fontSize: "0.9rem", maxWidth: "3vw",   rotate: "2deg",  opacity: 0.75, marginTop: "1.5rem" }}>{text}</div>
-                                <div style={{ fontFamily: "'Almendra Display', serif", fontSize: "1.1rem", maxWidth: "4vw",   rotate: "-1deg", opacity: 0.9 }}>{text}</div>
-                                <div style={{ fontFamily: "'Almendra Display', serif", fontSize: "0.85rem",maxWidth: "2.5vw", rotate: "5deg",  opacity: 0.5, marginTop: "2.5rem" }}>{text}</div>
-                              </div>
+                              </ScrambledText>
                             </div>
                           );
                         });
@@ -440,7 +372,7 @@ export default function Home() {
                     </motion.div>
 
                     {/* Header centrado */}
-                    <div style={{ display: "flex", flexDirection: "column", alignItems: "center", textAlign: "center", padding: "20vh 10vw 0" }}>
+                    <div style={{ display: "flex", flexDirection: "column", alignItems: "center", textAlign: "center", padding: "20vh 10vw 12vh" }}>
                       <span style={{ fontFamily: fontTitle, fontSize: "0.58rem", letterSpacing: "0.2em", textTransform: "uppercase", opacity: 0.3, marginBottom: "3rem" }}>
                         {String(selectedProject.id).padStart(2, "0")} / {String(projects.length).padStart(2, "0")}
                       </span>
@@ -451,16 +383,9 @@ export default function Home() {
                         {selectedProject.desc}
                       </p>
 
-                      {/* Hilo enredado — click para revelar imágenes */}
-                      {!detailShowImages && (
-                        <KnotThread onReveal={() => setDetailShowImages(true)} />
-                      )}
                     </div>
 
-                    {/* Imágenes en scroll conectadas por hilos */}
-                    <AnimatePresence>
-                      {detailShowImages && (
-                        <div style={{ width: "80vw", margin: "0 auto", display: "flex", flexDirection: "column", paddingBottom: "25vh" }}>
+                    <div style={{ width: "80vw", margin: "0 auto", display: "flex", flexDirection: "column", gap: "14vh", paddingBottom: "25vh" }}>
                           {(() => {
                             const layouts = [
                               { width: "44vw", alignSelf: "flex-start", ml: "4vw",  cx: 30 },
@@ -474,41 +399,15 @@ export default function Home() {
                             ];
                             return selectedProject.gallery.map((item, i) => {
                               const lay = layouts[i % layouts.length];
-                              const x1 = 50;
-                              const x2 = 50;
-                              const mx = 50;
                               const delay = i * 0.45;
                               return (
                                 <Fragment key={i}>
-                                  {/* hilo conector */}
-                                  <motion.svg
-                                    width="100%" height={i === 0 ? "10vh" : "18vh"}
-                                    viewBox="0 0 100 100" preserveAspectRatio="none"
-                                    initial={{ opacity: 0 }} animate={{ opacity: 1 }}
-                                    transition={{ duration: 0.4, delay }}
-                                    style={{ display: "block", overflow: "visible", cursor: "crosshair" }}
-                                    onMouseEnter={(e) => {
-                                      const path = e.currentTarget.querySelector("path");
-                                      if (!path) return;
-                                      gsap.killTweensOf(path);
-                                      gsap.to(path, { keyframes: [
-                                        { attr: { d: `M ${x1},0 Q ${mx + 16},50 ${x2},100` }, duration: 0.07 },
-                                        { attr: { d: `M ${x1},0 Q ${mx - 16},50 ${x2},100` }, duration: 0.07 },
-                                        { attr: { d: `M ${x1},0 Q ${mx + 10},50 ${x2},100` }, duration: 0.07 },
-                                        { attr: { d: `M ${x1},0 Q ${mx - 7},50 ${x2},100`  }, duration: 0.07 },
-                                        { attr: { d: `M ${x1},0 Q ${mx},50 ${x2},100`      }, duration: 0.07 },
-                                      ]});
-                                    }}
-                                  >
-                                    <path d={`M ${x1},0 Q ${mx},50 ${x2},100`} stroke="#002FA7" strokeWidth="1" fill="none" opacity="0.5" vectorEffect="non-scaling-stroke" />
-                                  </motion.svg>
-                                  {/* imagen */}
                                   <motion.div
                                     initial={{ opacity: 0, y: 30 }}
                                     animate={{ opacity: 1, y: [30, 0, -5, 0] }}
                                     transition={{ opacity: { duration: 0.6, delay: delay + 0.15 }, y: { duration: 0.8, ease: "easeOut", delay: delay + 0.15, times: [0, 0.7, 0.85, 1] } }}
-                                    onMouseEnter={() => { setHoveredIndex(i); setCursorColor("#ffffff"); }}
-                                    onMouseLeave={() => { setHoveredIndex(null); setCursorColor("#000000"); }}
+                                    onMouseEnter={() => { setHoveredIndex(i); setCursorColor("#ffffff"); setImagesHovered(true); }}
+                                    onMouseLeave={() => { setHoveredIndex(null); setCursorColor("#000000"); setImagesHovered(false); }}
                                     style={{ width: lay.width, alignSelf: lay.alignSelf, marginLeft: lay.ml, marginRight: lay.mr }}
                                   >
                                     {item.url.endsWith(".mp4") ? (
@@ -522,8 +421,6 @@ export default function Home() {
                             });
                           })()}
                         </div>
-                      )}
-                    </AnimatePresence>
                   </motion.div>
                 )
               )}

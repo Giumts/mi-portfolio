@@ -1,7 +1,8 @@
 {
   "permissions": {
     "allow": [
-      "WebFetch(domain:abetkaua.com)"
+      "WebFetch(domain:abetkaua.com)",
+      "Bash(npm run *)"
     ]
   }
 }
