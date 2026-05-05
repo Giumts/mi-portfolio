@@ -1,10 +1,9 @@
 "use client";
 import { useState, useEffect, useRef, Fragment } from "react";
-import { gsap } from "gsap";
 import ImageTrail from "./ImageTrail";
 import Crosshair from "./Crosshair";
 import ScrambledText from "./ScrambledText";
-import { motion, AnimatePresence, useSpring } from "framer-motion";
+import { motion, AnimatePresence, useSpring, useScroll } from "framer-motion";
 
 // --- COMPONENTE LOADER DE PALABRAS ---
 const LoadingScreen = () => {
@@ -61,16 +60,16 @@ export default function Home() {
   const containerRef = useRef(null);
   const carouselRef = useRef(null);
 
-  // Galerías (Mantenidas intactas)
-  const gallery1 = [{ url: "/fotos_detalle/24_1.jpg", text: "frame 01" }, { url: "/fotos_detalle/24_2.jpg", text: "frame 02" }, { url: "/fotos_detalle/24_3.mp4", text: "frame 03" }, { url: "/fotos_detalle/24_4.jpg", text: "frame 04" }, { url: "/fotos_detalle/24_5.jpg", text: "frame 05" }, { url: "/fotos_detalle/24_6.jpg", text: "frame 06" }, { url: "/fotos_detalle/24_7.jpg", text: "frame 07" }, { url: "/fotos_detalle/24_8.jpg", text: "frame 08" }];
-  const gallery2 = [{ url: "/fotos_detalle/aria_1.jpg", text: "vuelo 01" }, { url: "/fotos_detalle/aria_2.jpg", text: "vuelo 02" }, { url: "/fotos_detalle/aria_3.jpg", text: "vuelo 03" }, { url: "/fotos_detalle/aria_4.jpg", text: "vuelo 04" }, { url: "/fotos_detalle/aria_5.jpg", text: "vuelo 05" }, { url: "/fotos_detalle/aria_6.jpg", text: "vuelo 06" }, { url: "/fotos_detalle/aria_7.jpg", text: "vuelo 07" }, { url: "/fotos_detalle/aria_8.jpg", text: "vuelo 08" }, { url: "/fotos_detalle/aria_9.jpg", text: "vuelo 07" }, { url: "/fotos_detalle/aria_10.jpg", text: "vuelo 08" }, { url: "/fotos_detalle/aria_11.jpg", text: "vuelo 07" }, { url: "/fotos_detalle/aria_12.jpg", text: "vuelo 08" }];
-  const gallery3 = [{ url: "/fotos_detalle/bf_1.jpg", text: "fail 01" }, { url: "/fotos_detalle/bf_2.jpg", text: "fail 02" }, { url: "/fotos_detalle/bf_3.jpg", text: "fail 03" }, { url: "/fotos_detalle/bf_4.jpg", text: "fail 04" }, { url: "/fotos_detalle/bf_5.png", text: "After studying..." }, { url: "/fotos_detalle/bf_6.png", text: "fail 06" }, { url: "/fotos_detalle/bf_7.png", text: "fail 07" }, { url: "/fotos_detalle/bf_8.jpg", text: "fail 08" }];
-  const gallery4 = [{ url: "/fotos_detalle/led_1.jpg", text: "light 01" }, { url: "/fotos_detalle/led_2.jpg", text: "light 02" }, { url: "/fotos_detalle/led_3.jpg", text: "light 03" }, { url: "/fotos_detalle/led_4.jpg", text: "light 04" }, { url: "/fotos_detalle/led_5.jpg", text: "light 05" }, { url: "/fotos_detalle/led_6.png", text: "light 06" }, { url: "/fotos_detalle/led_5.png", text: "light 07" }, { url: "/fotos_detalle/led_8.jpg", text: "light 08" }, { url: "/fotos_detalle/led_7.jpg", text: "light 07" }, { url: "/fotos_detalle/led_9.jpg", text: "light 08" }, { url: "/fotos_detalle/led_9.png", text: "light 07" }, { url: "/fotos_detalle/led_10.png", text: "light 08" }, { url: "/fotos_detalle/led_11.png", text: "light 07" },{ url: "/fotos_detalle/led_12.png", text: "light 07" }, { url: "/fotos_detalle/led_13.png", text: "light 07" }];
-  const gallery5 = [{ url: "/fotos_detalle/moria_1.jpg", text: "moria 01" }, { url: "/fotos_detalle/moria_2.jpg", text: "moria 02" }, { url: "/fotos_detalle/moria_3.jpg", text: "moria 03" }, { url: "/fotos_detalle/moria_4.jpg", text: "moria 04" }, { url: "/fotos_detalle/moria_5.jpg", text: "moria 05" }, { url: "/fotos_detalle/moria_6.jpg", text: "moria 06" }, { url: "/fotos_detalle/moria_7.jpg", text: "moria 07" }, { url: "/fotos_detalle/moria_8.jpg", text: "moria 08" }];
-  const gallery6 = [{ url: "/fotos_detalle/rise_1.jpg", text: "rise 01" }, { url: "/fotos_detalle/rise_2.jpg", text: "rise 02" }, { url: "/fotos_detalle/rise_3.jpg", text: "rise 03" }, { url: "/fotos_detalle/rise_4.jpg", text: "rise 04" }, { url: "/fotos_detalle/rise_5.jpg", text: "rise 05" }, { url: "/fotos_detalle/rise_6.jpg", text: "rise 06" }, { url: "/fotos_detalle/rise_7.jpg", text: "rise 07" }, { url: "/fotos_detalle/rise_8.jpg", text: "rise 08" }];
-  const gallery7 = [{ url: "/fotos_detalle/sad_1.jpg", text: "san 01" }, { url: "/fotos_detalle/sad_2.jpg", text: "san 02" }, { url: "/fotos_detalle/sad_3.jpg", text: "san 03" }, { url: "/fotos_detalle/sad_4.jpg", text: "san 04" }, { url: "/fotos_detalle/sad_5.jpg", text: "san 05" }, { url: "/fotos_detalle/sad_6.jpg", text: "san 06" }, { url: "/fotos_detalle/sad_7.jpg", text: "san 07" }, { url: "/fotos_detalle/sad_8.jpg", text: "san 08" }];
-  const gallery8 = [{ url: "/fotos_detalle/vora_1.jpg", text: "vora 01" }, { url: "/fotos_detalle/vora_2.jpg", text: "vora 02" }, { url: "/fotos_detalle/vora_3.jpg", text: "vora 03" }, { url: "/fotos_detalle/vora_4.jpg", text: "vora 04" }, { url: "/fotos_detalle/vora_5.jpg", text: "vora 05" }, { url: "/fotos_detalle/vora_6.jpg", text: "vora 06" }, { url: "/fotos_detalle/vora_7.jpg", text: "vora 07" }, { url: "/fotos_detalle/vora_8.jpg", text: "vora 08" }];
-  const gallery9 = [{ url: "/fotos_detalle/space_01.png", text: "vora 01" }, { url: "/fotos_detalle/space_02.png", text: "vora 02" }, { url: "/fotos_detalle/space_03.png", text: "vora 03" }, { url: "/fotos_detalle/space_04.png", text: "vora 04" }, { url: "/fotos_detalle/space_05.png", text: "vora 05" }, { url: "/fotos_detalle/space_06.png", text: "vora 06" }, { url: "/fotos_detalle/space_07.png", text: "vora 07" }, { url: "/fotos_detalle/space_08.png", text: "vora 08" }];
+  // Galerías
+  const gallery1  = [{ url: "/fotos_detalle/24_1.jpg", text: "frame 01" }, { url: "/fotos_detalle/24_2.jpg", text: "frame 02" }, { url: "/fotos_detalle/24_3.mp4", text: "frame 03" }, { url: "/fotos_detalle/24_4.jpg", text: "frame 04" }, { url: "/fotos_detalle/24_5.jpg", text: "frame 05" }, { url: "/fotos_detalle/24_6.jpg", text: "frame 06" }, { url: "/fotos_detalle/24_7.jpg", text: "frame 07" }, { url: "/fotos_detalle/24_8.jpg", text: "frame 08" }];
+  const gallery2  = [{ url: "/fotos_detalle/aria_1.jpg", text: "vuelo 01" }, { url: "/fotos_detalle/aria_2.jpg", text: "vuelo 02" }, { url: "/fotos_detalle/aria_3.jpg", text: "vuelo 03" }, { url: "/fotos_detalle/aria_4.jpg", text: "vuelo 04" }, { url: "/fotos_detalle/aria_5.jpg", text: "vuelo 05" }, { url: "/fotos_detalle/aria_6.jpg", text: "vuelo 06" }, { url: "/fotos_detalle/aria_7.jpg", text: "vuelo 07" }, { url: "/fotos_detalle/aria_8.jpg", text: "vuelo 08" }, { url: "/fotos_detalle/aria_9.jpg", text: "vuelo 07" }, { url: "/fotos_detalle/aria_10.jpg", text: "vuelo 08" }, { url: "/fotos_detalle/aria_11.jpg", text: "vuelo 07" }, { url: "/fotos_detalle/aria_12.jpg", text: "vuelo 08" }];
+  const gallery3  = [{ url: "/fotos_detalle/bf_1.jpg", text: "fail 01" }, { url: "/fotos_detalle/bf_2.jpg", text: "fail 02" }, { url: "/fotos_detalle/bf_3.jpg", text: "fail 03" }, { url: "/fotos_detalle/bf_4.jpg", text: "fail 04" }, { url: "/fotos_detalle/bf_5.png", text: "After studying..." }, { url: "/fotos_detalle/bf_6.png", text: "fail 06" }, { url: "/fotos_detalle/bf_7.png", text: "fail 07" }, { url: "/fotos_detalle/bf_8.jpg", text: "fail 08" }];
+  const gallery4  = [{ url: "/fotos_detalle/led_1.jpg", text: "light 01" }, { url: "/fotos_detalle/led_2.jpg", text: "light 02" }, { url: "/fotos_detalle/led_3.jpg", text: "light 03" }, { url: "/fotos_detalle/led_4.jpg", text: "light 04" }, { url: "/fotos_detalle/led_5.jpg", text: "light 05" }, { url: "/fotos_detalle/led_6.png", text: "light 06" }, { url: "/fotos_detalle/led_5.png", text: "light 07" }, { url: "/fotos_detalle/led_8.jpg", text: "light 08" }, { url: "/fotos_detalle/led_7.jpg", text: "light 07" }, { url: "/fotos_detalle/led_9.jpg", text: "light 08" }, { url: "/fotos_detalle/led_9.png", text: "light 07" }, { url: "/fotos_detalle/led_10.png", text: "light 08" }, { url: "/fotos_detalle/led_11.png", text: "light 07" }, { url: "/fotos_detalle/led_12.png", text: "light 07" }, { url: "/fotos_detalle/led_13.png", text: "light 07" }];
+  const gallery5  = [{ url: "/fotos_detalle/moria_1.jpg", text: "moria 01" }, { url: "/fotos_detalle/moria_2.jpg", text: "moria 02" }, { url: "/fotos_detalle/moria_3.jpg", text: "moria 03" }, { url: "/fotos_detalle/moria_4.jpg", text: "moria 04" }, { url: "/fotos_detalle/moria_5.jpg", text: "moria 05" }, { url: "/fotos_detalle/moria_6.jpg", text: "moria 06" }, { url: "/fotos_detalle/moria_7.jpg", text: "moria 07" }, { url: "/fotos_detalle/moria_8.jpg", text: "moria 08" }];
+  const gallery6  = [{ url: "/fotos_detalle/rise_1.jpg", text: "rise 01" }, { url: "/fotos_detalle/rise_2.jpg", text: "rise 02" }, { url: "/fotos_detalle/rise_3.jpg", text: "rise 03" }, { url: "/fotos_detalle/rise_4.jpg", text: "rise 04" }, { url: "/fotos_detalle/rise_5.jpg", text: "rise 05" }, { url: "/fotos_detalle/rise_6.jpg", text: "rise 06" }, { url: "/fotos_detalle/rise_7.jpg", text: "rise 07" }, { url: "/fotos_detalle/rise_8.jpg", text: "rise 08" }];
+  const gallery7  = [{ url: "/fotos_detalle/sad_1.jpg", text: "san 01" }, { url: "/fotos_detalle/sad_2.jpg", text: "san 02" }, { url: "/fotos_detalle/sad_3.jpg", text: "san 03" }, { url: "/fotos_detalle/sad_4.jpg", text: "san 04" }, { url: "/fotos_detalle/sad_5.jpg", text: "san 05" }, { url: "/fotos_detalle/sad_6.jpg", text: "san 06" }, { url: "/fotos_detalle/sad_7.jpg", text: "san 07" }, { url: "/fotos_detalle/sad_8.jpg", text: "san 08" }];
+  const gallery8  = [{ url: "/fotos_detalle/vora_1.jpg", text: "vora 01" }, { url: "/fotos_detalle/vora_2.jpg", text: "vora 02" }, { url: "/fotos_detalle/vora_3.jpg", text: "vora 03" }, { url: "/fotos_detalle/vora_4.jpg", text: "vora 04" }, { url: "/fotos_detalle/vora_5.jpg", text: "vora 05" }, { url: "/fotos_detalle/vora_6.jpg", text: "vora 06" }, { url: "/fotos_detalle/vora_7.jpg", text: "vora 07" }, { url: "/fotos_detalle/vora_8.jpg", text: "vora 08" }];
+  const gallery9  = [{ url: "/fotos_detalle/space_01.png", text: "vora 01" }, { url: "/fotos_detalle/space_02.png", text: "vora 02" }, { url: "/fotos_detalle/space_03.png", text: "vora 03" }, { url: "/fotos_detalle/space_04.png", text: "vora 04" }, { url: "/fotos_detalle/space_05.png", text: "vora 05" }, { url: "/fotos_detalle/space_06.png", text: "vora 06" }, { url: "/fotos_detalle/space_07.png", text: "vora 07" }, { url: "/fotos_detalle/space_08.png", text: "vora 08" }];
   const gallery10 = [{ url: "/fotos_detalle/product_01.jpg", text: "vora 01" }, { url: "/fotos_detalle/product_02.jpg", text: "vora 02" }, { url: "/fotos_detalle/product_03.png", text: "vora 03" }, { url: "/fotos_detalle/product_04.png", text: "vora 04" }, { url: "/fotos_detalle/product_05.png", text: "vora 05" }, { url: "/fotos_detalle/product_06.jpg", text: "vora 06" }, { url: "/fotos_detalle/product_07.png", text: "vora 07" }, { url: "/fotos_detalle/product_08.png", text: "vora 08" }];
   
 
@@ -93,8 +92,9 @@ export default function Home() {
   const [selectedProject, setSelectedProject] = useState(null);
   
   const springConfig = { stiffness: 250, damping: 30 };
-  const mouseX = useSpring(0, springConfig); 
+  const mouseX = useSpring(0, springConfig);
   const mouseY = useSpring(0, springConfig);
+  const { scrollYProgress } = useScroll();
   
   const kleinBlue = "#002FA7"; 
   const fontTitle = "'Monor', monospace"; 
@@ -133,6 +133,8 @@ export default function Home() {
       setProjectPositions(positions);
     }
   }, [view]);
+
+
 
 
   const openProject = (proj) => {
@@ -193,6 +195,13 @@ export default function Home() {
                 )}
               </AnimatePresence>
             </nav>
+
+            {/* SCROLL INDICATOR */}
+            {view === "detail" && selectedProject && (
+              <div style={{ position: "fixed", right: "1vw", top: "20vh", bottom: "10vh", width: "1px", backgroundColor: "#e8e8e8", zIndex: 600, pointerEvents: "none" }}>
+                <motion.div style={{ position: "absolute", top: 0, left: 0, width: "100%", height: "100%", backgroundColor: kleinBlue, scaleY: scrollYProgress, transformOrigin: "top" }} />
+              </div>
+            )}
 
             {/* CURSOR DETALLE */}
             {view === "detail" && selectedProject && !isMobile && (
@@ -328,16 +337,32 @@ export default function Home() {
                   <motion.div key="detail" style={{ backgroundColor: "white", minHeight: "100vh", position: "relative",  }}>
                     <motion.div
                       key={selectedProject.title + "-info"}
-                      style={{ position: "fixed", right: "3vw", top: "50vh", transform: "translateY(-50%)", zIndex: 500, display: "flex", flexDirection: "column", gap: "0.5rem", fontFamily: fontTitle, fontSize: "0.75rem", textTransform: "lowercase", color: "#aaa", pointerEvents: "none", textAlign: "right" }}
+                      style={{ position: "fixed", right: "3vw", top: "50vh", transform: "translateY(-50%)", zIndex: 500, display: "flex", flexDirection: "column", gap: "0.5rem", fontFamily: fontTitle, textTransform: "lowercase", color: "#aaa", pointerEvents: "none", textAlign: "right" }}
                     >
-                      {[selectedProject.info.role, selectedProject.info.location, selectedProject.info.date].map((val, i) => (
+                      {/* Rol — más grande, flotante y clickable */}
+                      <motion.span
+                        initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 1.2, duration: 1 }}
+                        style={{ fontSize: "0.62rem", letterSpacing: "0.12em", color: kleinBlue, opacity: 0.7, display: "block", marginBottom: "0.15rem" }}
+                      >↓ similar</motion.span>
+                      <motion.div animate={{ y: [0, -4, 0] }} transition={{ repeat: Infinity, duration: 3.5, ease: "easeInOut" }}>
+                        <motion.span
+                          key={selectedProject.info.role}
+                          initial={{ scale: 1.8, opacity: 0 }}
+                          animate={{ scale: 1, opacity: 1 }}
+                          transition={{ type: "spring", stiffness: 35, damping: 18, mass: 1.2, opacity: { duration: 1.2, ease: "easeOut" } }}
+                          onClick={() => { setFilterRole(selectedProject.info.role); setSelectedProject(null); setView("projects"); }}
+                          style={{ cursor: "pointer", pointerEvents: "auto", fontSize: "1.05rem", color: kleinBlue }}
+                        >{selectedProject.info.role}</motion.span>
+                      </motion.div>
+
+                      {/* Location y date — tamaño normal */}
+                      {[selectedProject.info.location, selectedProject.info.date].map((val, i) => (
                         <motion.span
                           key={val}
                           initial={{ scale: 1.8, opacity: 0 }}
                           animate={{ scale: 1, opacity: 1 }}
-                          transition={{ type: "spring", stiffness: 35, damping: 18, mass: 1.2, delay: i * 0.18, opacity: { duration: 1.2, ease: "easeOut", delay: i * 0.18 } }}
-                          onClick={i === 0 ? () => { setFilterRole(val); setSelectedProject(null); setView("projects"); } : undefined}
-                          style={i === 0 ? { cursor: "pointer", pointerEvents: "auto", textDecoration: "underline", textUnderlineOffset: "3px" } : {}}
+                          transition={{ type: "spring", stiffness: 35, damping: 18, mass: 1.2, delay: (i + 1) * 0.18, opacity: { duration: 1.2, ease: "easeOut", delay: (i + 1) * 0.18 } }}
+                          style={{ fontSize: "0.75rem" }}
                         >{val}</motion.span>
                       ))}
                     </motion.div>
@@ -352,16 +377,22 @@ export default function Home() {
                           { left: "17vw", rotate: "2deg",  delay: "-75s"  },
                           { left: "5vw",  rotate: "1deg",  delay: "-100s" },
                           { left: "28vw", rotate: "-2deg", delay: "-15s"  },
+                          { left: "8vw",  rotate: "1.5deg",delay: "-35s"  },
+                          { left: "20vw", rotate: "-3deg", delay: "-60s"  },
+                          { left: "14vw", rotate: "2deg",  delay: "-85s"  },
+                          { left: "3vw",  rotate: "-1deg", delay: "-110s" },
+                          { left: "26vw", rotate: "3deg",  delay: "-45s"  },
+                          { left: "9vw",  rotate: "-2deg", delay: "-70s"  },
                         ];
                         return slots.map((fc, j) => {
                           const text = texts[j % texts.length];
                           return (
-                            <div key={j} style={{ position: "absolute", top: 0, left: fc.left, rotate: fc.rotate, animation: `floatDown 130s linear ${fc.delay} infinite`, pointerEvents: "auto", cursor: "crosshair" }}>
+                            <div key={j} className="falling-word-el" style={{ position: "absolute", top: 0, left: fc.left, rotate: fc.rotate, animation: `floatDown 130s linear ${fc.delay} infinite`, pointerEvents: "auto", cursor: "crosshair" }}>
                               <ScrambledText
                                 radius={90}
                                 duration={0.9}
                                 scrambleChars=".:"
-                                style={{ fontFamily: "'Almendra Display', serif", fontSize: "1.1rem", maxWidth: "14vw", color: "#222", lineHeight: 1.4 }}
+                                style={{ fontFamily: "'Almendra Display', serif", fontSize: "0.8rem", maxWidth: "12vw", color: "#222", lineHeight: 1.4 }}
                               >
                                 {text}
                               </ScrambledText>
@@ -386,41 +417,42 @@ export default function Home() {
                     </div>
 
                     <div style={{ width: "80vw", margin: "0 auto", display: "flex", flexDirection: "column", gap: "14vh", paddingBottom: "25vh" }}>
-                          {(() => {
-                            const layouts = [
-                              { width: "44vw", alignSelf: "flex-start", ml: "4vw",  cx: 30 },
-                              { width: "50vw", alignSelf: "flex-end",   mr: "2vw",  cx: 66 },
-                              { width: "38vw", alignSelf: "flex-start", ml: "18vw", cx: 47 },
-                              { width: "56vw", alignSelf: "flex-end",   mr: "4vw",  cx: 58 },
-                              { width: "46vw", alignSelf: "flex-start", ml: "6vw",  cx: 35 },
-                              { width: "40vw", alignSelf: "flex-end",   mr: "12vw", cx: 62 },
-                              { width: "52vw", alignSelf: "flex-start", ml: "0vw",  cx: 33 },
-                              { width: "42vw", alignSelf: "flex-end",   mr: "6vw",  cx: 67 },
-                            ];
-                            return selectedProject.gallery.map((item, i) => {
-                              const lay = layouts[i % layouts.length];
-                              const delay = i * 0.45;
-                              return (
-                                <Fragment key={i}>
-                                  <motion.div
-                                    initial={{ opacity: 0, y: 30 }}
-                                    animate={{ opacity: 1, y: [30, 0, -5, 0] }}
-                                    transition={{ opacity: { duration: 0.6, delay: delay + 0.15 }, y: { duration: 0.8, ease: "easeOut", delay: delay + 0.15, times: [0, 0.7, 0.85, 1] } }}
-                                    onMouseEnter={() => { setHoveredIndex(i); setCursorColor("#ffffff"); setImagesHovered(true); }}
-                                    onMouseLeave={() => { setHoveredIndex(null); setCursorColor("#000000"); setImagesHovered(false); }}
-                                    style={{ width: lay.width, alignSelf: lay.alignSelf, marginLeft: lay.ml, marginRight: lay.mr }}
-                                  >
-                                    {item.url.endsWith(".mp4") ? (
-                                      <video src={item.url} autoPlay muted loop playsInline style={{ width: "100%", display: "block" }} />
-                                    ) : (
-                                      <img src={item.url} crossOrigin="anonymous" style={{ width: "100%", display: "block" }} />
-                                    )}
-                                  </motion.div>
-                                </Fragment>
-                              );
-                            });
-                          })()}
-                        </div>
+                      {(() => {
+                        const layouts = [
+                          { width: "44vw", alignSelf: "flex-start", ml: "4vw"  },
+                          { width: "50vw", alignSelf: "flex-end",   mr: "2vw"  },
+                          { width: "38vw", alignSelf: "flex-start", ml: "18vw" },
+                          { width: "56vw", alignSelf: "flex-end",   mr: "4vw"  },
+                          { width: "46vw", alignSelf: "flex-start", ml: "6vw"  },
+                          { width: "40vw", alignSelf: "flex-end",   mr: "12vw" },
+                          { width: "52vw", alignSelf: "flex-start", ml: "0vw"  },
+                          { width: "42vw", alignSelf: "flex-end",   mr: "6vw"  },
+                        ];
+                        return selectedProject.gallery.map((item, i) => {
+                          const lay = layouts[i % layouts.length];
+                          const delay = i * 0.45;
+                          return (
+                            <Fragment key={i}>
+                              <motion.div
+                                initial={{ opacity: 0, y: 30 }}
+                                animate={{ opacity: 1, y: [30, 0, -5, 0] }}
+                                transition={{ opacity: { duration: 0.6, delay: delay + 0.15 }, y: { duration: 0.8, ease: "easeOut", delay: delay + 0.15, times: [0, 0.7, 0.85, 1] } }}
+                                onMouseEnter={() => { setHoveredIndex(i); setCursorColor("#ffffff"); setImagesHovered(true); }}
+                                onMouseLeave={() => { setHoveredIndex(null); setCursorColor("#000000"); setImagesHovered(false); }}
+                                className="gallery-image-el"
+                                style={{ width: lay.width, alignSelf: lay.alignSelf, marginLeft: lay.ml, marginRight: lay.mr }}
+                              >
+                                {item.url.endsWith(".mp4") ? (
+                                  <video src={item.url} autoPlay muted loop playsInline style={{ width: "100%", display: "block" }} />
+                                ) : (
+                                  <img src={item.url} crossOrigin="anonymous" style={{ width: "100%", display: "block" }} />
+                                )}
+                              </motion.div>
+                            </Fragment>
+                          );
+                        });
+                      })()}
+                    </div>
                   </motion.div>
                 )
               )}

@@ -22,17 +22,24 @@ const Crosshair = ({ color = 'white', containerRef = null, showLines = true }) =
 
   const mouse = useRef({ x: 0, y: 0 });
 
+  const isClickable = (el) => {
+    let node = el;
+    while (node && node !== document.body) {
+      if (node.style?.cursor === 'pointer') return true;
+      if (node.tagName === 'A' || node.tagName === 'BUTTON') return true;
+      node = node.parentElement;
+    }
+    return false;
+  };
+
   useEffect(() => {
     const handleMouseMove = ev => {
       mouse.current = getMousePos(ev, containerRef?.current);
 
-      // Mover la pequeña cruz exactamente con el cursor (sin lerp)
       if (smallCrossRef.current) {
-        gsap.set(smallCrossRef.current, {
-          x: mouse.current.x,
-          y: mouse.current.y,
-          opacity: 1
-        });
+        gsap.set(smallCrossRef.current, { x: mouse.current.x, y: mouse.current.y, opacity: 1 });
+        const clickable = isClickable(ev.target);
+        gsap.to(smallCrossRef.current, { rotation: clickable ? 45 : 0, duration: 0.3, ease: 'power2.out', overwrite: 'auto' });
       }
 
       if (containerRef?.current) {
