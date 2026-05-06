@@ -1,9 +1,9 @@
 "use client";
-import { useState, useEffect, useRef, Fragment } from "react";
+import { useState, useEffect, useRef } from "react";
 import ImageTrail from "./ImageTrail";
 import Crosshair from "./Crosshair";
-import ScrambledText from "./ScrambledText";
-import { motion, AnimatePresence, useSpring, useScroll } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
+
 
 // --- COMPONENTE LOADER DE PALABRAS ---
 const LoadingScreen = () => {
@@ -51,14 +51,20 @@ export default function Home() {
   const [isLoading, setIsLoading] = useState(true);
   const [hasMounted, setHasMounted] = useState(false); // Para evitar errores de hidratación
   const [projectPositions, setProjectPositions] = useState([]);
-  const [hoveredIndex, setHoveredIndex] = useState(null);
-  const [cursorColor, setCursorColor] = useState("#000000");
   const [imagesHovered, setImagesHovered] = useState(false);
+  const [carouselArrow, setCarouselArrow] = useState('→');
   const [hoveredProjectId, setHoveredProjectId] = useState(null);
   const [filterRole, setFilterRole] = useState(null);
+  const [showRoleMenu, setShowRoleMenu] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
   const containerRef = useRef(null);
   const carouselRef = useRef(null);
+  const dragStartRef = useRef(0);
+  const wheelCooldownRef = useRef(false);
+  const colorCacheRef = useRef({});
+  const [gradientColors, setGradientColors] = useState(null);
+  const [carouselIndex, setCarouselIndex] = useState(0);
+  const [activeSection, setActiveSection] = useState(0);
 
   // Galerías
   const gallery1  = [{ url: "/fotos_detalle/24_1.jpg", text: "frame 01" }, { url: "/fotos_detalle/24_2.jpg", text: "frame 02" }, { url: "/fotos_detalle/24_3.mp4", text: "frame 03" }, { url: "/fotos_detalle/24_4.jpg", text: "frame 04" }, { url: "/fotos_detalle/24_5.jpg", text: "frame 05" }, { url: "/fotos_detalle/24_6.jpg", text: "frame 06" }, { url: "/fotos_detalle/24_7.jpg", text: "frame 07" }, { url: "/fotos_detalle/24_8.jpg", text: "frame 08" }];
@@ -74,16 +80,16 @@ export default function Home() {
   
 
   const projects = [
-    { id: 1, title: "24 seconds", img: "/fotos_portadas/Portada_24 seconds.jpg", gallery: gallery1, desc: "una búsqueda de la armonía en el error digital. la fragmentación del tiempo como herramienta creativa, donde el fallo se convierte en forma y el ruido en ritmo.", info: { date: "2024", location: "barcelona", role: "creative direction" }, extraTexts: ["la fragmentación del tiempo se convierte en una herramienta de diseño.", "exploramos cómo el código puede fallar de manera estética.", "simbiosis entre la máquina y el instinto visual."] },
-    { id: 2, title: "aria libera", img: "/fotos_portadas/Portada_Aria libera.jpg", gallery: gallery2, desc: "la imperfección como lenguaje visual predominante. espacios que respiran a través de la asimetría, donde cada elemento incompleto construye una nueva lectura del todo.", info: { date: "2023", location: "milan", role: "art direction" }, extraTexts: ["espacios que respiran a través de la asimetría.", "una oda a la belleza de lo efímero.", "geometrías que se rompen para equilibrar."] },
-    { id: 3, title: "beautiful failures", img: "/fotos_portadas/Portada_Beautiful failures.jpg", gallery: gallery3, desc: "exploración rítmica del espacio en blanco. el lienzo como campo de fuerza donde los ritmos visuales nacen del fallo y la anomalía se convierte en propuesta estética.", info: { date: "2024", location: "madrid", role: "visual design" }, extraTexts: ["el lienzo como campo de fuerza.", "ritmos visuales que nacen del fallo.", "investigación sobre la anomalía estética."] },
-    { id: 4, title: "ledsc4", img: "/fotos_portadas/Portada_Ledsc4.jpg", gallery: gallery4, desc: "el contraste extremo define la forma. luz y sombra esculpen una identidad reducida a su esencia, explorando los límites de la legibilidad y la percepción visual.", info: { date: "2022", location: "london", role: "creative lead" }, extraTexts: ["la luz y la sombra esculpen la identidad.", "estudio sobre la legibilidad extrema.", "reducción de la forma a su esencia."] },
-    { id: 5, title: "now you see me moria", img: "/fotos_portadas/Portada_Now you see me moria.jpg", gallery: gallery5, desc: "abstracción aplicada al diseño contemporáneo. la fotografía descompone el entorno para capturar lo invisible en lo cotidiano, buscando la realidad tras el filtro.", info: { date: "2023", location: "berlin", role: "photography" }, extraTexts: ["capturando la realidad tras un filtro.", "la fotografía descompone el entorno.", "buscar lo invisible en lo cotidiano."] },
-    { id: 6, title: "rise up", img: "/fotos_portadas/Portada_rise up.JPG", gallery: gallery6, desc: "fragmentos de un proceso inacabado. la belleza reside en la evolución constante, en las texturas que narran su propia creación y en la ascendencia formal como discurso.", info: { date: "2024", location: "paris", role: "concept" }, extraTexts: ["la belleza de la evolución constante.", "transformación formal y ascendencia.", "texturas que narran su propia creación."] },
-    { id: 7, title: "san sadurnì", img: "/fotos_portadas/Portada_San sadurni.jpg", gallery: gallery7, desc: "capturando la esencia del movimiento estático. la tensión entre lo quieto y lo dinámico se cristaliza en patrones que dialogan entre la cinemática y la imagen fija.", info: { date: "2023", location: "barcelona", role: "production" }, extraTexts: ["tensión visual entre lo quieto y lo dinámico.", "el movimiento congelado en patrones.", "diálogo entre cinemática e imagen fija."] },
-    { id: 8, title: "vora", img: "/fotos_portadas/Portada_vora.jpg", gallery: gallery8, desc: "reducción visual al mínimo exponente. una interfaz construida desde la claridad máxima, eliminando lo superfluo para que cada elemento presente tenga peso y significado.", info: { date: "2024", location: "remote", role: "ui design" }, extraTexts: ["interfaz como espacio de máxima claridad.", "eliminación de lo superfluo.", "eficiencia visual con el mínimo elemento."] },
-    { id: 9, title: "space creation set", img: "/fotos_portadas/Portada_Shoot LAMP.png", gallery: gallery9, desc: "objetos que definen el espacio que los rodea. una exploración sobre cómo la luz y la forma construyen atmósferas, donde cada pieza existe en diálogo con su entorno.", info: { date: "2024", location: "remote", role: "ui design" }, extraTexts: ["interfaz como espacio de máxima claridad.", "eliminación de lo superfluo.", "eficiencia visual con el mínimo elemento."] },
-    { id: 10, title: "product render", img: "/fotos_portadas/Portada_product render.jpg", gallery: gallery10, desc: "la imagen como argumento de venta y de deseo. renders que trascienden la representación técnica para construir una narrativa visual en torno al objeto y su contexto.", info: { date: "2024", location: "remote", role: "ui design" }, extraTexts: ["interfaz como espacio de máxima claridad.", "eliminación de lo superfluo.", "eficiencia visual con el mínimo elemento."] }
+    { id: 1,  title: "24 seconds",          img: "/fotos_portadas/Portada_24 seconds.jpg",       gallery: gallery1,  tech: ["after effects", "premiere", "resolve"],          desc: "una búsqueda de la armonía en el error digital. la fragmentación del tiempo como herramienta creativa, donde el fallo se convierte en forma y el ruido en ritmo.", info: { date: "2024", location: "barcelona", role: "creative direction" }, extraTexts: ["la fragmentación del tiempo se convierte en una herramienta de diseño.", "exploramos cómo el código puede fallar de manera estética.", "simbiosis entre la máquina y el instinto visual."] },
+    { id: 2,  title: "aria libera",          img: "/fotos_portadas/Portada_Aria libera.jpg",       gallery: gallery2,  tech: ["lightroom", "indesign", "illustrator"],          desc: "la imperfección como lenguaje visual predominante. espacios que respiran a través de la asimetría, donde cada elemento incompleto construye una nueva lectura del todo.", info: { date: "2023", location: "milan", role: "art direction" }, extraTexts: ["espacios que respiran a través de la asimetría.", "una oda a la belleza de lo efímero.", "geometrías que se rompen para equilibrar."] },
+    { id: 3,  title: "beautiful failures",   img: "/fotos_portadas/Portada_Beautiful failures.jpg", gallery: gallery3,  tech: ["photoshop", "illustrator", "indesign"],          desc: "exploración rítmica del espacio en blanco. el lienzo como campo de fuerza donde los ritmos visuales nacen del fallo y la anomalía se convierte en propuesta estética.", info: { date: "2024", location: "madrid", role: "visual design" }, extraTexts: ["el lienzo como campo de fuerza.", "ritmos visuales que nacen del fallo.", "investigación sobre la anomalía estética."] },
+    { id: 4,  title: "ledsc4",               img: "/fotos_portadas/Portada_Ledsc4.jpg",             gallery: gallery4,  tech: ["after effects", "cinema 4d", "resolve"],         desc: "el contraste extremo define la forma. luz y sombra esculpen una identidad reducida a su esencia, explorando los límites de la legibilidad y la percepción visual.", info: { date: "2022", location: "london", role: "creative lead" }, extraTexts: ["la luz y la sombra esculpen la identidad.", "estudio sobre la legibilidad extrema.", "reducción de la forma a su esencia."] },
+    { id: 5,  title: "now you see me moria", img: "/fotos_portadas/Portada_Now you see me moria.jpg",gallery: gallery5,  tech: ["lightroom", "capture one", "photoshop"],         desc: "abstracción aplicada al diseño contemporáneo. la fotografía descompone el entorno para capturar lo invisible en lo cotidiano, buscando la realidad tras el filtro.", info: { date: "2023", location: "berlin", role: "photography" }, extraTexts: ["capturando la realidad tras un filtro.", "la fotografía descompone el entorno.", "buscar lo invisible en lo cotidiano."] },
+    { id: 6,  title: "rise up",              img: "/fotos_portadas/Portada_rise up.JPG",             gallery: gallery6,  tech: ["illustrator", "photoshop", "figma"],             desc: "fragmentos de un proceso inacabado. la belleza reside en la evolución constante, en las texturas que narran su propia creación y en la ascendencia formal como discurso.", info: { date: "2024", location: "paris", role: "concept" }, extraTexts: ["la belleza de la evolución constante.", "transformación formal y ascendencia.", "texturas que narran su propia creación."] },
+    { id: 7,  title: "san sadurnì",          img: "/fotos_portadas/Portada_San sadurni.jpg",         gallery: gallery7,  tech: ["premiere", "lightroom", "after effects"],        desc: "capturando la esencia del movimiento estático. la tensión entre lo quieto y lo dinámico se cristaliza en patrones que dialogan entre la cinemática y la imagen fija.", info: { date: "2023", location: "barcelona", role: "production" }, extraTexts: ["tensión visual entre lo quieto y lo dinámico.", "el movimiento congelado en patrones.", "diálogo entre cinemática e imagen fija."] },
+    { id: 8,  title: "vora",                 img: "/fotos_portadas/Portada_vora.jpg",                gallery: gallery8,  tech: ["figma", "framer", "css"],                        desc: "reducción visual al mínimo exponente. una interfaz construida desde la claridad máxima, eliminando lo superfluo para que cada elemento presente tenga peso y significado.", info: { date: "2024", location: "remote", role: "ui design" }, extraTexts: ["interfaz como espacio de máxima claridad.", "eliminación de lo superfluo.", "eficiencia visual con el mínimo elemento."] },
+    { id: 9,  title: "space creation set",   img: "/fotos_portadas/Portada_Shoot LAMP.png",          gallery: gallery9,  tech: ["cinema 4d", "blender", "lightroom"],             desc: "objetos que definen el espacio que los rodea. una exploración sobre cómo la luz y la forma construyen atmósferas, donde cada pieza existe en diálogo con su entorno.", info: { date: "2024", location: "remote", role: "ui design" }, extraTexts: ["interfaz como espacio de máxima claridad.", "eliminación de lo superfluo.", "eficiencia visual con el mínimo elemento."] },
+    { id: 10, title: "product render",        img: "/fotos_portadas/Portada_product render.jpg",      gallery: gallery10, tech: ["cinema 4d", "blender", "photoshop"],             desc: "la imagen como argumento de venta y de deseo. renders que trascienden la representación técnica para construir una narrativa visual en torno al objeto y su contexto.", info: { date: "2024", location: "remote", role: "ui design" }, extraTexts: ["interfaz como espacio de máxima claridad.", "eliminación de lo superfluo.", "eficiencia visual con el mínimo elemento."] }
   ];
 
   const trailImages = ["/BEAUTIFUL_FAILURES_AY1.jpg", "/BEAUTIFUL_FAILURES_AY3.jpg", "/BEAUTIFUL_FAILURES_AY15.jpg", "/BEAUTIFUL_FAILURES_AY37.jpg", "/BEAUTIFUL_FAILURES_AY42.jpg"];
@@ -91,10 +97,6 @@ export default function Home() {
   const [aboutPositions, setAboutPositions] = useState({ email: { top: "25vh", left: "15vw", rotate: "-5deg" }, phone: { bottom: "25vh", right: "15vw", rotate: "5deg" } });
   const [selectedProject, setSelectedProject] = useState(null);
   
-  const springConfig = { stiffness: 250, damping: 30 };
-  const mouseX = useSpring(0, springConfig);
-  const mouseY = useSpring(0, springConfig);
-  const { scrollYProgress } = useScroll();
   
   const kleinBlue = "#002FA7"; 
   const fontTitle = "'Monor', monospace"; 
@@ -114,21 +116,20 @@ export default function Home() {
     return () => window.removeEventListener("resize", check);
   }, []);
 
-  useEffect(() => {
-    const handleMouseMove = (e) => { mouseX.set(e.clientX); mouseY.set(e.clientY); };
-    window.addEventListener("mousemove", handleMouseMove);
-    return () => window.removeEventListener("mousemove", handleMouseMove);
-  }, [mouseX, mouseY]);
+  useEffect(() => { setCarouselIndex(0); setActiveSection(0); }, [selectedProject]);
+  useEffect(() => { setCarouselIndex(0); }, [activeSection]);
+
+
 
   useEffect(() => {
     if (view === "home") setNavPositions({ giulia: { top: "15vh", left: "40vw", rotate: "-2deg" }, projects: { top: "75vh", left: "15vw", rotate: "4deg" }, about: { top: "45vh", right: "12vw", rotate: "-3deg" } });
     if (view === "about") setAboutPositions({ email: { top: "25vh", left: "15vw", rotate: "-5deg" }, phone: { bottom: "25vh", right: "15vw", rotate: "5deg" } });
     if (view === "projects") {
       const positions = projects.map(() => ({
-        top: Math.floor(Math.random() * 52 + 18) + "vh",
-        left: Math.floor(Math.random() * 52 + 20) + "vw",
-        rotation: (Math.random() * 24 - 12) + "deg",
-        width: Math.floor(Math.random() * 90 + 75) + "px",
+        top: Math.floor(Math.random() * 48 + 12) + "vh",
+        left: Math.floor(Math.random() * 62 + 6) + "vw",
+        rotation: "0deg",
+        width: Math.floor(Math.random() * 70 + 100) + "px",
       }));
       setProjectPositions(positions);
     }
@@ -136,6 +137,22 @@ export default function Home() {
 
 
 
+
+  const extractImageColors = (imgSrc, id) => {
+    if (colorCacheRef.current[id]) { setGradientColors(colorCacheRef.current[id]); return; }
+    const img = new window.Image();
+    img.onload = () => {
+      const canvas = document.createElement('canvas');
+      canvas.width = 80; canvas.height = 80;
+      const ctx = canvas.getContext('2d');
+      ctx.drawImage(img, 0, 0, 80, 80);
+      const pts = [[12,12],[68,12],[40,40],[12,68],[68,68]];
+      const colors = pts.map(([x,y]) => { const d = ctx.getImageData(x,y,1,1).data; return `rgb(${d[0]},${d[1]},${d[2]})`; });
+      colorCacheRef.current[id] = colors;
+      setGradientColors(colors);
+    };
+    img.src = imgSrc;
+  };
 
   const openProject = (proj) => {
     setSelectedProject(proj);
@@ -169,6 +186,10 @@ export default function Home() {
           100% { transform: translateY(1200vh)  scale(0.7);  opacity: 0;   }
         }
         .sc-char { will-change: transform; }
+        @keyframes marqueeScroll {
+          from { transform: translateX(0); }
+          to { transform: translateX(-50%); }
+        }
       `}</style>
 
       <AnimatePresence mode="wait">
@@ -176,52 +197,27 @@ export default function Home() {
           <LoadingScreen key="loader" />
         ) : (
           <motion.div key="content" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 1 }}>
-            {!isMobile && <Crosshair color="#ffffff" showLines={view !== "home" && !imagesHovered} />}
+            {!isMobile && <Crosshair color="#ffffff" showLines={view !== "home" && !imagesHovered} showArrow={false} label={view === "detail" && selectedProject ? (imagesHovered ? `${carouselArrow} ${selectedProject.gallery[carouselIndex]?.text || ''}` : selectedProject.title) : ''} />}
             {/* NAV */}
             <nav>
               <AnimatePresence>
                 {view === "home" ? (
                   <>
-                    <motion.h1 onClick={() => setView("home")} animate={{ ...navPositions.giulia }} style={{ position: "fixed", fontFamily: fontTitle, fontSize: "0.9rem", textDecoration: "line-through", zIndex: 1000, cursor: "pointer" }}>giulia</motion.h1>
-                    <motion.div onClick={() => setView("projects")} animate={{ ...navPositions.projects }} whileHover={{ color: kleinBlue }} style={{ position: "fixed", fontFamily: fontTitle, fontSize: "0.8rem", zIndex: 1000, cursor: "pointer" }}>projects</motion.div>
-                    <motion.div onClick={() => setView("about")} animate={{ ...navPositions.about }} whileHover={{ color: kleinBlue }} style={{ position: "fixed", fontFamily: fontTitle, fontSize: "0.8rem", zIndex: 1000, cursor: "pointer" }}>about</motion.div>
+                    <motion.h1 onClick={() => setView("home")} animate={{ ...navPositions.giulia }} style={{ position: "fixed", fontFamily: fontTitle, fontSize: "0.75rem", textDecoration: "line-through", zIndex: 1000, cursor: "pointer" }}>giulia</motion.h1>
+                    <motion.div onClick={() => setView("projects")} animate={{ ...navPositions.projects }} whileHover={{ color: kleinBlue }} style={{ position: "fixed", fontFamily: fontTitle, fontSize: "0.72rem", zIndex: 1000, cursor: "pointer" }}>projects</motion.div>
+                    <motion.div onClick={() => setView("about")} animate={{ ...navPositions.about }} whileHover={{ color: kleinBlue }} style={{ position: "fixed", fontFamily: fontTitle, fontSize: "0.72rem", zIndex: 1000, cursor: "pointer" }}>about</motion.div>
                   </>
                 ) : (
-                  <div style={{ fontFamily: fontTitle, fontSize: "0.8rem", textTransform: "lowercase" }}>
-                    <div onClick={() => {setView("home"); setSelectedProject(null);}} style={{ position: "fixed", top: "4vh", left: "4vw", zIndex: 1000, cursor: "pointer" }}>giulia</div>
+                  <div style={{ fontFamily: fontTitle, fontSize: "0.72rem", textTransform: "lowercase" }}>
                     <div onClick={() => {setView("projects"); setSelectedProject(null); setFilterRole(null);}} style={{ position: "fixed", bottom: "4vh", left: "4vw", zIndex: 1000, cursor: "pointer", textDecoration: view === "projects" ? "line-through" : "none" }}>projects</div>
+                    <div onClick={() => {setView("home"); setSelectedProject(null);}} style={{ position: "fixed", bottom: "4vh", left: "50%", transform: "translateX(-50%)", zIndex: 1000, cursor: "pointer" }}>giulia</div>
                     <div onClick={() => {setView("about"); setSelectedProject(null);}} style={{ position: "fixed", bottom: "4vh", right: "4vw", zIndex: 1000, cursor: "pointer", textDecoration: view === "about" ? "line-through" : "none" }}>about</div>
                   </div>
                 )}
               </AnimatePresence>
             </nav>
 
-            {/* SCROLL INDICATOR */}
-            {view === "detail" && selectedProject && (
-              <div style={{ position: "fixed", right: "1vw", top: "20vh", bottom: "10vh", width: "1px", backgroundColor: "#e8e8e8", zIndex: 600, pointerEvents: "none" }}>
-                <motion.div style={{ position: "absolute", top: 0, left: 0, width: "100%", height: "100%", backgroundColor: kleinBlue, scaleY: scrollYProgress, transformOrigin: "top" }} />
-              </div>
-            )}
 
-            {/* CURSOR DETALLE */}
-            {view === "detail" && selectedProject && !isMobile && (
-              <motion.div style={{
-                  position: "fixed", left: 0, top: 0, x: mouseX, y: mouseY, pointerEvents: "none", zIndex: 9999,
-                  padding: "12px", fontFamily: fontTitle, fontSize: "0.6rem", color: cursorColor,
-                  textTransform: "lowercase", display: "flex", flexDirection: "column"
-              }}>
-                <AnimatePresence mode="wait">
-                  <motion.span
-                    key={hoveredIndex !== null ? `text-${hoveredIndex}` : 'title'}
-                    initial={{ opacity: 0 }} animate={{ opacity: 1 }}
-                    style={{ color: cursorColor }}
-                    transition={{ duration: 0.15 }}
-                  >
-                    {hoveredIndex !== null ? (selectedProject.gallery[hoveredIndex]?.text || "detalle") : selectedProject.title}
-                  </motion.span>
-                </AnimatePresence>
-              </motion.div>
-            )}
 
             <AnimatePresence mode="wait">
               {view === "home" && <motion.div key="home" style={{height: "100vh"}}><ImageTrail images={trailImages} /></motion.div>}
@@ -229,16 +225,56 @@ export default function Home() {
               {view === "projects" && (
                 <motion.div key="projects" ref={containerRef} style={{ position: "relative", width: "100vw", height: "100vh", overflow: "hidden" }}>
 
-                  {/* Indicador de filtro */}
-                  {filterRole && (
-                    <motion.div
-                      initial={{ opacity: 0, y: -8 }} animate={{ opacity: 1, y: 0 }}
-                      style={{ position: "absolute", top: "7vh", left: "50%", transform: "translateX(-50%)", zIndex: 600, fontFamily: fontTitle, fontSize: "0.65rem", textTransform: "lowercase", color: "#aaa", display: "flex", alignItems: "center", gap: "0.6rem" }}
+                  {/* Role filter menu */}
+                  <div style={{ position: "fixed", top: "4vh", right: "4vw", zIndex: 600, fontFamily: fontTitle, fontSize: "0.65rem", textTransform: "lowercase", textAlign: "right" }}>
+                    <span
+                      onClick={() => setShowRoleMenu(v => !v)}
+                      style={{ cursor: "pointer", color: filterRole ? kleinBlue : "#000", letterSpacing: "0.08em" }}
                     >
-                      <span>{filterRole}</span>
-                      <span onClick={() => setFilterRole(null)} style={{ cursor: "pointer", color: kleinBlue, fontSize: "0.8rem", lineHeight: 1 }}>×</span>
-                    </motion.div>
-                  )}
+                      {filterRole || "rol"}
+                    </span>
+                    <AnimatePresence>
+                      {showRoleMenu && (
+                        <motion.div
+                          initial={{ opacity: 0, y: -6 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          exit={{ opacity: 0, y: -6 }}
+                          transition={{ duration: 0.18 }}
+                          style={{ display: "flex", flexDirection: "column", gap: "0.55rem", marginTop: "0.9rem" }}
+                        >
+                          {[...new Set(projects.map(p => p.info.role))].map(role => (
+                            <span
+                              key={role}
+                              onClick={() => { setFilterRole(role === filterRole ? null : role); setShowRoleMenu(false); }}
+                              style={{ cursor: "pointer", color: filterRole === role ? kleinBlue : "#aaa", display: "block", whiteSpace: "nowrap" }}
+                            >{role}</span>
+                          ))}
+                          {filterRole && (
+                            <span onClick={() => { setFilterRole(null); setShowRoleMenu(false); }} style={{ cursor: "pointer", color: "#ccc", marginTop: "0.3rem" }}>× all</span>
+                          )}
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
+                  </div>
+
+                  {/* Gradient background on hover */}
+                  <AnimatePresence>
+                    {gradientColors && (
+                      <motion.div
+                        key="grad-bg"
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        transition={{ duration: 0.6 }}
+                        style={{
+                          position: "fixed", inset: 0, zIndex: 1, pointerEvents: "none",
+                          background: `radial-gradient(ellipse at 25% 30%, ${gradientColors[0]} 0%, transparent 55%), radial-gradient(ellipse at 75% 20%, ${gradientColors[1]} 0%, transparent 55%), radial-gradient(ellipse at 55% 65%, ${gradientColors[2]} 0%, transparent 50%), radial-gradient(ellipse at 15% 75%, ${gradientColors[3]} 0%, transparent 50%), radial-gradient(ellipse at 82% 78%, ${gradientColors[4]} 0%, transparent 50%)`,
+                          filter: "blur(55px) saturate(1.6)",
+                          opacity: 0.75,
+                        }}
+                      />
+                    )}
+                  </AnimatePresence>
 
                   {/* Nube de imágenes */}
                   {projects.map((proj, index) => {
@@ -246,35 +282,38 @@ export default function Home() {
                     return (
                       <motion.div
                         key={proj.id} drag dragConstraints={containerRef} onClick={() => openProject(proj)}
-                        initial={{ opacity: 0, scale: 0.7 }}
-                        animate={{ opacity: isHidden ? 0 : 1, scale: isHidden ? 0.7 : 1, pointerEvents: isHidden ? "none" : "auto" }}
-                        transition={{ type: "spring", stiffness: 60, damping: 14, delay: index * 0.06 }}
-                        whileHover={{ scale: 1.08, zIndex: 200 }}
-                        onMouseEnter={() => !isHidden && setHoveredProjectId(proj.id)}
-                        onMouseLeave={() => setHoveredProjectId(null)}
-                        style={{ position: "absolute", top: projectPositions[index]?.top, left: projectPositions[index]?.left, rotate: projectPositions[index]?.rotation, width: projectPositions[index]?.width || "120px", cursor: "pointer", zIndex: 10 + index, willChange: "transform" }}
+                        initial={{ opacity: 0, scale: 0.85 }}
+                        animate={{
+                          opacity: isHidden ? 0.07 : (hoveredProjectId !== null && hoveredProjectId !== proj.id ? 0.07 : 1),
+                          scale: isHidden ? 0.9 : 1,
+                          pointerEvents: isHidden ? "none" : "auto"
+                        }}
+                        transition={{ type: "spring", stiffness: 60, damping: 14, delay: index * 0.06, opacity: { duration: 0.35 } }}
+                        whileHover={{ scale: 1.13, zIndex: 200 }}
+                        onMouseEnter={() => { if (!isHidden) { setHoveredProjectId(proj.id); extractImageColors(proj.img, proj.id); } }}
+                        onMouseLeave={() => { setHoveredProjectId(null); setGradientColors(null); }}
+                        style={{ position: "absolute", top: projectPositions[index]?.top, left: projectPositions[index]?.left, width: projectPositions[index]?.width || "200px", cursor: "pointer", zIndex: 10 + index, willChange: "transform" }}
                       >
                         <img src={proj.img} className="proj-thumb" style={{ width: "100%", display: "block" }} />
                       </motion.div>
                     );
                   })}
 
-                  {/* Línea de títulos */}
-                  <motion.div
-                    initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.4, duration: 0.8 }}
-                    style={{ position: "absolute", bottom: "9vh", left: 0, right: 0, display: "flex", justifyContent: "center", flexWrap: "wrap", gap: "0 2.5rem", padding: "0 6vw", fontFamily: fontTitle, fontSize: "0.72rem", textTransform: "lowercase", zIndex: 500, pointerEvents: "none" }}
-                  >
-                    {projects.map((proj, i) => (
-                      <motion.span
-                        key={proj.id}
-                        onClick={() => openProject(proj)}
-                        animate={{ y: [0, -5, 0], color: hoveredProjectId === proj.id ? kleinBlue : (filterRole && proj.info.role !== filterRole ? "#ccc" : "#000"), opacity: hoveredProjectId === proj.id ? 1 : (filterRole && proj.info.role !== filterRole ? 0.25 : 0.55) }}
-                        transition={{ y: { repeat: Infinity, duration: 3.2 + i * 0.25, ease: "easeInOut", delay: i * 0.4 }, color: { duration: 0.2 }, opacity: { duration: 0.2 } }}
-                        whileHover={{ opacity: 1, color: kleinBlue }}
-                        style={{ cursor: "pointer", pointerEvents: "auto", display: "inline-block" }}
-                      >{proj.title}</motion.span>
-                    ))}
-                  </motion.div>
+                  {/* Título en hover */}
+                  <AnimatePresence>
+                    {hoveredProjectId && (
+                      <motion.div
+                        key={hoveredProjectId}
+                        initial={{ opacity: 0, y: 6 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, y: 6 }}
+                        transition={{ duration: 0.2 }}
+                        style={{ position: "fixed", bottom: "8vh", left: "50%", transform: "translateX(-50%)", fontFamily: fontTitle, fontSize: "0.75rem", color: kleinBlue, textTransform: "lowercase", zIndex: 600, pointerEvents: "none", whiteSpace: "nowrap" }}
+                      >
+                        {projects.find(p => p.id === hoveredProjectId)?.title}
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
                 </motion.div>
               )}
 
@@ -334,125 +373,93 @@ export default function Home() {
                     </div>
                   </motion.div>
                 ) : (
-                  <motion.div key="detail" style={{ backgroundColor: "white", minHeight: "100vh", position: "relative",  }}>
-                    <motion.div
-                      key={selectedProject.title + "-info"}
-                      style={{ position: "fixed", right: "3vw", top: "50vh", transform: "translateY(-50%)", zIndex: 500, display: "flex", flexDirection: "column", gap: "0.5rem", fontFamily: fontTitle, textTransform: "lowercase", color: "#aaa", pointerEvents: "none", textAlign: "right" }}
-                    >
-                      {/* Rol — más grande, flotante y clickable */}
-                      <motion.span
-                        initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 1.2, duration: 1 }}
-                        style={{ fontSize: "0.62rem", letterSpacing: "0.12em", color: kleinBlue, opacity: 0.7, display: "block", marginBottom: "0.15rem" }}
-                      >↓ similar</motion.span>
-                      <motion.div animate={{ y: [0, -4, 0] }} transition={{ repeat: Infinity, duration: 3.5, ease: "easeInOut" }}>
-                        <motion.span
-                          key={selectedProject.info.role}
-                          initial={{ scale: 1.8, opacity: 0 }}
-                          animate={{ scale: 1, opacity: 1 }}
-                          transition={{ type: "spring", stiffness: 35, damping: 18, mass: 1.2, opacity: { duration: 1.2, ease: "easeOut" } }}
+                  <motion.div key="detail" style={{ backgroundColor: "white", minHeight: "100vh", position: "relative" }}>
+
+                    {/* Franja central — info de lado a lado */}
+                    <div style={{ position: "fixed", top: "49vh", left: 0, right: 0, zIndex: 200, display: "flex", justifyContent: "space-between", alignItems: "center", padding: "0 4vw", fontFamily: fontTitle, fontSize: "0.72rem", textTransform: "lowercase", letterSpacing: "0.06em", color: kleinBlue, pointerEvents: "none" }}>
+                      <div style={{ display: "flex", gap: "2rem", alignItems: "center", whiteSpace: "nowrap" }}>
+                        <span>{selectedProject.title}</span>
+                        <span style={{ opacity: 0.5 }}>{selectedProject.info.date}</span>
+                        <span style={{ opacity: 0.5 }}>{selectedProject.info.location}</span>
+                        <div
+                          style={{ display: "flex", alignItems: "center", gap: "0.4rem", pointerEvents: "auto", cursor: "pointer" }}
                           onClick={() => { setFilterRole(selectedProject.info.role); setSelectedProject(null); setView("projects"); }}
-                          style={{ cursor: "pointer", pointerEvents: "auto", fontSize: "1.05rem", color: kleinBlue }}
-                        >{selectedProject.info.role}</motion.span>
-                      </motion.div>
-
-                      {/* Location y date — tamaño normal */}
-                      {[selectedProject.info.location, selectedProject.info.date].map((val, i) => (
-                        <motion.span
-                          key={val}
-                          initial={{ scale: 1.8, opacity: 0 }}
-                          animate={{ scale: 1, opacity: 1 }}
-                          transition={{ type: "spring", stiffness: 35, damping: 18, mass: 1.2, delay: (i + 1) * 0.18, opacity: { duration: 1.2, ease: "easeOut", delay: (i + 1) * 0.18 } }}
-                          style={{ fontSize: "0.75rem" }}
-                        >{val}</motion.span>
-                      ))}
-                    </motion.div>
-
-                    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 2, duration: 2, ease: "easeIn" }} style={{ position: "absolute", top: 0, left: 0, width: "35vw", height: "100%", pointerEvents: "none", zIndex: 10, overflow: "hidden" }}>
-                      {(() => {
-                        const texts = selectedProject.extraTexts || [];
-                        const slots = [
-                          { left: "2vw",  rotate: "-2deg", delay: "0s"    },
-                          { left: "24vw", rotate: "3deg",  delay: "-25s"  },
-                          { left: "11vw", rotate: "-1deg", delay: "-50s"  },
-                          { left: "17vw", rotate: "2deg",  delay: "-75s"  },
-                          { left: "5vw",  rotate: "1deg",  delay: "-100s" },
-                          { left: "28vw", rotate: "-2deg", delay: "-15s"  },
-                          { left: "8vw",  rotate: "1.5deg",delay: "-35s"  },
-                          { left: "20vw", rotate: "-3deg", delay: "-60s"  },
-                          { left: "14vw", rotate: "2deg",  delay: "-85s"  },
-                          { left: "3vw",  rotate: "-1deg", delay: "-110s" },
-                          { left: "26vw", rotate: "3deg",  delay: "-45s"  },
-                          { left: "9vw",  rotate: "-2deg", delay: "-70s"  },
-                        ];
-                        return slots.map((fc, j) => {
-                          const text = texts[j % texts.length];
-                          return (
-                            <div key={j} className="falling-word-el" style={{ position: "absolute", top: 0, left: fc.left, rotate: fc.rotate, animation: `floatDown 130s linear ${fc.delay} infinite`, pointerEvents: "auto", cursor: "crosshair" }}>
-                              <ScrambledText
-                                radius={90}
-                                duration={0.9}
-                                scrambleChars=".:"
-                                style={{ fontFamily: "'Almendra Display', serif", fontSize: "0.8rem", maxWidth: "12vw", color: "#222", lineHeight: 1.4 }}
-                              >
-                                {text}
-                              </ScrambledText>
-                            </div>
-                          );
-                        });
-                      })()}
-                    </motion.div>
-
-                    {/* Header centrado */}
-                    <div style={{ display: "flex", flexDirection: "column", alignItems: "center", textAlign: "center", padding: "20vh 10vw 12vh" }}>
-                      <span style={{ fontFamily: fontTitle, fontSize: "0.58rem", letterSpacing: "0.2em", textTransform: "uppercase", opacity: 0.3, marginBottom: "3rem" }}>
-                        {String(selectedProject.id).padStart(2, "0")} / {String(projects.length).padStart(2, "0")}
-                      </span>
-                      <h1 style={{ fontFamily: fontTitle, fontSize: "9vw", color: kleinBlue, lineHeight: "0.85", letterSpacing: "-0.025em", maxWidth: "80vw" }}>
-                        {selectedProject.title}
-                      </h1>
-                      <p style={{ fontFamily: fontBody, fontSize: "0.75rem", maxWidth: "36vw", lineHeight: "1.8", opacity: 0.55, marginTop: "2.5rem" }}>
-                        {selectedProject.desc}
-                      </p>
-
+                        >
+                          <span>{selectedProject.info.role}</span>
+                          <span style={{ fontSize: "0.85rem" }}>↗</span>
+                        </div>
+                      </div>
+                      <div style={{ display: "flex", gap: "2rem", alignItems: "center", whiteSpace: "nowrap", pointerEvents: "auto" }}>
+                        {["project", "technical", "development"].map((s, i) => (
+                          <span key={s} onClick={() => setActiveSection(i)} style={{ opacity: activeSection === i ? 1 : 0.3, cursor: "pointer", transition: "opacity 0.3s ease" }}>{s}</span>
+                        ))}
+                      </div>
                     </div>
 
-                    <div style={{ width: "80vw", margin: "0 auto", display: "flex", flexDirection: "column", gap: "14vh", paddingBottom: "25vh" }}>
-                      {(() => {
-                        const layouts = [
-                          { width: "44vw", alignSelf: "flex-start", ml: "4vw"  },
-                          { width: "50vw", alignSelf: "flex-end",   mr: "2vw"  },
-                          { width: "38vw", alignSelf: "flex-start", ml: "18vw" },
-                          { width: "56vw", alignSelf: "flex-end",   mr: "4vw"  },
-                          { width: "46vw", alignSelf: "flex-start", ml: "6vw"  },
-                          { width: "40vw", alignSelf: "flex-end",   mr: "12vw" },
-                          { width: "52vw", alignSelf: "flex-start", ml: "0vw"  },
-                          { width: "42vw", alignSelf: "flex-end",   mr: "6vw"  },
-                        ];
-                        return selectedProject.gallery.map((item, i) => {
-                          const lay = layouts[i % layouts.length];
-                          const delay = i * 0.45;
-                          return (
-                            <Fragment key={i}>
-                              <motion.div
-                                initial={{ opacity: 0, y: 30 }}
-                                animate={{ opacity: 1, y: [30, 0, -5, 0] }}
-                                transition={{ opacity: { duration: 0.6, delay: delay + 0.15 }, y: { duration: 0.8, ease: "easeOut", delay: delay + 0.15, times: [0, 0.7, 0.85, 1] } }}
-                                onMouseEnter={() => { setHoveredIndex(i); setCursorColor("#ffffff"); setImagesHovered(true); }}
-                                onMouseLeave={() => { setHoveredIndex(null); setCursorColor("#000000"); setImagesHovered(false); }}
-                                className="gallery-image-el"
-                                style={{ width: lay.width, alignSelf: lay.alignSelf, marginLeft: lay.ml, marginRight: lay.mr }}
-                              >
+                    {/* Texto marquee arriba */}
+                    <div style={{ position: "fixed", top: 0, left: 0, right: 0, height: "6vh", overflow: "hidden", zIndex: 100, background: "white", display: "flex", alignItems: "center", pointerEvents: "none" }}>
+                      <div style={{ display: "flex", whiteSpace: "nowrap", animation: "marqueeScroll 55s linear infinite" }}>
+                        {[0,1,2,3].map(k => (
+                          <span key={k} style={{ fontFamily: fontBody, fontSize: "0.65rem", color: "#555", paddingRight: "6vw" }}>
+                            {selectedProject.desc}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+
+                    {/* Carousel central — drag horizontal */}
+                    <div
+                      style={{ marginLeft: "4vw", marginRight: "4vw", marginTop: "6vh", height: "86vh", overflow: "hidden", position: "relative", cursor: "none" }}
+                      onWheel={(e) => {
+                        if (wheelCooldownRef.current) return;
+                        wheelCooldownRef.current = true;
+                        setTimeout(() => { wheelCooldownRef.current = false; }, 600);
+                        if (e.deltaY > 0 && activeSection < 2) setActiveSection(s => s + 1);
+                        else if (e.deltaY < 0 && activeSection > 0) setActiveSection(s => s - 1);
+                      }}
+                      onMouseMove={(e) => { setCarouselArrow(e.clientX < window.innerWidth * 0.54 ? '←' : '→'); }}
+                      onMouseEnter={() => { setImagesHovered(true); }}
+                      onClick={(e) => {
+                        const goLeft = e.clientX < window.innerWidth * 0.54;
+                        if (goLeft && carouselIndex > 0) setCarouselIndex(i => i - 1);
+                        else if (!goLeft && carouselIndex < selectedProject.gallery.length - 1) setCarouselIndex(i => i + 1);
+                      }}
+                      onPointerDown={(e) => { dragStartRef.current = e.clientX; }}
+                      onPointerUp={(e) => {
+                        const dx = e.clientX - dragStartRef.current;
+                        if (dx < -50 && carouselIndex < selectedProject.gallery.length - 1) setCarouselIndex(i => i + 1);
+                        else if (dx > 50 && carouselIndex > 0) setCarouselIndex(i => i - 1);
+                      }}
+                      onMouseLeave={() => { setImagesHovered(false); setCarouselArrow('→'); }}
+                    >
+                      <AnimatePresence mode="wait">
+                        <motion.div
+                          key={activeSection}
+                          initial={{ opacity: 0, x: 80 }}
+                          animate={{ opacity: 1, x: 0 }}
+                          exit={{ opacity: 0, x: -80 }}
+                          transition={{ duration: 0.4, ease: [0.25, 0.1, 0.25, 1] }}
+                          style={{ position: "absolute", inset: 0 }}
+                        >
+                          <motion.div
+                            animate={{ x: `${-carouselIndex * (100 / selectedProject.gallery.length)}%` }}
+                            transition={{ type: "spring", stiffness: 300, damping: 35 }}
+                            style={{ display: "flex", height: "100%", width: `${selectedProject.gallery.length * 100}%`, userSelect: "none" }}
+                          >
+                            {selectedProject.gallery.map((item, i) => (
+                              <div key={i} style={{ width: `${100 / selectedProject.gallery.length}%`, height: "100%", flexShrink: 0, overflow: "hidden" }}>
                                 {item.url.endsWith(".mp4") ? (
-                                  <video src={item.url} autoPlay muted loop playsInline style={{ width: "100%", display: "block" }} />
+                                  <video src={item.url} autoPlay muted loop playsInline style={{ width: "100%", height: "100%", objectFit: "contain", display: "block", pointerEvents: "none" }} />
                                 ) : (
-                                  <img src={item.url} crossOrigin="anonymous" style={{ width: "100%", display: "block" }} />
+                                  <img src={item.url} draggable={false} style={{ width: "100%", height: "100%", objectFit: "contain", display: "block", pointerEvents: "none" }} />
                                 )}
-                              </motion.div>
-                            </Fragment>
-                          );
-                        });
-                      })()}
+                              </div>
+                            ))}
+                          </motion.div>
+                        </motion.div>
+                      </AnimatePresence>
                     </div>
+
                   </motion.div>
                 )
               )}

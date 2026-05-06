@@ -12,13 +12,15 @@ const getMousePos = (e, container) => {
   return { x: e.clientX, y: e.clientY };
 };
 
-const Crosshair = ({ color = 'white', containerRef = null, showLines = true }) => {
+const Crosshair = ({ color = 'white', containerRef = null, showLines = true, showArrow = false, label = '' }) => {
   const cursorRef = useRef(null);
   const lineHorizontalRef = useRef(null);
   const lineVerticalRef = useRef(null);
   const smallCrossRef = useRef(null);
   const filterXRef = useRef(null);
   const filterYRef = useRef(null);
+  const showArrowRef = useRef(showArrow);
+  useEffect(() => { showArrowRef.current = showArrow; }, [showArrow]);
 
   const mouse = useRef({ x: 0, y: 0 });
 
@@ -38,8 +40,12 @@ const Crosshair = ({ color = 'white', containerRef = null, showLines = true }) =
 
       if (smallCrossRef.current) {
         gsap.set(smallCrossRef.current, { x: mouse.current.x, y: mouse.current.y, opacity: 1 });
-        const clickable = isClickable(ev.target);
-        gsap.to(smallCrossRef.current, { rotation: clickable ? 45 : 0, duration: 0.3, ease: 'power2.out', overwrite: 'auto' });
+        if (showArrowRef.current) {
+          gsap.set(smallCrossRef.current, { rotation: 0 });
+        } else {
+          const clickable = isClickable(ev.target);
+          gsap.to(smallCrossRef.current, { rotation: clickable ? 45 : 0, duration: 0.3, ease: 'power2.out', overwrite: 'auto' });
+        }
       }
 
       if (containerRef?.current) {
@@ -156,10 +162,21 @@ const Crosshair = ({ color = 'white', containerRef = null, showLines = true }) =
       <div ref={lineHorizontalRef} style={{ position: 'absolute', width: '100%', height: '0.5px', background: color, top: 0, opacity: 0, visibility: showLines ? 'visible' : 'hidden' }} />
       <div ref={lineVerticalRef} style={{ position: 'absolute', height: '100%', width: '0.5px', background: color, left: 0, opacity: 0, visibility: showLines ? 'visible' : 'hidden' }} />
 
-      {/* Cruz pequeña que sigue el cursor exactamente */}
+      {/* Cruz pequeña / flecha que sigue el cursor */}
       <div ref={smallCrossRef} style={{ position: 'absolute', top: 0, left: 0, width: 0, height: 0, opacity: 0 }}>
-        <div style={{ position: 'absolute', width: '12px', height: '1px', background: color, top: 0, left: '-6px' }} />
-        <div style={{ position: 'absolute', width: '1px', height: '12px', background: color, top: '-6px', left: 0 }} />
+        {showArrow ? (
+          <span style={{ position: 'absolute', transform: 'translate(-50%, -50%)', fontSize: '1rem', color, lineHeight: 1, userSelect: 'none' }}>↓</span>
+        ) : (
+          <>
+            <div style={{ position: 'absolute', width: '12px', height: '1px', background: color, top: 0, left: '-6px' }} />
+            <div style={{ position: 'absolute', width: '1px', height: '12px', background: color, top: '-6px', left: 0 }} />
+          </>
+        )}
+        {label && (
+          <span style={{ position: 'absolute', left: '10px', top: '-8px', whiteSpace: 'nowrap', fontSize: '0.6rem', color, fontFamily: "'Monor', monospace", textTransform: 'lowercase', letterSpacing: '0.05em', userSelect: 'none' }}>
+            {label}
+          </span>
+        )}
       </div>
     </div>
   );

@@ -2,7 +2,13 @@
   "permissions": {
     "allow": [
       "WebFetch(domain:abetkaua.com)",
-      "Bash(npm run *)"
+      "Bash(npm run *)",
+      "Bash(npm install *)",
+      "Bash(npx next *)",
+      "WebFetch(domain:krisztianeder.com)",
+      "Bash(curl -s -A \"Mozilla/5.0\" \"https://krisztianeder.com/work/chlo%C3%A9\")",
+      "Read(//tmp/**)",
+      "Bash(curl -s \"https://krisztianeder.com/_app/immutable/assets/0.CP0NN74Y.css\")"
     ]
   }
 }
