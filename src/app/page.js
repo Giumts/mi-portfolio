@@ -367,47 +367,59 @@ export default function Home() {
               {view === "detail" && selectedProject && (
                 isMobile ? (
                   <motion.div key="detail" style={{ backgroundColor: "white", minHeight: "100vh" }}>
-                    <div style={{ padding: "14vh 6vw 4vh" }}>
-                      <h1 style={{ fontFamily: fontTitle, fontSize: "12vw", color: kleinBlue, lineHeight: "0.85" }}>{selectedProject.title}</h1>
-                      <p style={{ fontFamily: fontBody, fontSize: "0.85rem", marginTop: "1.2rem", lineHeight: "1.5", opacity: 0.8 }}>{selectedProject.desc}</p>
-                      <div style={{ display: "flex", gap: "5vw", marginTop: "1rem", fontFamily: fontTitle, fontSize: "0.6rem", color: kleinBlue, textTransform: "lowercase", flexWrap: "wrap" }}>
+
+                    {/* Header */}
+                    <div style={{ padding: "14vh 6vw 3vh" }}>
+                      <h1 style={{ fontFamily: fontTitle, fontSize: "10vw", color: kleinBlue, lineHeight: "0.9", textTransform: "lowercase" }}>{selectedProject.title}</h1>
+                      <div style={{ display: "flex", gap: "5vw", marginTop: "0.8rem", fontFamily: fontTitle, fontSize: "0.6rem", color: "#000", textTransform: "lowercase", flexWrap: "wrap", opacity: 0.6 }}>
                         <span>{selectedProject.info.role}</span>
                         <span>{selectedProject.info.location}</span>
                         <span>{selectedProject.info.date}</span>
                       </div>
                     </div>
 
-                    <div ref={carouselRef} style={{ width: "100vw", height: "65vw", overflow: "hidden", marginTop: "4vh" }}>
-                      <motion.div
-                        drag="x"
-                        dragConstraints={carouselRef}
-                        dragElastic={0.05}
-                        dragTransition={{ bounceStiffness: 300, bounceDamping: 30 }}
-                        style={{ display: "flex", height: "100%", width: `${selectedProject.galleries[0].length * 100}%` }}
-                      >
-                        {selectedProject.galleries[0].map((item, i) => (
-                          <div key={i} style={{ flex: 1, height: "100%", display: "flex", alignItems: "center", justifyContent: "center", padding: "2vw 3vw" }}>
-                            {item.url.endsWith(".mp4") ? (
-                              <video src={item.url} autoPlay muted loop playsInline style={{ maxHeight: "100%", maxWidth: "100%", objectFit: "contain", pointerEvents: "none" }} />
-                            ) : (
-                              <img src={item.url} draggable={false} style={{ maxHeight: "100%", maxWidth: "100%", objectFit: "contain", userSelect: "none" }} />
-                            )}
-                          </div>
-                        ))}
-                      </motion.div>
-                    </div>
-
-                    <div style={{ padding: "8vh 6vw", display: "flex", flexDirection: "column", gap: "8vh" }}>
-                      {selectedProject.galleries[0].map((item, i) => (
-                        <div key={i}>
-                          {item.url.endsWith(".mp4") ? (
-                            <video src={item.url} autoPlay muted loop playsInline style={{ width: "100%" }} />
-                          ) : (
-                            <img src={item.url} style={{ width: "100%" }} />
-                          )}
-                        </div>
+                    {/* Section tabs */}
+                    <div style={{ display: "flex", gap: "2rem", padding: "0 6vw 2vh", fontFamily: fontTitle, fontSize: "0.65rem", textTransform: "lowercase" }}>
+                      {["project", "technical", "development"].map((s, i) => (
+                        <span key={s} onClick={() => setActiveSection(i)} style={{ cursor: "pointer", opacity: activeSection === i ? 1 : 0.3, transition: "opacity 0.3s ease", display: "flex", flexDirection: "column", alignItems: "center", gap: "0.2rem" }}>
+                          {s}
+                          <span style={{ width: "3px", height: "3px", borderRadius: "50%", background: "#000", opacity: activeSection === i ? 1 : 0, transition: "opacity 0.3s ease" }} />
+                        </span>
                       ))}
                     </div>
+
+                    {/* Carousel */}
+                    <AnimatePresence mode="wait">
+                      <motion.div key={activeSection} initial={{ opacity: 0, x: 30 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -30 }} transition={{ duration: 0.3 }}>
+                        {selectedProject.galleries[activeSection].length === 0 ? (
+                          <div style={{ height: "60vw", display: "flex", alignItems: "center", justifyContent: "center", fontFamily: fontTitle, fontSize: "0.65rem", color: "#aaa" }}>coming soon</div>
+                        ) : (
+                          <div ref={carouselRef} style={{ width: "100vw", height: "70vw", overflow: "hidden" }}>
+                            <motion.div
+                              drag="x"
+                              dragConstraints={carouselRef}
+                              dragElastic={0.05}
+                              dragTransition={{ bounceStiffness: 300, bounceDamping: 30 }}
+                              style={{ display: "flex", height: "100%", width: `${selectedProject.galleries[activeSection].length * 100}%` }}
+                            >
+                              {selectedProject.galleries[activeSection].map((item, i) => (
+                                <div key={i} style={{ flex: 1, height: "100%", display: "flex", alignItems: "center", justifyContent: "center", padding: "2vw 4vw" }}>
+                                  {item.url.endsWith(".mp4") ? (
+                                    <video src={item.url} autoPlay muted loop playsInline style={{ maxHeight: "100%", maxWidth: "100%", objectFit: "contain", pointerEvents: "none" }} />
+                                  ) : (
+                                    <img src={item.url} draggable={false} style={{ maxHeight: "100%", maxWidth: "100%", objectFit: "contain", userSelect: "none" }} />
+                                  )}
+                                </div>
+                              ))}
+                            </motion.div>
+                          </div>
+                        )}
+                      </motion.div>
+                    </AnimatePresence>
+
+                    {/* Desc */}
+                    <p style={{ fontFamily: fontBody, fontSize: "0.8rem", lineHeight: "1.6", opacity: 0.7, padding: "4vh 6vw 12vh" }}>{selectedProject.desc}</p>
+
                   </motion.div>
                 ) : (
                   <motion.div key="detail" style={{ backgroundColor: "white", minHeight: "100vh", position: "relative" }}>
