@@ -199,6 +199,42 @@ export default function Home() {
         ) : (
           <motion.div key="content" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 1 }}>
             {!isMobile && <Crosshair color="#ffffff" showLines={view !== "home" && !imagesHovered} showArrow={false} label={view === "detail" && selectedProject ? (imagesHovered ? `${carouselArrow} ${(selectedProject.galleries[activeSection][carouselIndex])?.text || ''}` : selectedProject.title) : ''} />}
+
+            {/* Info strip — fuera del motion.div de detalle para que mixBlendMode funcione */}
+            {!isMobile && view === "detail" && selectedProject && (
+              <div style={{ position: "fixed", top: "49vh", left: 0, right: 0, zIndex: 9998, display: "flex", justifyContent: "space-between", alignItems: "center", padding: "0 4vw", fontFamily: fontTitle, fontSize: "0.72rem", textTransform: "lowercase", letterSpacing: "0.06em", color: "#000", pointerEvents: "none" }}>
+                <div style={{ display: "flex", gap: "2rem", alignItems: "center", whiteSpace: "nowrap" }}>
+                  <span>{selectedProject.title}</span>
+                  <span style={{ opacity: 0.5 }}>{selectedProject.info.date}</span>
+                  <span style={{ opacity: 0.5 }}>{selectedProject.info.location}</span>
+                  <div style={{ display: "flex", alignItems: "center", gap: "0.4rem", pointerEvents: "auto", cursor: "pointer" }}
+                    onClick={() => { setFilterRole(selectedProject.info.role); setSelectedProject(null); setView("projects"); }}>
+                    <span>{selectedProject.info.role}</span>
+                    <span style={{ fontSize: "0.85rem" }}>↗</span>
+                  </div>
+                </div>
+                <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-end", gap: "0.5rem", pointerEvents: "auto" }}>
+                  <motion.span
+                    animate={{ y: [0, -4, 0] }}
+                    transition={{ duration: 2.5, repeat: Infinity, ease: "easeInOut" }}
+                    style={{ fontSize: "0.5rem", letterSpacing: "0.12em", whiteSpace: "nowrap", pointerEvents: "none", color: "#000", opacity: 0.4 }}
+                  >click and explore the sections</motion.span>
+                  <div style={{ display: "flex", gap: "2rem", alignItems: "center", whiteSpace: "nowrap" }}>
+                    {["project", "technical", "development"].map((s, i) => (
+                      <span key={s} onClick={() => setActiveSection(i)}
+                        style={{ opacity: activeSection === i ? 1 : 0.3, cursor: "pointer", transition: "opacity 0.3s ease", display: "flex", flexDirection: "column", alignItems: "center", gap: "0.25rem" }}
+                        onMouseEnter={e => e.currentTarget.style.opacity = 1}
+                        onMouseLeave={e => e.currentTarget.style.opacity = activeSection === i ? 1 : 0.3}
+                      >
+                        {s}
+                        <span style={{ width: "3px", height: "3px", borderRadius: "50%", background: "#000", opacity: activeSection === i ? 1 : 0, transition: "opacity 0.3s ease", flexShrink: 0 }} />
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            )}
+
             {/* NAV */}
             <nav>
               <AnimatePresence>
@@ -309,7 +345,7 @@ export default function Home() {
                         animate={{ opacity: 1, y: 0 }}
                         exit={{ opacity: 0, y: 6 }}
                         transition={{ duration: 0.2 }}
-                        style={{ position: "fixed", bottom: "8vh", left: "50%", transform: "translateX(-50%)", fontFamily: fontTitle, fontSize: "0.75rem", color: kleinBlue, textTransform: "lowercase", zIndex: 600, pointerEvents: "none", whiteSpace: "nowrap" }}
+                        style={{ position: "fixed", top: "4vh", left: "50%", transform: "translateX(-50%)", fontFamily: fontTitle, fontSize: "1.1rem", color: "#000", textTransform: "lowercase", zIndex: 600, pointerEvents: "none", whiteSpace: "nowrap", textAlign: "center" }}
                       >
                         {projects.find(p => p.id === hoveredProjectId)?.title}
                       </motion.div>
@@ -376,27 +412,6 @@ export default function Home() {
                 ) : (
                   <motion.div key="detail" style={{ backgroundColor: "white", minHeight: "100vh", position: "relative" }}>
 
-                    {/* Franja central — info de lado a lado */}
-                    <div style={{ position: "fixed", top: "49vh", left: 0, right: 0, zIndex: 200, display: "flex", justifyContent: "space-between", alignItems: "center", padding: "0 4vw", fontFamily: fontTitle, fontSize: "0.72rem", textTransform: "lowercase", letterSpacing: "0.06em", color: kleinBlue, pointerEvents: "none" }}>
-                      <div style={{ display: "flex", gap: "2rem", alignItems: "center", whiteSpace: "nowrap" }}>
-                        <span>{selectedProject.title}</span>
-                        <span style={{ opacity: 0.5 }}>{selectedProject.info.date}</span>
-                        <span style={{ opacity: 0.5 }}>{selectedProject.info.location}</span>
-                        <div
-                          style={{ display: "flex", alignItems: "center", gap: "0.4rem", pointerEvents: "auto", cursor: "pointer" }}
-                          onClick={() => { setFilterRole(selectedProject.info.role); setSelectedProject(null); setView("projects"); }}
-                        >
-                          <span>{selectedProject.info.role}</span>
-                          <span style={{ fontSize: "0.85rem" }}>↗</span>
-                        </div>
-                      </div>
-                      <div style={{ display: "flex", gap: "2rem", alignItems: "center", whiteSpace: "nowrap", pointerEvents: "auto" }}>
-                        {["project", "technical", "development"].map((s, i) => (
-                          <span key={s} onClick={() => setActiveSection(i)} style={{ opacity: activeSection === i ? 1 : 0.3, cursor: "pointer", transition: "opacity 0.3s ease" }}>{s}</span>
-                        ))}
-                      </div>
-                    </div>
-
                     {/* Texto marquee arriba */}
                     <div style={{ position: "fixed", top: 0, left: 0, right: 0, height: "6vh", overflow: "hidden", zIndex: 100, background: "white", display: "flex", alignItems: "center", pointerEvents: "none" }}>
                       <div style={{ display: "flex", whiteSpace: "nowrap", animation: "marqueeScroll 55s linear infinite" }}>
@@ -414,9 +429,10 @@ export default function Home() {
                       onWheel={(e) => {
                         if (wheelCooldownRef.current) return;
                         wheelCooldownRef.current = true;
-                        setTimeout(() => { wheelCooldownRef.current = false; }, 600);
-                        if (e.deltaY > 0 && activeSection < 2) setActiveSection(s => s + 1);
-                        else if (e.deltaY < 0 && activeSection > 0) setActiveSection(s => s - 1);
+                        setTimeout(() => { wheelCooldownRef.current = false; }, 400);
+                        const gallery = selectedProject.galleries[activeSection];
+                        if (e.deltaY > 0 && carouselIndex < gallery.length - 1) setCarouselIndex(i => i + 1);
+                        else if (e.deltaY < 0 && carouselIndex > 0) setCarouselIndex(i => i - 1);
                       }}
                       onMouseMove={(e) => { setCarouselArrow(e.clientX < window.innerWidth * 0.54 ? '←' : '→'); }}
                       onMouseEnter={() => { setImagesHovered(true); }}
@@ -436,10 +452,10 @@ export default function Home() {
                       <AnimatePresence mode="wait">
                         <motion.div
                           key={activeSection}
-                          initial={{ opacity: 0, x: 80 }}
+                          initial={{ opacity: 0, x: 40 }}
                           animate={{ opacity: 1, x: 0 }}
-                          exit={{ opacity: 0, x: -80 }}
-                          transition={{ duration: 0.4, ease: [0.25, 0.1, 0.25, 1] }}
+                          exit={{ opacity: 0, x: -40 }}
+                          transition={{ duration: 0.55, ease: [0.4, 0, 0.2, 1] }}
                           style={{ position: "absolute", inset: 0 }}
                         >
                           {selectedProject.galleries[activeSection].length === 0 ? (
