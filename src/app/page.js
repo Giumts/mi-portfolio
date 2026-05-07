@@ -441,10 +441,21 @@ export default function Home() {
                       onWheel={(e) => {
                         if (wheelCooldownRef.current) return;
                         wheelCooldownRef.current = true;
-                        setTimeout(() => { wheelCooldownRef.current = false; }, 400);
+                        setTimeout(() => { wheelCooldownRef.current = false; }, 500);
                         const gallery = selectedProject.galleries[activeSection];
-                        if (e.deltaY > 0 && carouselIndex < gallery.length - 1) setCarouselIndex(i => i + 1);
-                        else if (e.deltaY < 0 && carouselIndex > 0) setCarouselIndex(i => i - 1);
+                        if (e.deltaY > 0) {
+                          if (carouselIndex < gallery.length - 1) {
+                            setCarouselIndex(i => i + 1);
+                          } else if (activeSection < 2) {
+                            setActiveSection(s => s + 1);
+                          }
+                        } else if (e.deltaY < 0) {
+                          if (carouselIndex > 0) {
+                            setCarouselIndex(i => i - 1);
+                          } else if (activeSection > 0) {
+                            setActiveSection(s => s - 1);
+                          }
+                        }
                       }}
                       onMouseMove={(e) => { setCarouselArrow(e.clientX < window.innerWidth * 0.54 ? '←' : '→'); }}
                       onMouseEnter={() => { setImagesHovered(true); }}
