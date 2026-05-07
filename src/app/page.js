@@ -372,7 +372,7 @@ export default function Home() {
 
                     {/* Header */}
                     <div style={{ padding: "14vh 6vw 3vh" }}>
-                      <h1 style={{ fontFamily: fontTitle, fontSize: "10vw", color: kleinBlue, lineHeight: "0.9", textTransform: "lowercase" }}>{selectedProject.title}</h1>
+                      <h1 style={{ fontFamily: fontTitle, fontSize: "0.85rem", color: "#000", lineHeight: "1.2", textTransform: "lowercase", fontWeight: "normal" }}>{selectedProject.title}</h1>
                       <div style={{ display: "flex", gap: "5vw", marginTop: "0.8rem", fontFamily: fontTitle, fontSize: "0.6rem", color: "#000", textTransform: "lowercase", flexWrap: "wrap", opacity: 0.6 }}>
                         <span>{selectedProject.info.role}</span>
                         <span>{selectedProject.info.location}</span>
