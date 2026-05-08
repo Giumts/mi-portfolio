@@ -10,7 +10,9 @@
       "Read(//tmp/**)",
       "Bash(curl -s \"https://krisztianeder.com/_app/immutable/assets/0.CP0NN74Y.css\")",
       "Bash(dir \"c:\\\\Users\\\\Giulia\\\\Desktop\\\\giulia\\\\mi-portfolio\\\\public\\\\fotos_detalle\")",
-      "Bash(findstr /i \"rise\")"
+      "Bash(findstr /i \"rise\")",
+      "Bash(findstr /i \"moria\")",
+      "Bash(dir \"c:\\\\Users\\\\Giulia\\\\Desktop\\\\giulia\\\\mi-portfolio\\\\public\\\\fotos_detalle\" /b)"
     ]
   }
 }
