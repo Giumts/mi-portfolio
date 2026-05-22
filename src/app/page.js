@@ -137,15 +137,14 @@ export default function Home() {
 
   useEffect(() => {
     if (showGallery && selectedProject) {
-      const cols = 7;
-      const colPct = 100 / cols;
+      const cols = 5;
+      const colHeights = [10, 38, 16, 52, 28];
       setGalleryPositions(selectedProject.galleries.map(gallery =>
         gallery.map((_, i) => ({
           col: i % cols,
           row: Math.floor(i / cols),
-          jitterY: (Math.random() - 0.5) * 70,
-          jitterX: (Math.random() - 0.5) * colPct * 0.9,
-          size: Math.floor(Math.random() * 20 + 70),
+          heightPct: colHeights[i % cols],
+          size: Math.floor(Math.random() * 20 + 72),
         }))
       ));
     }
@@ -612,11 +611,11 @@ export default function Home() {
                               {selectedProject.sections.map((sectionName, sectionIdx) => {
                                 const sectionImgs = selectedProject.galleries[sectionIdx];
                                 if (!sectionImgs || sectionImgs.length === 0) return null;
-                                const cols = 7;
+                                const cols = 5;
                                 const colPct = 100 / cols;
-                                const rowH = 140;
+                                const rowH = 220;
                                 const numRows = Math.ceil(sectionImgs.length / cols);
-                                const groupH = numRows * rowH + 20;
+                                const groupH = numRows * rowH + 80;
                                 const sectionPositions = galleryPositions[sectionIdx] || [];
                                 return (
                                   <div key={sectionIdx} style={{ marginBottom: "8vh" }}>
@@ -634,7 +633,7 @@ export default function Home() {
                                           <div
                                             key={i}
                                             onClick={() => setLightboxImage(item)}
-                                            style={{ position: "absolute", top: `${pos.row * rowH + 20 + pos.jitterY}px`, left: `calc(${pos.col * colPct}% + ${pos.jitterX}%)`, width: `${pos.size}px`, cursor: "pointer", transition: "opacity 0.2s ease", zIndex: 2 }}
+                                            style={{ position: "absolute", top: `${pos.row * rowH + pos.heightPct * rowH / 100}px`, left: `${pos.col * colPct}%`, width: `${pos.size}px`, cursor: "pointer", transition: "opacity 0.2s ease", zIndex: 2 }}
                                             onMouseEnter={e => { e.currentTarget.style.opacity = 0.65; e.currentTarget.style.zIndex = 5; }}
                                             onMouseLeave={e => { e.currentTarget.style.opacity = 1; e.currentTarget.style.zIndex = 2; }}
                                           >
