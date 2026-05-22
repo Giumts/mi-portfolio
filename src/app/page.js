@@ -155,12 +155,24 @@ export default function Home() {
     if (view === "home") setNavPositions({ giulia: { top: "15vh", left: "40vw", rotate: "-2deg" }, projects: { top: "75vh", left: "15vw", rotate: "4deg" }, about: { top: "45vh", right: "12vw", rotate: "-3deg" } });
     if (view === "about") setAboutPositions({ email: { top: "25vh", left: "15vw", rotate: "-5deg" }, phone: { bottom: "25vh", right: "15vw", rotate: "5deg" } });
     if (view === "projects") {
-      const positions = projects.map(() => ({
-        top: Math.floor(Math.random() * 48 + 12) + "vh",
-        left: Math.floor(Math.random() * 62 + 6) + "vw",
-        rotation: "0deg",
-        width: Math.floor(Math.random() * 70 + 100) + "px",
-      }));
+      const cols = 4;
+      const rows = Math.ceil(projects.length / cols);
+      const colW = 84 / cols;
+      const rowH = 80 / rows;
+      const positions = projects.map((_, i) => {
+        const col = i % cols;
+        const row = Math.floor(i / cols);
+        const jitterX = (Math.random() - 0.5) * colW * 1.1;
+        const jitterY = (Math.random() - 0.5) * rowH * 1.1;
+        const baseLeft = 8 + col * colW + colW * 0.3;
+        const baseTop = 10 + row * rowH + rowH * 0.3;
+        return {
+          top: Math.min(Math.max(baseTop + jitterY, 3), 88) + "vh",
+          left: Math.min(Math.max(baseLeft + jitterX, 2), 88) + "vw",
+          rotation: "0deg",
+          width: Math.floor(Math.random() * 50 + 85) + "px",
+        };
+      });
       setProjectPositions(positions);
     }
   }, [view]);
