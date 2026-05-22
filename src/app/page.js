@@ -57,6 +57,9 @@ export default function Home() {
   const [filterRole, setFilterRole] = useState(null);
   const [showRoleMenu, setShowRoleMenu] = useState(false);
   const [showWhatIDo, setShowWhatIDo] = useState(false);
+  const [showGallery, setShowGallery] = useState(false);
+  const [lightboxImage, setLightboxImage] = useState(null);
+  const [galleryPositions, setGalleryPositions] = useState([]);
   const [isMobile, setIsMobile] = useState(false);
   const containerRef = useRef(null);
   const carouselRef = useRef(null);
@@ -124,7 +127,23 @@ export default function Home() {
     return () => window.removeEventListener("resize", check);
   }, []);
 
-  useEffect(() => { setCarouselIndex(0); setActiveSection(0); }, [selectedProject]);
+  useEffect(() => { setCarouselIndex(0); setActiveSection(0); setShowGallery(true); setLightboxImage(null); setGalleryPositions([]); }, [selectedProject]);
+
+  useEffect(() => {
+    if (showGallery && selectedProject) {
+      const cols = 7;
+      const colPct = 100 / cols;
+      setGalleryPositions(selectedProject.galleries.map(gallery =>
+        gallery.map((_, i) => ({
+          col: i % cols,
+          row: Math.floor(i / cols),
+          jitterY: (Math.random() - 0.5) * 70,
+          jitterX: (Math.random() - 0.5) * colPct * 0.9,
+          size: Math.floor(Math.random() * 20 + 70),
+        }))
+      ));
+    }
+  }, [showGallery, selectedProject]);
   useEffect(() => { setCarouselIndex(0); }, [activeSection]);
 
 
@@ -225,7 +244,7 @@ export default function Home() {
             {!isMobile && view === "detail" && selectedProject && (
               <div style={{ position: "fixed", top: "49vh", left: 0, right: 0, zIndex: 9998, display: "flex", justifyContent: "space-between", alignItems: "center", padding: "0 4vw", fontFamily: fontTitle, fontSize: "0.72rem", textTransform: "lowercase", letterSpacing: "0.06em", color: "#000", pointerEvents: "none" }}>
                 <div style={{ display: "flex", gap: "2rem", alignItems: "center", whiteSpace: "nowrap" }}>
-                  <span>{selectedProject.title}</span>
+                  <span onClick={() => setShowGallery(true)} style={{ cursor: "pointer", pointerEvents: "auto" }}>{selectedProject.title}</span>
                   <span style={{ opacity: 0.5 }}>{selectedProject.info.date}</span>
                   <span style={{ opacity: 0.5 }}>{selectedProject.info.location}</span>
                   <div style={{ display: "flex", alignItems: "center", gap: "0.4rem", pointerEvents: "auto", cursor: "pointer" }}
@@ -242,13 +261,13 @@ export default function Home() {
                   >click and explore the sections</motion.span>
                   <div style={{ display: "flex", gap: "2rem", alignItems: "center", whiteSpace: "nowrap" }}>
                     {selectedProject.sections.map((s, i) => (
-                      <span key={s} onClick={() => setActiveSection(i)}
-                        style={{ opacity: activeSection === i ? 1 : 0.3, cursor: "pointer", transition: "opacity 0.3s ease", display: "flex", flexDirection: "column", alignItems: "center", gap: "0.25rem" }}
+                      <span key={s} onClick={() => { setActiveSection(i); setShowGallery(false); }}
+                        style={{ opacity: !showGallery && activeSection === i ? 1 : 0.3, cursor: "pointer", transition: "opacity 0.3s ease", display: "flex", flexDirection: "column", alignItems: "center", gap: "0.25rem" }}
                         onMouseEnter={e => e.currentTarget.style.opacity = 1}
-                        onMouseLeave={e => e.currentTarget.style.opacity = activeSection === i ? 1 : 0.3}
+                        onMouseLeave={e => e.currentTarget.style.opacity = !showGallery && activeSection === i ? 1 : 0.3}
                       >
                         {s}
-                        <span style={{ width: "3px", height: "3px", borderRadius: "50%", background: "#000", opacity: activeSection === i ? 1 : 0, transition: "opacity 0.3s ease", flexShrink: 0 }} />
+                        <span style={{ width: "3px", height: "3px", borderRadius: "50%", background: "#000", opacity: !showGallery && activeSection === i ? 1 : 0, transition: "opacity 0.3s ease", flexShrink: 0 }} />
                       </span>
                     ))}
                   </div>
@@ -502,6 +521,8 @@ export default function Home() {
                             setCarouselIndex(i => i + 1);
                           } else if (activeSection < 2) {
                             setActiveSection(s => s + 1);
+                          } else {
+                            setShowGallery(true);
                           }
                         } else if (e.deltaY < 0) {
                           if (carouselIndex > 0) {
@@ -557,6 +578,85 @@ export default function Home() {
                         </motion.div>
                       </AnimatePresence>
                     </div>
+
+                    {/* Gallery overlay */}
+                    <AnimatePresence>
+                      {showGallery && (
+                        <motion.div
+                          key="gallery"
+                          initial={{ y: "100%" }}
+                          animate={{ y: 0 }}
+                          exit={{ y: "100%" }}
+                          transition={{ duration: 0.15, ease: "linear" }}
+                          style={{ position: "absolute", inset: 0, background: "white", zIndex: 300, overflowY: "auto", overflowX: "hidden" }}
+                        >
+                          <div style={{ padding: "10vh 10vw 8vh" }}>
+                              {selectedProject.sections.map((sectionName, sectionIdx) => {
+                                const sectionImgs = selectedProject.galleries[sectionIdx];
+                                if (!sectionImgs || sectionImgs.length === 0) return null;
+                                const cols = 7;
+                                const colPct = 100 / cols;
+                                const rowH = 140;
+                                const numRows = Math.ceil(sectionImgs.length / cols);
+                                const groupH = numRows * rowH + 20;
+                                const sectionPositions = galleryPositions[sectionIdx] || [];
+                                return (
+                                  <div key={sectionIdx} style={{ marginBottom: "8vh" }}>
+                                    <span
+                                      onClick={() => { setActiveSection(sectionIdx); setShowGallery(false); }}
+                                      style={{ fontFamily: fontTitle, fontSize: "0.62rem", textTransform: "lowercase", letterSpacing: "0.06em", opacity: 0.35, cursor: "pointer", display: "inline-block", marginBottom: "3vh" }}
+                                      onMouseEnter={e => e.currentTarget.style.opacity = 1}
+                                      onMouseLeave={e => e.currentTarget.style.opacity = 0.35}
+                                    >{sectionName} →</span>
+                                    <div style={{ position: "relative", width: "100%", height: `${groupH}px` }}>
+                                      {sectionImgs.map((item, i) => {
+                                        const pos = sectionPositions[i];
+                                        if (!pos) return null;
+                                        return (
+                                          <div
+                                            key={i}
+                                            onClick={() => setLightboxImage(item)}
+                                            style={{ position: "absolute", top: `${pos.row * rowH + 20 + pos.jitterY}px`, left: `calc(${pos.col * colPct}% + ${pos.jitterX}%)`, width: `${pos.size}px`, cursor: "pointer", transition: "opacity 0.2s ease", zIndex: 2 }}
+                                            onMouseEnter={e => { e.currentTarget.style.opacity = 0.65; e.currentTarget.style.zIndex = 5; }}
+                                            onMouseLeave={e => { e.currentTarget.style.opacity = 1; e.currentTarget.style.zIndex = 2; }}
+                                          >
+                                            {item.url.endsWith(".mp4") ? (
+                                              <video src={item.url} muted playsInline style={{ width: "100%", display: "block" }} />
+                                            ) : (
+                                              <img src={item.url} style={{ width: "100%", display: "block" }} />
+                                            )}
+                                          </div>
+                                        );
+                                      })}
+                                    </div>
+                                  </div>
+                                );
+                              })}
+                            </div>
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
+
+                    {/* Lightbox */}
+                    <AnimatePresence>
+                      {lightboxImage && (
+                        <motion.div
+                          key="lightbox"
+                          initial={{ opacity: 0 }}
+                          animate={{ opacity: 1 }}
+                          exit={{ opacity: 0 }}
+                          transition={{ duration: 0.15 }}
+                          onClick={() => setLightboxImage(null)}
+                          style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.92)", zIndex: 9999, display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer" }}
+                        >
+                          {lightboxImage.url.endsWith(".mp4") ? (
+                            <video src={lightboxImage.url} autoPlay muted loop playsInline style={{ maxWidth: "90vw", maxHeight: "90vh", objectFit: "contain" }} />
+                          ) : (
+                            <img src={lightboxImage.url} style={{ maxWidth: "90vw", maxHeight: "90vh", objectFit: "contain" }} />
+                          )}
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
 
                   </motion.div>
                 )
