@@ -56,6 +56,7 @@ export default function Home() {
   const [hoveredProjectId, setHoveredProjectId] = useState(null);
   const [filterRole, setFilterRole] = useState(null);
   const [showRoleMenu, setShowRoleMenu] = useState(false);
+  const [showWhatIDo, setShowWhatIDo] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
   const containerRef = useRef(null);
   const carouselRef = useRef(null);
@@ -378,6 +379,34 @@ export default function Home() {
                 <motion.div key="about" style={{ width: "100vw", height: "100vh", position: "relative" }}>
                   <motion.p animate={{ ...aboutPositions.email }} style={{ position: "absolute", fontFamily: fontTitle, fontSize: "0.8rem", color: kleinBlue }}>giulia@studio.com</motion.p>
                   <motion.p animate={{ ...aboutPositions.phone }} style={{ position: "absolute", fontFamily: fontTitle, fontSize: "0.8rem", color: kleinBlue }}>+34 600 000 000</motion.p>
+
+                  {/* what I do */}
+                  <motion.div
+                    animate={showWhatIDo ? { y: 0, rotate: -4 } : { y: [0, -5, 0, 3, 0], rotate: [-4, -2, -5, -3, -4] }}
+                    transition={showWhatIDo ? { duration: 0.2 } : { duration: 5, repeat: Infinity, ease: "easeInOut" }}
+                    style={{ position: "absolute", top: "18vh", right: "8vw", fontFamily: fontTitle, fontSize: "0.9rem", textTransform: "lowercase", cursor: "pointer", zIndex: 100, color: kleinBlue }}
+                    onClick={() => setShowWhatIDo(v => !v)}>
+                    <span style={{ textDecoration: showWhatIDo ? "line-through" : "none" }}>what I do</span>
+                    <AnimatePresence>
+                      {showWhatIDo && (
+                        <motion.div
+                          initial={{ opacity: 0, y: -6 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          exit={{ opacity: 0, y: -6 }}
+                          transition={{ duration: 0.3 }}
+                          style={{ marginTop: "0.8rem", display: "flex", flexDirection: "column", gap: "0.4rem", fontFamily: fontBody, fontSize: "0.6rem", color: "#000", textAlign: "right", cursor: "default" }}
+                          onClick={e => e.stopPropagation()}
+                        >
+                          {["product 2d and 3d design", "rendering", "lighting", "installation and interior design", "research and graphic design"].map(s => (
+                            <span key={s} style={{ opacity: 0.7 }}>{s}</span>
+                          ))}
+                          <span style={{ opacity: 0.9, fontSize: "0.75rem", marginTop: "0.8rem" }}>always learning new things,</span>
+                          <span style={{ opacity: 0.9, fontSize: "0.75rem" }}>and sometimes I draw</span>
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
+                  </motion.div>
+
                   <div style={{ display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center", height: "100vh", padding: "0 20vw", textAlign: "center" }}>
                     <p style={{ fontFamily: fontBody, fontSize: "0.9rem", maxWidth: "450px", lineHeight: "1.6" }}>I'm involved in a thin limbo, between design and architecture, the ephemeral, which follows the steps of the continuous changes.<br/><br/>I am fascinated by the studies of spaces and by the infinite possibilities of action, from the research passing through site-specific projects to art installations in a dynamic way of designing, ranging in its different fields.</p>
                   </div>
