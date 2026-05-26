@@ -12,7 +12,13 @@
       "Bash(dir \"c:\\\\Users\\\\Giulia\\\\Desktop\\\\giulia\\\\mi-portfolio\\\\public\\\\fotos_detalle\")",
       "Bash(findstr /i \"rise\")",
       "Bash(findstr /i \"moria\")",
-      "Bash(dir \"c:\\\\Users\\\\Giulia\\\\Desktop\\\\giulia\\\\mi-portfolio\\\\public\\\\fotos_detalle\" /b)"
+      "Bash(dir \"c:\\\\Users\\\\Giulia\\\\Desktop\\\\giulia\\\\mi-portfolio\\\\public\\\\fotos_detalle\" /b)",
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\" http://localhost:3000)",
+      "Bash(du -sh fotos_detalle fotos_portadas)",
+      "Bash(powershell -command \"Get-ChildItem -Recurse fotos_detalle,fotos_portadas | Measure-Object -Property Length -Sum | Select-Object -ExpandProperty Sum\")",
+      "Bash(magick --version)",
+      "Bash(convert --version)",
+      "Bash(node compress-images.mjs)"
     ]
   }
 }

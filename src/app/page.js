@@ -623,12 +623,14 @@ export default function Home() {
                                 const sectionPositions = galleryPositions[sectionIdx] || [];
                                 return (
                                   <div key={sectionIdx} style={{ marginBottom: "8vh" }}>
-                                    <span
-                                      onClick={() => { setActiveSection(sectionIdx); setShowGallery(false); }}
-                                      style={{ fontFamily: fontTitle, fontSize: "0.62rem", textTransform: "lowercase", letterSpacing: "0.06em", opacity: 0.35, cursor: "pointer", display: "inline-block", marginBottom: "3vh" }}
-                                      onMouseEnter={e => e.currentTarget.style.opacity = 1}
-                                      onMouseLeave={e => e.currentTarget.style.opacity = 0.35}
-                                    >{sectionName} →</span>
+                                    <div style={{ textAlign: "center", marginBottom: "3vh" }}>
+                                      <span
+                                        onClick={() => { setActiveSection(sectionIdx); setShowGallery(false); }}
+                                        style={{ fontFamily: fontTitle, fontSize: "0.62rem", textTransform: "lowercase", letterSpacing: "0.06em", opacity: 0.35, cursor: "pointer", display: "inline-block" }}
+                                        onMouseEnter={e => e.currentTarget.style.opacity = 1}
+                                        onMouseLeave={e => e.currentTarget.style.opacity = 0.35}
+                                      >{sectionName} →</span>
+                                    </div>
                                     <div style={{ position: "relative", width: "100%", height: `${groupH}px` }}>
                                       {sectionImgs.map((item, i) => {
                                         const pos = sectionPositions[i];
