@@ -452,7 +452,7 @@ export default function Home() {
                   <motion.div
                     animate={showWhatIDo ? { y: 0, rotate: -4 } : { y: [0, -12, 0, 8, 0], rotate: [-6, -2, -7, -3, -6] }}
                     transition={showWhatIDo ? { duration: 0.2 } : { duration: 5, repeat: Infinity, ease: "easeInOut" }}
-                    style={{ position: "absolute", top: "18vh", right: "8vw", fontFamily: fontTitle, fontSize: "0.9rem", textTransform: "lowercase", cursor: "pointer", zIndex: 100, color: kleinBlue }}
+                    style={{ position: "absolute", top: "18vh", right: "8vw", maxWidth: isMobile ? "42vw" : "none", fontFamily: fontTitle, fontSize: "0.9rem", textTransform: "lowercase", cursor: "pointer", zIndex: 100, color: kleinBlue }}
                     onClick={() => setShowWhatIDo(v => !v)}>
                     <span style={{ textDecoration: showWhatIDo ? "line-through" : "none" }}>what I do</span>
                     <AnimatePresence>
@@ -466,7 +466,7 @@ export default function Home() {
                           onClick={e => e.stopPropagation()}
                         >
                           {["CONCEPT", "MANAGING", "3D DESIGN", "2D DESIGN", "RENDERING", "LIGHTING", "RESEARCH"].map((s, i) => (
-                            <span key={s} style={{ opacity: 0.7, marginRight: `${(i % 3) * 0.6}rem` }}>{s}</span>
+                            <span key={s} style={{ opacity: 0.7, marginRight: isMobile ? 0 : `${(i % 3) * 0.6}rem` }}>{s}</span>
                           ))}
                           <span style={{ opacity: 0.9, fontSize: "0.75rem", marginTop: "1rem", textTransform: "none", fontStyle: "italic" }}>"sometimes I draw"</span>
                         </motion.div>
