@@ -462,14 +462,13 @@ export default function Home() {
                           animate={{ opacity: 1, y: 0 }}
                           exit={{ opacity: 0, y: -6 }}
                           transition={{ duration: 0.3 }}
-                          style={{ marginTop: "0.8rem", display: "flex", flexDirection: "column", gap: "0.4rem", fontFamily: fontBody, fontSize: "0.6rem", color: kleinBlue, textAlign: "right", cursor: "default" }}
+                          style={{ marginTop: "0.8rem", display: "flex", flexDirection: "column", gap: "0.75rem", fontFamily: fontBody, fontSize: "0.6rem", color: kleinBlue, textAlign: "right", cursor: "default", textTransform: "uppercase" }}
                           onClick={e => e.stopPropagation()}
                         >
-                          {["product 2d and 3d design", "rendering", "lighting", "installation and interior design", "research and graphic design"].map(s => (
-                            <span key={s} style={{ opacity: 0.7 }}>{s}</span>
+                          {["CONCEPT", "MANAGING", "3D DESIGN", "2D DESIGN", "RENDERING", "LIGHTING", "RESEARCH"].map((s, i) => (
+                            <span key={s} style={{ opacity: 0.7, marginRight: `${(i % 3) * 0.6}rem` }}>{s}</span>
                           ))}
-                          <span style={{ opacity: 0.9, fontSize: "0.75rem", marginTop: "0.8rem" }}>always learning new things,</span>
-                          <span style={{ opacity: 0.9, fontSize: "0.75rem" }}>and sometimes I draw</span>
+                          <span style={{ opacity: 0.9, fontSize: "0.75rem", marginTop: "1rem", textTransform: "none", fontStyle: "italic" }}>"sometimes I draw"</span>
                         </motion.div>
                       )}
                     </AnimatePresence>
