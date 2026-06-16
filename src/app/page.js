@@ -350,6 +350,8 @@ export default function Home() {
               {view === "projects" && (
                 <motion.div key="projects" ref={containerRef} style={{ position: "relative", width: "100vw", height: "100vh", overflow: "hidden" }}>
 
+                  <a href="/collective%20ephemeral.pdf" target="_blank" rel="noopener noreferrer" style={{ position: "fixed", top: "4vh", left: "4vw", zIndex: 600, fontFamily: fontTitle, fontSize: "0.65rem", textTransform: "lowercase", color: "#000", textDecoration: "underline", cursor: "pointer" }}>collective_ephemeral</a>
+
                   {/* Role filter menu */}
                   <div style={{ position: "fixed", top: "4vh", right: "4vw", zIndex: 600, fontFamily: fontTitle, fontSize: "0.65rem", textTransform: "lowercase", textAlign: "right" }}>
                     <span
@@ -447,6 +449,14 @@ export default function Home() {
                   <motion.p animate={{ ...aboutPositions.email }} style={{ position: "absolute", fontFamily: fontTitle, fontSize: "0.8rem", color: kleinBlue }}>giuliat97@hotmail.com</motion.p>
                   <motion.p animate={{ ...aboutPositions.phone }} style={{ position: "absolute", fontFamily: fontTitle, fontSize: "0.8rem", color: kleinBlue }}>+393662538712</motion.p>
                   <a href="/CV_Giulia%20Tufariello.pdf" download style={{ position: "absolute", bottom: "18vh", left: "15vw", fontFamily: fontTitle, fontSize: "0.8rem", color: kleinBlue, textDecoration: "underline", cursor: "pointer" }}>download cv</a>
+                  <motion.a
+                    href="/collective%20ephemeral.pdf"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    animate={{ y: [0, -7, 0, 5, 0], rotate: [-2, 1, -3, 0, -2] }}
+                    transition={{ duration: 4.5, repeat: Infinity, ease: "easeInOut" }}
+                    style={{ position: "absolute", bottom: "12vh", left: "15vw", fontFamily: fontTitle, fontSize: "0.8rem", color: kleinBlue, textDecoration: "underline", cursor: "pointer" }}
+                  >collective_ephemeral</motion.a>
 
                   {/* what I do */}
                   <motion.div
