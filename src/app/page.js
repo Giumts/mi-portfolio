@@ -446,10 +446,11 @@ export default function Home() {
                 <motion.div key="about" style={{ width: "100vw", height: "100vh", position: "relative" }}>
                   <motion.p animate={{ ...aboutPositions.email }} style={{ position: "absolute", fontFamily: fontTitle, fontSize: "0.8rem", color: kleinBlue }}>giuliat97@hotmail.com</motion.p>
                   <motion.p animate={{ ...aboutPositions.phone }} style={{ position: "absolute", fontFamily: fontTitle, fontSize: "0.8rem", color: kleinBlue }}>+393662538712</motion.p>
+                  <a href="/CV_Giulia%20Tufariello.pdf" download style={{ position: "absolute", bottom: "18vh", left: "15vw", fontFamily: fontTitle, fontSize: "0.8rem", color: kleinBlue, textDecoration: "underline", cursor: "pointer" }}>download cv</a>
 
                   {/* what I do */}
                   <motion.div
-                    animate={showWhatIDo ? { y: 0, rotate: -4 } : { y: [0, -5, 0, 3, 0], rotate: [-4, -2, -5, -3, -4] }}
+                    animate={showWhatIDo ? { y: 0, rotate: -4 } : { y: [0, -12, 0, 8, 0], rotate: [-6, -2, -7, -3, -6] }}
                     transition={showWhatIDo ? { duration: 0.2 } : { duration: 5, repeat: Infinity, ease: "easeInOut" }}
                     style={{ position: "absolute", top: "18vh", right: "8vw", fontFamily: fontTitle, fontSize: "0.9rem", textTransform: "lowercase", cursor: "pointer", zIndex: 100, color: kleinBlue }}
                     onClick={() => setShowWhatIDo(v => !v)}>
@@ -461,7 +462,7 @@ export default function Home() {
                           animate={{ opacity: 1, y: 0 }}
                           exit={{ opacity: 0, y: -6 }}
                           transition={{ duration: 0.3 }}
-                          style={{ marginTop: "0.8rem", display: "flex", flexDirection: "column", gap: "0.4rem", fontFamily: fontBody, fontSize: "0.6rem", color: "#000", textAlign: "right", cursor: "default" }}
+                          style={{ marginTop: "0.8rem", display: "flex", flexDirection: "column", gap: "0.4rem", fontFamily: fontBody, fontSize: "0.6rem", color: kleinBlue, textAlign: "right", cursor: "default" }}
                           onClick={e => e.stopPropagation()}
                         >
                           {["product 2d and 3d design", "rendering", "lighting", "installation and interior design", "research and graphic design"].map(s => (
