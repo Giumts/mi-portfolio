@@ -177,6 +177,39 @@ export default function Home() {
   }, [showGallery, selectedProject]);
   useEffect(() => { setCarouselIndex(0); }, [activeSection]);
 
+  // Browser back button support
+  const isPoppingRef = useRef(false);
+  useEffect(() => {
+    const handlePopState = (e) => {
+      isPoppingRef.current = true;
+      const state = e.state;
+      if (!state) { setView("home"); setSelectedProject(null); }
+      else if (state.view === "projects") { setView("projects"); setSelectedProject(null); }
+      else if (state.view === "about") { setView("about"); setSelectedProject(null); }
+      else if (state.view === "detail" && state.projectId != null) {
+        const proj = projects.find(p => p.id === state.projectId);
+        if (proj) { setView("detail"); setSelectedProject(proj); }
+      } else { setView("home"); setSelectedProject(null); }
+      setTimeout(() => { isPoppingRef.current = false; }, 0);
+    };
+    window.addEventListener("popstate", handlePopState);
+    window.history.replaceState({ view: "home" }, "");
+    return () => window.removeEventListener("popstate", handlePopState);
+  }, []);
+
+  useEffect(() => {
+    if (isPoppingRef.current) return;
+    if (view === "detail" && selectedProject) {
+      window.history.pushState({ view: "detail", projectId: selectedProject.id }, "");
+    } else if (view === "projects") {
+      window.history.pushState({ view: "projects" }, "");
+    } else if (view === "about") {
+      window.history.pushState({ view: "about" }, "");
+    } else if (view === "home") {
+      window.history.pushState({ view: "home" }, "");
+    }
+  }, [view, selectedProject]);
+
   useEffect(() => {
     const handleKey = (e) => {
       if (view !== "detail" || showGallery || lightboxImage) return;
