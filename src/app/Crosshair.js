@@ -173,7 +173,7 @@ const Crosshair = ({ color = 'white', containerRef = null, showLines = true, sho
           </>
         )}
         {label && (
-          <span style={{ position: 'absolute', left: '10px', top: '-8px', whiteSpace: 'nowrap', fontSize: '0.6rem', color, fontFamily: "'Monor', monospace", textTransform: 'lowercase', letterSpacing: '0.05em', userSelect: 'none' }}>
+          <span style={{ position: 'absolute', left: '10px', top: '-0.45em', whiteSpace: 'nowrap', fontSize: '0.6rem', color, fontFamily: "'Monor', monospace", textTransform: 'lowercase', letterSpacing: '0.05em', userSelect: 'none' }}>
             {label}
           </span>
         )}
