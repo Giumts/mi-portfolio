@@ -294,7 +294,7 @@ export default function Home() {
           <LoadingScreen key="loader" />
         ) : (
           <motion.div key="content" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 1 }}>
-            {!isMobile && <Crosshair color="#ffffff" showLines={view === "projects" && !imagesHovered} showArrow={false} label={view === "detail" && selectedProject ? (imagesHovered ? ((selectedProject.galleries[activeSection][carouselIndex])?.text || '') : selectedProject.title) : ''} />}
+            {!isMobile && <Crosshair color="#ffffff" showLines={view === "projects" && !imagesHovered} showArrow={false} label={view === "detail" && selectedProject ? (imagesHovered ? ((selectedProject.galleries[activeSection][carouselIndex])?.text || '') : selectedProject.title) : (view === "projects" && hoveredProjectId ? (projects.find(p => p.id === hoveredProjectId)?.title || '') : '')} />}
 
             {/* NYSMM contact marquee */}
             {!isMobile && view === "detail" && selectedProject?.id === 5 && (
@@ -457,18 +457,6 @@ export default function Home() {
 
                   {/* Título en hover */}
                   <AnimatePresence>
-                    {hoveredProjectId && (
-                      <motion.div
-                        key={hoveredProjectId}
-                        initial={{ opacity: 0, y: 6 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        exit={{ opacity: 0, y: 6 }}
-                        transition={{ duration: 0.2 }}
-                        style={{ position: "fixed", top: "4vh", left: "50%", transform: "translateX(-50%)", fontFamily: fontTitle, fontSize: "1.1rem", color: "#000", textTransform: "lowercase", zIndex: 600, pointerEvents: "none", whiteSpace: "nowrap", textAlign: "center" }}
-                      >
-                        {projects.find(p => p.id === hoveredProjectId)?.title}
-                      </motion.div>
-                    )}
                   </AnimatePresence>
                 </motion.div>
               )}
@@ -477,15 +465,14 @@ export default function Home() {
                 <motion.div key="about" style={{ width: "100vw", height: "100vh", position: "relative" }}>
                   <motion.p animate={{ ...aboutPositions.email }} style={{ position: "absolute", fontFamily: fontTitle, fontSize: "0.8rem", color: kleinBlue }}>giuliat97@hotmail.com</motion.p>
                   <motion.p animate={{ ...aboutPositions.phone }} style={{ position: "absolute", fontFamily: fontTitle, fontSize: "0.8rem", color: kleinBlue }}>+393662538712</motion.p>
-                  <a href="/CV_Giulia%20Tufariello.pdf" download style={{ position: "absolute", bottom: "18vh", left: "15vw", fontFamily: fontTitle, fontSize: "0.8rem", color: kleinBlue, textDecoration: "underline", cursor: "pointer" }}>download cv</a>
-                  <motion.a
-                    href="/collective%20ephemeral.pdf"
-                    target="_blank"
-                    rel="noopener noreferrer"
+                  <motion.div
                     animate={{ y: [0, -7, 0, 5, 0], rotate: [-2, 1, -3, 0, -2] }}
                     transition={{ duration: 4.5, repeat: Infinity, ease: "easeInOut" }}
-                    style={{ position: "absolute", bottom: "12vh", left: "15vw", fontFamily: fontTitle, fontSize: "0.8rem", color: kleinBlue, textDecoration: "underline", cursor: "pointer" }}
-                  >collective_ephemeral</motion.a>
+                    style={{ position: "absolute", bottom: "12vh", left: "15vw", display: "flex", flexDirection: "column", gap: "0.4rem" }}
+                  >
+                    <span style={{ fontFamily: fontTitle, fontSize: "0.6rem", color: kleinBlue, opacity: 0.7, letterSpacing: "0.05em" }}>have a look →</span>
+                    <a href="/collective%20ephemeral.pdf" target="_blank" rel="noopener noreferrer" style={{ fontFamily: fontTitle, fontSize: "0.8rem", color: kleinBlue, textDecoration: "underline", cursor: "pointer" }}>collective_ephemeral</a>
+                  </motion.div>
 
                   {/* what I do */}
                   <motion.div
@@ -515,6 +502,7 @@ export default function Home() {
 
                   <div style={{ display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center", height: "100vh", padding: "0 20vw", textAlign: "center" }}>
                     <p style={{ fontFamily: fontBody, fontSize: "0.9rem", maxWidth: "450px", lineHeight: "1.6" }}>I'm involved in a thin limbo, between design and architecture, the ephemeral, which follows the steps of the continuous changes.<br/><br/>I am fascinated by the studies of spaces and by the infinite possibilities of action, from the research passing through site-specific projects to art installations in a dynamic way of designing, ranging in its different fields.</p>
+                    <a href="/CV_Giulia%20Tufariello.pdf" download style={{ marginTop: "2.5vh", fontFamily: fontTitle, fontSize: "0.8rem", color: kleinBlue, textDecoration: "underline", cursor: "pointer" }}>download cv</a>
                   </div>
                 </motion.div>
               )}
