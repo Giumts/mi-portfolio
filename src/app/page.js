@@ -52,7 +52,6 @@ export default function Home() {
   const [hasMounted, setHasMounted] = useState(false); // Para evitar errores de hidratación
   const [projectPositions, setProjectPositions] = useState([]);
   const [imagesHovered, setImagesHovered] = useState(false);
-  const [carouselArrow, setCarouselArrow] = useState('→');
   const [hoveredProjectId, setHoveredProjectId] = useState(null);
   const [filterRole, setFilterRole] = useState(null);
   const [showRoleMenu, setShowRoleMenu] = useState(false);
@@ -178,6 +177,31 @@ export default function Home() {
   }, [showGallery, selectedProject]);
   useEffect(() => { setCarouselIndex(0); }, [activeSection]);
 
+  useEffect(() => {
+    const handleKey = (e) => {
+      if (view !== "detail" || showGallery || lightboxImage) return;
+      const gallery = selectedProject?.galleries[activeSection] || [];
+      const maxSection = (selectedProject?.galleries.length || 1) - 1;
+      if (e.key === "ArrowRight") {
+        if (carouselIndex < gallery.length - 1) {
+          setCarouselIndex(i => i + 1);
+        } else if (activeSection < maxSection) {
+          setActiveSection(s => s + 1);
+        } else {
+          setShowGallery(true);
+        }
+      }
+      if (e.key === "ArrowLeft") {
+        if (carouselIndex > 0) {
+          setCarouselIndex(i => i - 1);
+        } else if (activeSection > 0) {
+          setActiveSection(s => s - 1);
+        }
+      }
+    };
+    window.addEventListener("keydown", handleKey);
+    return () => window.removeEventListener("keydown", handleKey);
+  }, [view, showGallery, lightboxImage, activeSection, carouselIndex, selectedProject]);
 
 
   useEffect(() => {
@@ -270,7 +294,7 @@ export default function Home() {
           <LoadingScreen key="loader" />
         ) : (
           <motion.div key="content" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 1 }}>
-            {!isMobile && <Crosshair color="#ffffff" showLines={view === "projects" && !imagesHovered} showArrow={false} label={view === "detail" && selectedProject ? (imagesHovered ? `${carouselArrow} ${(selectedProject.galleries[activeSection][carouselIndex])?.text || ''}` : selectedProject.title) : ''} />}
+            {!isMobile && <Crosshair color="#ffffff" showLines={view === "projects" && !imagesHovered} showArrow={false} label={view === "detail" && selectedProject && imagesHovered ? ((selectedProject.galleries[activeSection][carouselIndex])?.text || '') : ''} />}
 
             {/* NYSMM contact marquee */}
             {!isMobile && view === "detail" && selectedProject?.id === 5 && (
@@ -290,7 +314,10 @@ export default function Home() {
             {!isMobile && view === "detail" && selectedProject && (
               <div style={{ position: "fixed", top: "49vh", left: 0, right: 0, zIndex: 9998, display: "flex", justifyContent: "space-between", alignItems: "center", padding: "0 4vw", fontFamily: fontTitle, fontSize: "0.72rem", textTransform: "lowercase", letterSpacing: "0.06em", color: "#000", pointerEvents: "none" }}>
                 <div style={{ display: "flex", gap: "2rem", alignItems: "center", whiteSpace: "nowrap" }}>
-                  <span onClick={() => setShowGallery(true)} style={{ cursor: "pointer", pointerEvents: "auto" }}>{selectedProject.title}</span>
+                  <span onClick={() => setShowGallery(true)} style={{ cursor: "pointer", pointerEvents: "auto", position: "relative", display: "inline-flex", flexDirection: "column", alignItems: "center", gap: "0.25rem" }}>
+                    <span>{selectedProject.title}</span>
+                    <span style={{ width: "3px", height: "3px", borderRadius: "50%", background: "#000", opacity: showGallery ? 1 : 0, transition: "opacity 0.3s ease", flexShrink: 0 }} />
+                  </span>
                   <span style={{ opacity: 0.5 }}>{selectedProject.info.date}</span>
                   <span
                     style={{ opacity: 0.5, cursor: selectedProject.info.team ? "pointer" : "default", pointerEvents: selectedProject.info.team ? "auto" : "none" }}
@@ -307,7 +334,7 @@ export default function Home() {
                   <motion.span
                     animate={{ y: [0, -4, 0] }}
                     transition={{ duration: 2.5, repeat: Infinity, ease: "easeInOut" }}
-                    style={{ fontSize: "0.5rem", letterSpacing: "0.12em", whiteSpace: "nowrap", pointerEvents: "none", color: "#000", opacity: 0.4 }}
+                    style={{ fontSize: "0.5rem", letterSpacing: "0.12em", whiteSpace: "nowrap", pointerEvents: "none", color: kleinBlue, alignSelf: "center" }}
                   >click and explore the sections</motion.span>
                   <div style={{ display: "flex", gap: "2rem", alignItems: "center", whiteSpace: "nowrap" }}>
                     {selectedProject.sections.map((s, i) => (
@@ -612,7 +639,7 @@ export default function Home() {
                           }
                         }
                       }}
-                      onMouseMove={(e) => { setCarouselArrow(e.clientX < window.innerWidth * 0.54 ? '←' : '→'); }}
+                      onMouseMove={() => { }}
                       onMouseEnter={() => { setImagesHovered(true); }}
                       onClick={(e) => {
                         const goLeft = e.clientX < window.innerWidth * 0.54;
@@ -671,7 +698,7 @@ export default function Home() {
                           style={{ position: "absolute", inset: 0, background: "white", zIndex: 300, overflowY: "auto", overflowX: "hidden" }}
                         >
                           <div style={{ padding: "10vh 20vw 8vh" }}>
-                              {selectedProject.sections.map((sectionName, sectionIdx) => {
+                              {selectedProject.sections.map((_, sectionIdx) => {
                                 const sectionImgs = selectedProject.galleries[sectionIdx];
                                 if (!sectionImgs || sectionImgs.length === 0) return null;
                                 const cols = 5;
@@ -682,14 +709,6 @@ export default function Home() {
                                 const sectionPositions = galleryPositions[sectionIdx] || [];
                                 return (
                                   <div key={sectionIdx} style={{ marginBottom: "8vh" }}>
-                                    <div style={{ textAlign: "center", marginBottom: "3vh" }}>
-                                      <span
-                                        onClick={() => { setActiveSection(sectionIdx); setShowGallery(false); }}
-                                        style={{ fontFamily: fontTitle, fontSize: "0.62rem", textTransform: "lowercase", letterSpacing: "0.06em", opacity: 0.35, cursor: "pointer", display: "inline-block" }}
-                                        onMouseEnter={e => e.currentTarget.style.opacity = 1}
-                                        onMouseLeave={e => e.currentTarget.style.opacity = 0.35}
-                                      >{sectionName} →</span>
-                                    </div>
                                     <div style={{ position: "relative", width: "100%", height: `${groupH}px` }}>
                                       {sectionImgs.map((item, i) => {
                                         const pos = sectionPositions[i];
@@ -733,10 +752,26 @@ export default function Home() {
                           style={{ position: "fixed", inset: 0, background: "rgba(255,255,255,0.65)", backdropFilter: "blur(24px)", WebkitBackdropFilter: "blur(24px)", zIndex: 9999, display: "flex", alignItems: "center", justifyContent: "center" }}
                         >
                           <span className="lightbox-close" style={{ position: "absolute", top: "3vh", right: "3vw", fontFamily: fontBody, fontSize: "0.7rem", color: "rgba(0,0,0,0.4)", letterSpacing: "0.1em", textTransform: "lowercase" }}>close</span>
+                          {(() => {
+                            const secIdx = selectedProject.galleries.findIndex(g => g.some(img => img.url === lightboxImage.url));
+                            if (secIdx === -1) return null;
+                            return (
+                              <div onClick={e => e.stopPropagation()} style={{ position: "absolute", right: "3vw", top: "50%", transform: "translateY(-50%)" }}>
+                                <motion.span
+                                  animate={{ y: [0, -6, 0, 4, 0], x: [0, 1, 0, -1, 0] }}
+                                  transition={{ duration: 3.5, repeat: Infinity, ease: "easeInOut" }}
+                                  onClick={() => { setLightboxImage(null); setActiveSection(secIdx); setShowGallery(false); }}
+                                  style={{ fontFamily: fontTitle, fontSize: "0.6rem", color: kleinBlue, letterSpacing: "0.08em", textTransform: "lowercase", cursor: "pointer", whiteSpace: "nowrap", opacity: 0.7 }}
+                                  onMouseEnter={e => e.currentTarget.style.opacity = 1}
+                                  onMouseLeave={e => e.currentTarget.style.opacity = 0.7}
+                                >seguir en {selectedProject.sections[secIdx]} →</motion.span>
+                              </div>
+                            );
+                          })()}
                           {lightboxImage.url.endsWith(".mp4") ? (
-                            <video src={lightboxImage.url} autoPlay muted loop playsInline style={{ maxWidth: "90vw", maxHeight: "90vh", objectFit: "contain" }} />
+                            <video src={lightboxImage.url} autoPlay muted loop playsInline style={{ maxWidth: "75vw", maxHeight: "90vh", objectFit: "contain" }} />
                           ) : (
-                            <img src={lightboxImage.url} style={{ maxWidth: "90vw", maxHeight: "90vh", objectFit: "contain" }} />
+                            <img src={lightboxImage.url} style={{ maxWidth: "75vw", maxHeight: "90vh", objectFit: "contain" }} />
                           )}
                         </motion.div>
                       )}
