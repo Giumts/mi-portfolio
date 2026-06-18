@@ -294,7 +294,7 @@ export default function Home() {
           <LoadingScreen key="loader" />
         ) : (
           <motion.div key="content" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 1 }}>
-            {!isMobile && <Crosshair color="#ffffff" showLines={view === "projects" && !imagesHovered} showArrow={false} label={view === "detail" && selectedProject && imagesHovered ? ((selectedProject.galleries[activeSection][carouselIndex])?.text || '') : ''} />}
+            {!isMobile && <Crosshair color="#ffffff" showLines={view === "projects" && !imagesHovered} showArrow={false} label={view === "detail" && selectedProject ? (imagesHovered ? ((selectedProject.galleries[activeSection][carouselIndex])?.text || '') : selectedProject.title) : ''} />}
 
             {/* NYSMM contact marquee */}
             {!isMobile && view === "detail" && selectedProject?.id === 5 && (
