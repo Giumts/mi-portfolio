@@ -241,6 +241,8 @@ export default function Home() {
         @font-face { font-family: 'Monor'; src: url('/fonts/Monor_Regular.otf') format('opentype'); }
         @font-face { font-family: 'Roundo'; src: url('/fonts/Roundo-Regular.otf') format('opentype'); }
         body, html, * { margin: 0; padding: 0; color: #000; -webkit-font-smoothing: antialiased; cursor: none !important; }
+        .lightbox-overlay, .lightbox-overlay * { cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14'%3E%3Cline x1='7' y1='1' x2='7' y2='13' stroke='%23000' stroke-width='1'/%3E%3Cline x1='1' y1='7' x2='13' y2='7' stroke='%23000' stroke-width='1'/%3E%3C/svg%3E") 7 7, crosshair !important; }
+        .lightbox-close { cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14'%3E%3Cline x1='2' y1='2' x2='12' y2='12' stroke='%23000' stroke-width='1'/%3E%3Cline x1='12' y1='2' x2='2' y2='12' stroke='%23000' stroke-width='1'/%3E%3C/svg%3E") 7 7, pointer !important; }
         @media (max-width: 768px) { body, html, * { cursor: auto !important; } }
         ::-webkit-scrollbar { display: none; }
         .proj-thumb { filter: grayscale(100%); transition: filter 0.35s ease; will-change: transform; }
@@ -722,13 +724,15 @@ export default function Home() {
                       {lightboxImage && (
                         <motion.div
                           key="lightbox"
+                          className="lightbox-overlay"
                           initial={{ opacity: 0 }}
                           animate={{ opacity: 1 }}
                           exit={{ opacity: 0 }}
                           transition={{ duration: 0.15 }}
                           onClick={() => setLightboxImage(null)}
-                          style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.92)", zIndex: 9999, display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer" }}
+                          style={{ position: "fixed", inset: 0, background: "rgba(255,255,255,0.65)", backdropFilter: "blur(24px)", WebkitBackdropFilter: "blur(24px)", zIndex: 9999, display: "flex", alignItems: "center", justifyContent: "center" }}
                         >
+                          <span className="lightbox-close" style={{ position: "absolute", top: "3vh", right: "3vw", fontFamily: fontBody, fontSize: "0.7rem", color: "rgba(0,0,0,0.4)", letterSpacing: "0.1em", textTransform: "lowercase" }}>close</span>
                           {lightboxImage.url.endsWith(".mp4") ? (
                             <video src={lightboxImage.url} autoPlay muted loop playsInline style={{ maxWidth: "90vw", maxHeight: "90vh", objectFit: "contain" }} />
                           ) : (

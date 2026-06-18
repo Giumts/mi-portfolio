@@ -18,7 +18,9 @@
       "Bash(powershell -command \"Get-ChildItem -Recurse fotos_detalle,fotos_portadas | Measure-Object -Property Length -Sum | Select-Object -ExpandProperty Sum\")",
       "Bash(magick --version)",
       "Bash(convert --version)",
-      "Bash(node compress-images.mjs)"
+      "Bash(node compress-images.mjs)",
+      "Skill(run)",
+      "Skill(run:*)"
     ]
   }
 }
