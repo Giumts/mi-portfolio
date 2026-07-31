@@ -800,27 +800,27 @@ export default function Home() {
                           onClick={() => setLightboxImage(null)}
                           style={{ position: "fixed", inset: 0, background: "rgba(255,255,255,0.65)", backdropFilter: "blur(24px)", WebkitBackdropFilter: "blur(24px)", zIndex: 9999, display: "flex", alignItems: "center", justifyContent: "center" }}
                         >
-                          <span className="lightbox-close" style={{ position: "absolute", top: "3vh", right: "3vw", fontFamily: fontBody, fontSize: "0.7rem", color: "rgba(0,0,0,0.4)", letterSpacing: "0.1em", textTransform: "lowercase" }}>close</span>
+                          <span className="lightbox-close" onClick={() => setLightboxImage(null)} style={{ position: "absolute", top: "4vh", left: "50%", transform: "translateX(-50%)", fontFamily: fontBody, fontSize: "0.7rem", color: "rgba(0,0,0,0.4)", letterSpacing: "0.1em", textTransform: "lowercase" }}>close</span>
                           {(() => {
                             const secIdx = selectedProject.galleries.findIndex(g => g.some(img => img.url === lightboxImage.url));
                             if (secIdx === -1) return null;
                             return (
-                              <div onClick={e => e.stopPropagation()} style={{ position: "absolute", right: "3vw", top: "50%", transform: "translateY(-50%)" }}>
+                              <div onClick={e => e.stopPropagation()} style={{ position: "absolute", bottom: "4vh", left: "50%", transform: "translateX(-50%)" }}>
                                 <motion.span
-                                  animate={{ y: [0, -6, 0, 4, 0], x: [0, 1, 0, -1, 0] }}
+                                  animate={{ y: [0, -4, 0, 3, 0] }}
                                   transition={{ duration: 3.5, repeat: Infinity, ease: "easeInOut" }}
                                   onClick={() => { setLightboxImage(null); setActiveSection(secIdx); setShowGallery(false); }}
                                   style={{ fontFamily: fontTitle, fontSize: "0.6rem", color: detailAccentColor, letterSpacing: "0.08em", textTransform: "lowercase", cursor: "pointer", whiteSpace: "nowrap", opacity: 0.7 }}
                                   onMouseEnter={e => e.currentTarget.style.opacity = 1}
                                   onMouseLeave={e => e.currentTarget.style.opacity = 0.7}
-                                >seguir en {selectedProject.sections[secIdx]} →</motion.span>
+                                >{selectedProject.sections[secIdx]} →</motion.span>
                               </div>
                             );
                           })()}
                           {lightboxImage.url.endsWith(".mp4") ? (
-                            <video src={lightboxImage.url} autoPlay muted loop playsInline style={{ maxWidth: "75vw", maxHeight: "90vh", objectFit: "contain" }} />
+                            <video src={lightboxImage.url} autoPlay muted loop playsInline style={{ maxWidth: "62vw", maxHeight: "72vh", objectFit: "contain" }} />
                           ) : (
-                            <img src={lightboxImage.url} style={{ maxWidth: "75vw", maxHeight: "90vh", objectFit: "contain" }} />
+                            <img src={lightboxImage.url} style={{ maxWidth: "62vw", maxHeight: "72vh", objectFit: "contain" }} />
                           )}
                         </motion.div>
                       )}
