@@ -141,9 +141,10 @@ export default function Home() {
   const [selectedProject, setSelectedProject] = useState(null);
   
   
-  const kleinBlue = "#002FA7"; 
-  const fontTitle = "'Monor', monospace"; 
+  const kleinBlue = "#002FA7";
+  const fontTitle = "'Monor', monospace";
   const fontBody = "'Roundo', sans-serif";
+  const [detailAccentColor, setDetailAccentColor] = useState(kleinBlue);
 
   // --- EFECTOS ---
   useEffect(() => {
@@ -159,20 +160,67 @@ export default function Home() {
     return () => window.removeEventListener("resize", check);
   }, []);
 
-  useEffect(() => { setCarouselIndex(0); setActiveSection(0); setShowGallery(true); setLightboxImage(null); setGalleryPositions([]); setShowFullDesc(false); }, [selectedProject]);
+  useEffect(() => {
+    setCarouselIndex(0); setActiveSection(0); setShowGallery(true); setLightboxImage(null); setGalleryPositions([]); setShowFullDesc(false);
+    if (!selectedProject) { setDetailAccentColor(kleinBlue); return; }
+    const cached = colorCacheRef.current[selectedProject.id];
+    const applyColor = (colors) => {
+      let best = kleinBlue, bestSat = 0;
+      for (const c of colors) {
+        const m = c.match(/rgb\((\d+),(\d+),(\d+)\)/);
+        if (!m) continue;
+        const [r, g, b] = [+m[1], +m[2], +m[3]];
+        const max = Math.max(r, g, b), min = Math.min(r, g, b);
+        const sat = max === 0 ? 0 : (max - min) / max;
+        if (sat > bestSat) { bestSat = sat; best = c; }
+      }
+      setDetailAccentColor(bestSat > 0.2 ? best : kleinBlue);
+    };
+    if (cached) { applyColor(cached); return; }
+    const img = new window.Image();
+    img.onload = () => {
+      const canvas = document.createElement('canvas');
+      canvas.width = 80; canvas.height = 80;
+      const ctx = canvas.getContext('2d');
+      ctx.drawImage(img, 0, 0, 80, 80);
+      const pts = [[12,12],[68,12],[40,40],[12,68],[68,68]];
+      const colors = pts.map(([x,y]) => { const d = ctx.getImageData(x,y,1,1).data; return `rgb(${d[0]},${d[1]},${d[2]})`; });
+      colorCacheRef.current[selectedProject.id] = colors;
+      applyColor(colors);
+    };
+    img.src = selectedProject.img;
+  }, [selectedProject]);
 
   useEffect(() => {
     if (showGallery && selectedProject) {
-      const cols = 5;
-      const colHeights = [10, 38, 16, 52, 28];
-      setGalleryPositions(selectedProject.galleries.map(gallery =>
-        gallery.map((_, i) => ({
-          col: i % cols,
-          row: Math.floor(i / cols),
-          heightPct: colHeights[i % cols],
-          size: Math.floor(Math.random() * 20 + 72),
-        }))
-      ));
+      const allImgs = selectedProject.galleries.flat();
+      const n = allImgs.length;
+      if (n === 0) { setGalleryPositions([[]]); return; }
+      const W = window.innerWidth;
+      const H = window.innerHeight;
+      const padX = W * 0.08;
+      const padTop = H * 0.09;
+      const padBot = H * 0.09;
+      const availW = W - padX * 2;
+      const availH = H - padTop - padBot;
+      const cols = Math.min(6, n);
+      const rows = Math.ceil(n / cols);
+      const cellW = availW / cols;
+      const cellH = availH / rows;
+      const baseSize = Math.min(cellW * 0.65, cellH * 0.65, 100);
+      const positions = allImgs.map((_, i) => {
+        const col = i % cols;
+        const row = Math.floor(i / cols);
+        const jX = (Math.random() - 0.5) * cellW * 0.38;
+        const jY = (Math.random() - 0.5) * cellH * 0.38;
+        const size = baseSize;
+        return {
+          x: padX + col * cellW + cellW / 2 - size / 2 + jX,
+          y: padTop + row * cellH + cellH / 2 - size / 2 + jY,
+          size,
+        };
+      });
+      setGalleryPositions([positions]);
     }
   }, [showGallery, selectedProject]);
   useEffect(() => { setCarouselIndex(0); }, [activeSection]);
@@ -349,11 +397,11 @@ export default function Home() {
                 <div style={{ display: "flex", gap: "2rem", alignItems: "center", whiteSpace: "nowrap" }}>
                   <span onClick={() => setShowGallery(true)} style={{ cursor: "pointer", pointerEvents: "auto", position: "relative", display: "inline-flex", flexDirection: "column", alignItems: "center", gap: "0.25rem" }}>
                     <span>{selectedProject.title}</span>
-                    <span style={{ width: "3px", height: "3px", borderRadius: "50%", background: "#000", opacity: showGallery ? 1 : 0, transition: "opacity 0.3s ease", flexShrink: 0 }} />
+                    <span style={{ width: "3px", height: "3px", borderRadius: "50%", background: detailAccentColor, opacity: showGallery ? 1 : 0, transition: "opacity 0.3s ease", flexShrink: 0 }} />
                   </span>
-                  <span style={{ opacity: 0.5 }}>{selectedProject.info.date}</span>
+                  <span style={{ opacity: 0.6 }}>{selectedProject.info.date}</span>
                   <span
-                    style={{ opacity: 0.5, cursor: selectedProject.info.team ? "pointer" : "default", pointerEvents: selectedProject.info.team ? "auto" : "none" }}
+                    style={{ opacity: 0.6, cursor: selectedProject.info.team ? "pointer" : "default", pointerEvents: selectedProject.info.team ? "auto" : "none" }}
                     onMouseEnter={() => selectedProject.info.team && setLocationHovered(true)}
                     onMouseLeave={() => setLocationHovered(false)}
                   >{locationHovered && selectedProject.info.team ? selectedProject.info.team : selectedProject.info.location}</span>
@@ -364,11 +412,6 @@ export default function Home() {
                   </div>
                 </div>
                 <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-end", gap: "0.5rem", pointerEvents: "auto" }}>
-                  <motion.span
-                    animate={{ y: [0, -4, 0] }}
-                    transition={{ duration: 2.5, repeat: Infinity, ease: "easeInOut" }}
-                    style={{ fontSize: "0.5rem", letterSpacing: "0.12em", whiteSpace: "nowrap", pointerEvents: "none", color: kleinBlue, alignSelf: "center" }}
-                  >click and explore the sections</motion.span>
                   <div style={{ display: "flex", gap: "2rem", alignItems: "center", whiteSpace: "nowrap" }}>
                     {selectedProject.sections.map((s, i) => (
                       <span key={s} onClick={() => { setActiveSection(i); setShowGallery(false); }}
@@ -377,7 +420,7 @@ export default function Home() {
                         onMouseLeave={e => e.currentTarget.style.opacity = !showGallery && activeSection === i ? 1 : 0.3}
                       >
                         {s}
-                        <span style={{ width: "3px", height: "3px", borderRadius: "50%", background: "#000", opacity: !showGallery && activeSection === i ? 1 : 0, transition: "opacity 0.3s ease", flexShrink: 0 }} />
+                        <span style={{ width: "3px", height: "3px", borderRadius: "50%", background: detailAccentColor, opacity: !showGallery && activeSection === i ? 1 : 0, transition: "opacity 0.3s ease", flexShrink: 0 }} />
                       </span>
                     ))}
                   </div>
@@ -412,15 +455,15 @@ export default function Home() {
               {view === "projects" && (
                 <motion.div key="projects" ref={containerRef} style={{ position: "relative", width: "100vw", height: "100vh", overflow: "hidden" }}>
 
-                  <a href="/collective%20ephemeral.pdf" target="_blank" rel="noopener noreferrer" style={{ position: "fixed", top: "4vh", left: "4vw", zIndex: 600, fontFamily: fontTitle, fontSize: "0.65rem", textTransform: "lowercase", color: "#000", textDecoration: "underline", cursor: "pointer" }}>collective_ephemeral</a>
+                  <a href="/collective%20ephemeral.pdf" target="_blank" rel="noopener noreferrer" style={{ position: "fixed", top: "4vh", left: "4vw", zIndex: 600, fontFamily: fontTitle, fontSize: "0.65rem", textTransform: "lowercase", textDecoration: "none", cursor: "pointer", background: "linear-gradient(120deg, #5577AA 0%, #8899BB 55%, #BBBDCC 100%)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", backgroundClip: "text" }}>collective_ephemeral →</a>
 
                   {/* Role filter menu */}
                   <div style={{ position: "fixed", top: "4vh", right: "4vw", zIndex: 600, fontFamily: fontTitle, fontSize: "0.65rem", textTransform: "lowercase", textAlign: "right" }}>
                     <span
                       onClick={() => setShowRoleMenu(v => !v)}
-                      style={{ cursor: "pointer", color: filterRole ? kleinBlue : "#000", letterSpacing: "0.08em" }}
+                      style={{ cursor: "pointer", letterSpacing: "0.08em", background: "linear-gradient(120deg, #5577AA 0%, #8899BB 55%, #BBBDCC 100%)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", backgroundClip: "text" }}
                     >
-                      {filterRole || "rol"}
+                      {filterRole ? `${filterRole} →` : "rol →"}
                     </span>
                     <AnimatePresence>
                       {showRoleMenu && (
@@ -496,22 +539,22 @@ export default function Home() {
 
               {view === "about" && (
                 <motion.div key="about" style={{ width: "100vw", height: "100vh", position: "relative" }}>
-                  <motion.p animate={{ ...aboutPositions.email }} style={{ position: "absolute", fontFamily: fontTitle, fontSize: "0.8rem", color: kleinBlue }}>giuliat97@hotmail.com</motion.p>
-                  <motion.p animate={{ ...aboutPositions.phone }} style={{ position: "absolute", fontFamily: fontTitle, fontSize: "0.8rem", color: kleinBlue }}>+393662538712</motion.p>
+                  <motion.p animate={{ ...aboutPositions.email }} style={{ position: "absolute", fontFamily: fontTitle, fontSize: "0.8rem", background: "linear-gradient(120deg, #5577AA 0%, #8899BB 55%, #BBBDCC 100%)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", backgroundClip: "text" }}>giuliat97@hotmail.com</motion.p>
+                  <motion.p animate={{ ...aboutPositions.phone }} style={{ position: "absolute", fontFamily: fontTitle, fontSize: "0.8rem", background: "linear-gradient(120deg, #5577AA 0%, #8899BB 55%, #BBBDCC 100%)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", backgroundClip: "text" }}>+393662538712</motion.p>
                   <motion.div
                     animate={{ y: [0, -7, 0, 5, 0], rotate: [-2, 1, -3, 0, -2] }}
                     transition={{ duration: 4.5, repeat: Infinity, ease: "easeInOut" }}
-                    style={{ position: "absolute", bottom: "12vh", left: "15vw", display: "flex", flexDirection: "column", gap: "0.4rem" }}
+                    style={{ position: "absolute", bottom: "12vh", left: "15vw", display: "flex", flexDirection: "column", gap: "0.4rem", alignItems: "center" }}
                   >
-                    <span style={{ fontFamily: fontTitle, fontSize: "0.6rem", color: kleinBlue, opacity: 0.7, letterSpacing: "0.05em" }}>have a look →</span>
-                    <a href="/collective%20ephemeral.pdf" target="_blank" rel="noopener noreferrer" style={{ fontFamily: fontTitle, fontSize: "0.8rem", color: kleinBlue, textDecoration: "underline", cursor: "pointer" }}>collective_ephemeral</a>
+                    <span style={{ fontFamily: fontTitle, fontSize: "0.6rem", opacity: 0.7, letterSpacing: "0.05em", background: "linear-gradient(120deg, #5577AA 0%, #8899BB 55%, #BBBDCC 100%)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", backgroundClip: "text" }}>have a look</span>
+                    <a href="/collective%20ephemeral.pdf" target="_blank" rel="noopener noreferrer" style={{ fontFamily: fontTitle, fontSize: "0.8rem", textDecoration: "none", cursor: "pointer", background: "linear-gradient(120deg, #5577AA 0%, #8899BB 55%, #BBBDCC 100%)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", backgroundClip: "text" }}>collective_ephemeral →</a>
                   </motion.div>
 
                   {/* what I do */}
                   <motion.div
                     animate={showWhatIDo ? { y: 0, rotate: -4 } : { y: [0, -12, 0, 8, 0], rotate: [-6, -2, -7, -3, -6] }}
                     transition={showWhatIDo ? { duration: 0.2 } : { duration: 5, repeat: Infinity, ease: "easeInOut" }}
-                    style={{ position: "absolute", top: "18vh", right: "8vw", maxWidth: isMobile ? "42vw" : "none", fontFamily: fontTitle, fontSize: "0.9rem", textTransform: "lowercase", cursor: "pointer", zIndex: 100, color: kleinBlue }}
+                    style={{ position: "absolute", top: "18vh", right: "8vw", maxWidth: isMobile ? "42vw" : "none", fontFamily: fontTitle, fontSize: "0.9rem", textTransform: "lowercase", cursor: "pointer", zIndex: 100, background: "linear-gradient(120deg, #5577AA 0%, #8899BB 55%, #BBBDCC 100%)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", backgroundClip: "text" }}
                     onClick={() => setShowWhatIDo(v => !v)}>
                     <span style={{ textDecoration: showWhatIDo ? "line-through" : "none" }}>what I do</span>
                     <AnimatePresence>
@@ -521,7 +564,7 @@ export default function Home() {
                           animate={{ opacity: 1, y: 0 }}
                           exit={{ opacity: 0, y: -6 }}
                           transition={{ duration: 0.3 }}
-                          style={{ marginTop: "0.8rem", display: "flex", flexDirection: "column", gap: "0.75rem", fontFamily: fontBody, fontSize: "0.6rem", color: kleinBlue, textAlign: "right", cursor: "default", textTransform: "uppercase" }}
+                          style={{ marginTop: "0.8rem", display: "flex", flexDirection: "column", gap: "0.75rem", fontFamily: fontBody, fontSize: "0.6rem", textAlign: "right", cursor: "default", textTransform: "uppercase", background: "linear-gradient(120deg, #5577AA 0%, #8899BB 55%, #BBBDCC 100%)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", backgroundClip: "text" }}
                           onClick={e => e.stopPropagation()}
                         >
                           {["CONCEPT", "MANAGING", "3D DESIGN", "2D DESIGN", "RENDERING", "LIGHTING", "RESEARCH"].map((s, i) => (
@@ -535,7 +578,7 @@ export default function Home() {
 
                   <div style={{ display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center", height: "100vh", padding: "0 20vw", textAlign: "center" }}>
                     <p style={{ fontFamily: fontBody, fontSize: "0.9rem", maxWidth: "450px", lineHeight: "1.6" }}>I'm involved in a thin limbo, between design and architecture, the ephemeral, which follows the steps of the continuous changes.<br/><br/>I am fascinated by the studies of spaces and by the infinite possibilities of action, from the research passing through site-specific projects to art installations in a dynamic way of designing, ranging in its different fields.</p>
-                    <a href="/CV_Giulia%20Tufariello.pdf" download style={{ marginTop: "2.5vh", fontFamily: fontTitle, fontSize: "0.8rem", color: kleinBlue, textDecoration: "underline", cursor: "pointer" }}>download cv</a>
+                    <a href="/CV_Giulia%20Tufariello.pdf" download style={{ marginTop: "2.5vh", fontFamily: fontTitle, fontSize: "0.8rem", textDecoration: "none", cursor: "pointer", background: "linear-gradient(120deg, #5577AA 0%, #8899BB 55%, #BBBDCC 100%)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", backgroundClip: "text" }}>download cv →</a>
                   </div>
                 </motion.div>
               )}
@@ -716,45 +759,30 @@ export default function Home() {
                           animate={{ y: 0 }}
                           exit={{ y: "100%" }}
                           transition={{ duration: 0.15, ease: "linear" }}
-                          style={{ position: "absolute", inset: 0, background: "white", zIndex: 300, overflowY: "auto", overflowX: "hidden" }}
+                          style={{ position: "absolute", inset: 0, background: "white", zIndex: 300, overflow: "hidden" }}
                         >
-                          <div style={{ padding: "10vh 20vw 8vh" }}>
-                              {selectedProject.sections.map((_, sectionIdx) => {
-                                const sectionImgs = selectedProject.galleries[sectionIdx];
-                                if (!sectionImgs || sectionImgs.length === 0) return null;
-                                const cols = 5;
-                                const colPct = 100 / cols;
-                                const rowH = 220;
-                                const numRows = Math.ceil(sectionImgs.length / cols);
-                                const groupH = numRows * rowH + 80;
-                                const sectionPositions = galleryPositions[sectionIdx] || [];
-                                return (
-                                  <div key={sectionIdx} style={{ marginBottom: "8vh" }}>
-                                    <div style={{ position: "relative", width: "100%", height: `${groupH}px` }}>
-                                      {sectionImgs.map((item, i) => {
-                                        const pos = sectionPositions[i];
-                                        if (!pos) return null;
-                                        return (
-                                          <div
-                                            key={i}
-                                            onClick={() => setLightboxImage(item)}
-                                            style={{ position: "absolute", top: `${pos.row * rowH + pos.heightPct * rowH / 100}px`, left: `${pos.col * colPct}%`, width: `${pos.size}px`, cursor: "pointer", transition: "opacity 0.2s ease", zIndex: 2 }}
-                                            onMouseEnter={e => { e.currentTarget.style.opacity = 0.65; e.currentTarget.style.zIndex = 5; }}
-                                            onMouseLeave={e => { e.currentTarget.style.opacity = 1; e.currentTarget.style.zIndex = 2; }}
-                                          >
-                                            {item.url.endsWith(".mp4") ? (
-                                              <video src={item.url} muted playsInline style={{ width: "100%", display: "block" }} />
-                                            ) : (
-                                              <img src={item.url} loading="lazy" decoding="async" style={{ width: "100%", display: "block" }} />
-                                            )}
-                                          </div>
-                                        );
-                                      })}
-                                    </div>
-                                  </div>
-                                );
-                              })}
-                            </div>
+                          {(() => {
+                            const allImgs = selectedProject.galleries.flat();
+                            const flatPositions = galleryPositions[0] || [];
+                            return allImgs.map((item, i) => {
+                              const pos = flatPositions[i];
+                              if (!pos) return null;
+                              return (
+                                <div key={i}
+                                  onClick={() => setLightboxImage(item)}
+                                  style={{ position: "absolute", left: `${pos.x}px`, top: `${pos.y}px`, width: `${pos.size}px`, cursor: "pointer", transition: "opacity 0.2s ease", zIndex: 2 }}
+                                  onMouseEnter={e => { e.currentTarget.style.opacity = 0.65; e.currentTarget.style.zIndex = 5; }}
+                                  onMouseLeave={e => { e.currentTarget.style.opacity = 1; e.currentTarget.style.zIndex = 2; }}
+                                >
+                                  {item.url.endsWith(".mp4") ? (
+                                    <video src={item.url} muted playsInline style={{ width: "100%", maxHeight: `${pos.size * 1.3}px`, objectFit: "cover", display: "block" }} />
+                                  ) : (
+                                    <img src={item.url} loading="lazy" decoding="async" style={{ width: "100%", maxHeight: `${pos.size * 1.3}px`, objectFit: "cover", display: "block" }} />
+                                  )}
+                                </div>
+                              );
+                            });
+                          })()}
                         </motion.div>
                       )}
                     </AnimatePresence>
@@ -782,7 +810,7 @@ export default function Home() {
                                   animate={{ y: [0, -6, 0, 4, 0], x: [0, 1, 0, -1, 0] }}
                                   transition={{ duration: 3.5, repeat: Infinity, ease: "easeInOut" }}
                                   onClick={() => { setLightboxImage(null); setActiveSection(secIdx); setShowGallery(false); }}
-                                  style={{ fontFamily: fontTitle, fontSize: "0.6rem", color: kleinBlue, letterSpacing: "0.08em", textTransform: "lowercase", cursor: "pointer", whiteSpace: "nowrap", opacity: 0.7 }}
+                                  style={{ fontFamily: fontTitle, fontSize: "0.6rem", color: detailAccentColor, letterSpacing: "0.08em", textTransform: "lowercase", cursor: "pointer", whiteSpace: "nowrap", opacity: 0.7 }}
                                   onMouseEnter={e => e.currentTarget.style.opacity = 1}
                                   onMouseLeave={e => e.currentTarget.style.opacity = 0.7}
                                 >seguir en {selectedProject.sections[secIdx]} →</motion.span>
