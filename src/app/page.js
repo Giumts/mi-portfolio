@@ -52,6 +52,7 @@ export default function Home() {
   const [hasMounted, setHasMounted] = useState(false); // Para evitar errores de hidratación
   const [projectPositions, setProjectPositions] = useState([]);
   const [imagesHovered, setImagesHovered] = useState(false);
+  const [pdfHovered, setPdfHovered] = useState(false);
   const [hoveredProjectId, setHoveredProjectId] = useState(null);
   const [filterRole, setFilterRole] = useState(null);
   const [showRoleMenu, setShowRoleMenu] = useState(false);
@@ -450,7 +451,37 @@ export default function Home() {
 
 
             <AnimatePresence mode="wait">
-              {view === "home" && <motion.div key="home" style={{height: "100vh"}}><ImageTrail images={trailImages} /></motion.div>}
+              {view === "home" && (
+                <motion.div key="home" style={{ height: "100vh", position: "relative" }}>
+                  <div style={{ opacity: pdfHovered ? 0.08 : 1, transition: "opacity 0.5s ease" }}>
+                    <ImageTrail images={trailImages} />
+                  </div>
+                  <div style={{ position: "absolute", top: "50%", left: "50%", transform: "translate(-50%, -50%)", zIndex: 10 }}>
+                    <motion.a
+                      href="/Projects_foto.pdf"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      animate={{ y: [0, -8, 0, 6, 0], rotate: [0, 1, 0, -1, 0] }}
+                      transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }}
+                      onMouseEnter={() => setPdfHovered(true)}
+                      onMouseLeave={() => setPdfHovered(false)}
+                      style={{ display: "block", fontFamily: fontTitle, fontSize: "0.65rem", textTransform: "lowercase", textDecoration: "none", color: "#000", letterSpacing: "0.08em", cursor: "pointer", whiteSpace: "nowrap" }}
+                    >project in photos →</motion.a>
+                  </div>
+                  <div style={{ position: "absolute", top: "57%", left: "44%", zIndex: 10 }}>
+                    <motion.a
+                      href="/collective%20ephemeral.pdf"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      animate={{ y: [0, -6, 0, 5, 0], rotate: [0, -1, 0, 1, 0] }}
+                      transition={{ duration: 6, repeat: Infinity, ease: "easeInOut", delay: 1 }}
+                      onMouseEnter={() => setPdfHovered(true)}
+                      onMouseLeave={() => setPdfHovered(false)}
+                      style={{ display: "block", fontFamily: fontTitle, fontSize: "0.65rem", textTransform: "lowercase", textDecoration: "none", color: "#000", letterSpacing: "0.08em", cursor: "pointer", whiteSpace: "nowrap" }}
+                    >collective ephemeral →</motion.a>
+                  </div>
+                </motion.div>
+              )}
 
               {view === "projects" && (
                 <motion.div key="projects" ref={containerRef} style={{ position: "relative", width: "100vw", height: "100vh", overflow: "hidden" }}>
