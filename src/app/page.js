@@ -225,21 +225,21 @@ export default function Home() {
   }, [showGallery, selectedProject]);
   useEffect(() => { setCarouselIndex(0); }, [activeSection]);
 
-  // Browser back button support
+  // Browser back button support via hash
   useEffect(() => {
-    const handlePopState = (e) => {
-      const state = e.state;
-      if (!state) { setView("home"); setSelectedProject(null); }
-      else if (state.view === "projects") { setView("projects"); setSelectedProject(null); }
-      else if (state.view === "about") { setView("about"); setSelectedProject(null); }
-      else if (state.view === "detail" && state.projectId != null) {
-        const proj = projects.find(p => p.id === state.projectId);
+    const handleHashChange = () => {
+      const hash = window.location.hash.replace("#", "");
+      if (!hash || hash === "home") { setView("home"); setSelectedProject(null); }
+      else if (hash === "projects") { setView("projects"); setSelectedProject(null); }
+      else if (hash === "about") { setView("about"); setSelectedProject(null); }
+      else if (hash.startsWith("detail-")) {
+        const projectId = parseInt(hash.replace("detail-", ""));
+        const proj = projects.find(p => p.id === projectId);
         if (proj) { setView("detail"); setSelectedProject(proj); }
       } else { setView("home"); setSelectedProject(null); }
     };
-    window.addEventListener("popstate", handlePopState);
-    window.history.replaceState({ view: "home" }, "");
-    return () => window.removeEventListener("popstate", handlePopState);
+    window.addEventListener("hashchange", handleHashChange);
+    return () => window.removeEventListener("hashchange", handleHashChange);
   }, []);
 
   useEffect(() => {
@@ -317,7 +317,7 @@ export default function Home() {
   const openProject = (proj) => {
     setSelectedProject(proj);
     setView("detail");
-    window.history.pushState({ view: "detail", projectId: proj.id }, "");
+    window.location.hash = `detail-${proj.id}`;
     window.scrollTo({ top: 0, behavior: 'instant' });
   };
 
@@ -391,7 +391,7 @@ export default function Home() {
                     onMouseLeave={() => setLocationHovered(false)}
                   >{locationHovered && selectedProject.info.team ? selectedProject.info.team : selectedProject.info.location}</span>
                   <div style={{ display: "flex", alignItems: "center", gap: "0.4rem", pointerEvents: "auto", cursor: "pointer" }}
-                    onClick={() => { setFilterRole(selectedProject.info.role); setSelectedProject(null); setView("projects"); window.history.pushState({ view: "projects" }, ""); }}>
+                    onClick={() => { setFilterRole(selectedProject.info.role); setSelectedProject(null); setView("projects"); window.location.hash = "projects"; }}>
                     <span>{selectedProject.info.role}</span>
                     <span style={{ fontSize: "0.85rem" }}>↗</span>
                   </div>
@@ -418,15 +418,15 @@ export default function Home() {
               <AnimatePresence>
                 {view === "home" ? (
                   <>
-                    <motion.h1 onClick={() => { setView("home"); window.history.pushState({ view: "home" }, ""); }} animate={{ ...navPositions.giulia }} style={{ position: "fixed", fontFamily: fontTitle, fontSize: "0.75rem", textDecoration: "line-through", zIndex: 1000, cursor: "pointer" }}>giulia</motion.h1>
-                    <motion.div onClick={() => { setView("projects"); window.history.pushState({ view: "projects" }, ""); }} animate={{ ...navPositions.projects }} whileHover={{ color: kleinBlue }} style={{ position: "fixed", fontFamily: fontTitle, fontSize: "0.72rem", zIndex: 1000, cursor: "pointer" }}>projects</motion.div>
-                    <motion.div onClick={() => { setView("about"); window.history.pushState({ view: "about" }, ""); }} animate={{ ...navPositions.about }} whileHover={{ color: kleinBlue }} style={{ position: "fixed", fontFamily: fontTitle, fontSize: "0.72rem", zIndex: 1000, cursor: "pointer" }}>about</motion.div>
+                    <motion.h1 onClick={() => { setView("home"); window.location.hash = "home"; }} animate={{ ...navPositions.giulia }} style={{ position: "fixed", fontFamily: fontTitle, fontSize: "0.75rem", textDecoration: "line-through", zIndex: 1000, cursor: "pointer" }}>giulia</motion.h1>
+                    <motion.div onClick={() => { setView("projects"); window.location.hash = "projects"; }} animate={{ ...navPositions.projects }} whileHover={{ color: kleinBlue }} style={{ position: "fixed", fontFamily: fontTitle, fontSize: "0.72rem", zIndex: 1000, cursor: "pointer" }}>projects</motion.div>
+                    <motion.div onClick={() => { setView("about"); window.location.hash = "about"; }} animate={{ ...navPositions.about }} whileHover={{ color: kleinBlue }} style={{ position: "fixed", fontFamily: fontTitle, fontSize: "0.72rem", zIndex: 1000, cursor: "pointer" }}>about</motion.div>
                   </>
                 ) : (
                   <div style={{ fontFamily: fontTitle, fontSize: "0.72rem", textTransform: "lowercase" }}>
-                    <div onClick={() => { setView("projects"); setSelectedProject(null); setFilterRole(null); window.history.pushState({ view: "projects" }, ""); }} style={{ position: "fixed", bottom: "4vh", left: "4vw", zIndex: 1000, cursor: "pointer", textDecoration: view === "projects" ? "line-through" : "none" }}>projects</div>
-                    <div onClick={() => { setView("home"); setSelectedProject(null); window.history.pushState({ view: "home" }, ""); }} style={{ position: "fixed", bottom: "4vh", left: "50%", transform: "translateX(-50%)", zIndex: 1000, cursor: "pointer" }}>giulia</div>
-                    <div onClick={() => { setView("about"); setSelectedProject(null); window.history.pushState({ view: "about" }, ""); }} style={{ position: "fixed", bottom: "4vh", right: "4vw", zIndex: 1000, cursor: "pointer", textDecoration: view === "about" ? "line-through" : "none" }}>about</div>
+                    <div onClick={() => { setView("projects"); setSelectedProject(null); setFilterRole(null); window.location.hash = "projects"; }} style={{ position: "fixed", bottom: "4vh", left: "4vw", zIndex: 1000, cursor: "pointer", textDecoration: view === "projects" ? "line-through" : "none" }}>projects</div>
+                    <div onClick={() => { setView("home"); setSelectedProject(null); window.location.hash = "home"; }} style={{ position: "fixed", bottom: "4vh", left: "50%", transform: "translateX(-50%)", zIndex: 1000, cursor: "pointer" }}>giulia</div>
+                    <div onClick={() => { setView("about"); setSelectedProject(null); window.location.hash = "about"; }} style={{ position: "fixed", bottom: "4vh", right: "4vw", zIndex: 1000, cursor: "pointer", textDecoration: view === "about" ? "line-through" : "none" }}>about</div>
                   </div>
                 )}
               </AnimatePresence>
