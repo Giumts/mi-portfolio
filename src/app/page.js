@@ -347,8 +347,8 @@ export default function Home() {
         .lightbox-close { cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14'%3E%3Cline x1='2' y1='2' x2='12' y2='12' stroke='%23000' stroke-width='1'/%3E%3Cline x1='12' y1='2' x2='2' y2='12' stroke='%23000' stroke-width='1'/%3E%3C/svg%3E") 7 7, pointer !important; }
         @media (max-width: 768px) { body, html, * { cursor: auto !important; } }
         ::-webkit-scrollbar { display: none; }
-        @keyframes wclick { 0%{transform:translate(0,0) rotate(0deg)} 40%{transform:translate(-1px,-1.5px) rotate(-0.3deg)} 100%{transform:translate(0,0) rotate(0deg)} }
-        .wclicked { animation: wclick 0.18s ease; }
+        @keyframes wclick { 0%{transform:translateX(0)} 35%{transform:translateX(3px)} 100%{transform:translateX(0)} }
+        .wclicked { animation: wclick 0.2s ease-out; }
         .proj-thumb { filter: grayscale(100%); transition: filter 0.35s ease; will-change: transform; }
         .proj-thumb:hover { filter: grayscale(0%); }
         @keyframes floatDown {
@@ -432,9 +432,9 @@ export default function Home() {
               <AnimatePresence>
                 {view === "home" ? (
                   <>
-                    <motion.h1 onClick={() => { setView("home"); window.location.hash = "home"; }} animate={{ ...navPositions.giulia }} whileTap={{ y: -2, rotate: -0.4 }} style={{ position: "fixed", fontFamily: fontTitle, fontSize: "0.75rem", textDecoration: "line-through", zIndex: 1000, cursor: "pointer" }}>giulia</motion.h1>
-                    <motion.div onClick={() => { setView("projects"); window.location.hash = "projects"; }} animate={{ ...navPositions.projects }} whileHover={{ color: kleinBlue }} whileTap={{ y: -2, x: 1, rotate: 0.4 }} style={{ position: "fixed", fontFamily: fontTitle, fontSize: "0.72rem", zIndex: 1000, cursor: "pointer" }}>projects</motion.div>
-                    <motion.div onClick={() => { setView("about"); window.location.hash = "about"; }} animate={{ ...navPositions.about }} whileHover={{ color: kleinBlue }} whileTap={{ y: -2, x: -1, rotate: -0.4 }} style={{ position: "fixed", fontFamily: fontTitle, fontSize: "0.72rem", zIndex: 1000, cursor: "pointer" }}>about</motion.div>
+                    <motion.h1 onClick={() => { setView("home"); window.location.hash = "home"; }} animate={{ ...navPositions.giulia }} whileTap={{ x: 3 }} style={{ position: "fixed", fontFamily: fontTitle, fontSize: "0.75rem", textDecoration: "line-through", zIndex: 1000, cursor: "pointer" }}>giulia</motion.h1>
+                    <motion.div onClick={() => { setView("projects"); window.location.hash = "projects"; }} animate={{ ...navPositions.projects }} whileHover={{ color: kleinBlue }} whileTap={{ x: 3 }} style={{ position: "fixed", fontFamily: fontTitle, fontSize: "0.72rem", zIndex: 1000, cursor: "pointer" }}>projects</motion.div>
+                    <motion.div onClick={() => { setView("about"); window.location.hash = "about"; }} animate={{ ...navPositions.about }} whileHover={{ color: kleinBlue }} whileTap={{ x: 3 }} style={{ position: "fixed", fontFamily: fontTitle, fontSize: "0.72rem", zIndex: 1000, cursor: "pointer" }}>about</motion.div>
                   </>
                 ) : (
                   <div style={{ fontFamily: fontTitle, fontSize: "0.72rem", textTransform: "lowercase" }}>
