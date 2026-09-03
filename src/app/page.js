@@ -238,7 +238,6 @@ export default function Home() {
         const proj = projects.find(p => p.id === state.projectId);
         if (proj) { setView("detail"); setSelectedProject(proj); }
       } else { setView("home"); setSelectedProject(null); }
-      setTimeout(() => { isPoppingRef.current = false; }, 0);
     };
     window.addEventListener("popstate", handlePopState);
     window.history.replaceState({ view: "home" }, "");
@@ -246,7 +245,10 @@ export default function Home() {
   }, []);
 
   useEffect(() => {
-    if (isPoppingRef.current) return;
+    if (isPoppingRef.current) {
+      isPoppingRef.current = false;
+      return;
+    }
     if (view === "detail" && selectedProject) {
       window.history.pushState({ view: "detail", projectId: selectedProject.id }, "");
     } else if (view === "projects") {
