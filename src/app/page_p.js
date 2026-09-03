@@ -52,6 +52,7 @@ export default function Home() {
   const [hasMounted, setHasMounted] = useState(false); // Para evitar errores de hidratación
   const [projectPositions, setProjectPositions] = useState([]);
   const [imagesHovered, setImagesHovered] = useState(false);
+  const [pdfHovered, setPdfHovered] = useState(false);
   const [hoveredProjectId, setHoveredProjectId] = useState(null);
   const [filterRole, setFilterRole] = useState(null);
   const [showRoleMenu, setShowRoleMenu] = useState(false);
@@ -452,7 +453,33 @@ export default function Home() {
             <AnimatePresence mode="wait">
               {view === "home" && (
                 <motion.div key="home" style={{ height: "100vh", position: "relative" }}>
-                  <ImageTrail images={trailImages} />
+                  <div style={{ opacity: pdfHovered ? 0.08 : 1, transition: "opacity 0.5s ease" }}>
+                    <ImageTrail images={trailImages} />
+                  </div>
+                  <div style={{ position: "absolute", top: "50%", left: "50%", transform: "translate(-50%, -50%)", zIndex: 10 }}>
+                    <motion.a
+                      href="/Projects_foto.pdf"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      animate={{ y: [0, -8, 0, 6, 0], rotate: [0, 1, 0, -1, 0] }}
+                      transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }}
+                      onMouseEnter={() => setPdfHovered(true)}
+                      onMouseLeave={() => setPdfHovered(false)}
+                      style={{ display: "block", fontFamily: fontTitle, fontSize: "0.65rem", textTransform: "lowercase", textDecoration: "none", color: "#000", letterSpacing: "0.08em", cursor: "pointer", whiteSpace: "nowrap" }}
+                    >project in photos →</motion.a>
+                  </div>
+                  <div style={{ position: "absolute", top: "57%", left: "44%", zIndex: 10 }}>
+                    <motion.a
+                      href="/collective%20ephemeral.pdf"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      animate={{ y: [0, -6, 0, 5, 0], rotate: [0, -1, 0, 1, 0] }}
+                      transition={{ duration: 6, repeat: Infinity, ease: "easeInOut", delay: 1 }}
+                      onMouseEnter={() => setPdfHovered(true)}
+                      onMouseLeave={() => setPdfHovered(false)}
+                      style={{ display: "block", fontFamily: fontTitle, fontSize: "0.65rem", textTransform: "lowercase", textDecoration: "none", color: "#000", letterSpacing: "0.08em", cursor: "pointer", whiteSpace: "nowrap" }}
+                    >collective ephemeral →</motion.a>
+                  </div>
                 </motion.div>
               )}
 
@@ -583,7 +610,6 @@ export default function Home() {
                   <div style={{ display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center", height: "100vh", padding: "0 20vw", textAlign: "center" }}>
                     <p style={{ fontFamily: fontBody, fontSize: "0.9rem", maxWidth: "450px", lineHeight: "1.6" }}>I'm involved in a thin limbo, between design and architecture, the ephemeral, which follows the steps of the continuous changes.<br/><br/>I am fascinated by the studies of spaces and by the infinite possibilities of action, from the research passing through site-specific projects to art installations in a dynamic way of designing, ranging in its different fields.</p>
                     <a href="/CV_Giulia%20Tufariello.pdf" download style={{ marginTop: "2.5vh", fontFamily: fontTitle, fontSize: "0.8rem", textDecoration: "none", cursor: "pointer", background: "linear-gradient(120deg, #5577AA 0%, #8899BB 55%, #BBBDCC 100%)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", backgroundClip: "text" }}>download cv →</a>
-                    <a href="/Projects_foto.pdf" target="_blank" rel="noopener noreferrer" style={{ marginTop: "1vh", fontFamily: fontTitle, fontSize: "0.8rem", textDecoration: "none", cursor: "pointer", background: "linear-gradient(120deg, #5577AA 0%, #8899BB 55%, #BBBDCC 100%)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", backgroundClip: "text" }}>project in photos →</a>
                   </div>
                 </motion.div>
               )}
