@@ -545,14 +545,22 @@ export default function Home() {
                 <motion.div key="about" style={{ width: "100vw", height: "100vh", position: "relative" }}>
                   <motion.p animate={{ ...aboutPositions.email }} style={{ position: "absolute", fontFamily: fontTitle, fontSize: "0.8rem", background: "linear-gradient(120deg, #5577AA 0%, #8899BB 55%, #BBBDCC 100%)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", backgroundClip: "text" }}>giuliat97@hotmail.com</motion.p>
                   <motion.p animate={{ ...aboutPositions.phone }} style={{ position: "absolute", fontFamily: fontTitle, fontSize: "0.8rem", background: "linear-gradient(120deg, #5577AA 0%, #8899BB 55%, #BBBDCC 100%)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", backgroundClip: "text" }}>+393662538712</motion.p>
-                  <motion.div
-                    animate={{ y: [0, -7, 0, 5, 0], rotate: [-2, 1, -3, 0, -2] }}
+                  <motion.a
+                    href="/collective%20ephemeral.pdf"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    animate={{ y: [0, -10, 0, 7, 0], x: [0, 4, 0, -3, 0], rotate: [-2, 1, -3, 0, -2] }}
                     transition={{ duration: 4.5, repeat: Infinity, ease: "easeInOut" }}
-                    style={{ position: "absolute", bottom: "12vh", left: "15vw", display: "flex", flexDirection: "column", gap: "0.4rem", alignItems: "center" }}
-                  >
-                    <span style={{ fontFamily: fontTitle, fontSize: "0.6rem", opacity: 0.7, letterSpacing: "0.05em", background: "linear-gradient(120deg, #5577AA 0%, #8899BB 55%, #BBBDCC 100%)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", backgroundClip: "text" }}>have a look</span>
-                    <a href="/collective%20ephemeral.pdf" target="_blank" rel="noopener noreferrer" style={{ fontFamily: fontTitle, fontSize: "0.8rem", textDecoration: "none", cursor: "pointer", background: "linear-gradient(120deg, #5577AA 0%, #8899BB 55%, #BBBDCC 100%)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", backgroundClip: "text" }}>collective_ephemeral →</a>
-                  </motion.div>
+                    style={{ position: "absolute", bottom: "20vh", left: "15vw", fontFamily: fontTitle, fontSize: "0.8rem", textDecoration: "none", cursor: "pointer", color: "#000", letterSpacing: "0.06em", textTransform: "lowercase" }}
+                  >collective ephemeral →</motion.a>
+                  <motion.a
+                    href="/Projects_foto.pdf"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    animate={{ y: [0, 8, 0, -6, 0], x: [0, -3, 0, 4, 0], rotate: [1, -1, 2, 0, 1] }}
+                    transition={{ duration: 5.5, repeat: Infinity, ease: "easeInOut", delay: 0.8 }}
+                    style={{ position: "absolute", bottom: "13vh", left: "15vw", fontFamily: fontTitle, fontSize: "0.8rem", textDecoration: "none", cursor: "pointer", color: "#000", letterSpacing: "0.06em", textTransform: "lowercase" }}
+                  >project in photos →</motion.a>
 
                   {/* what I do */}
                   <motion.div
@@ -583,7 +591,6 @@ export default function Home() {
                   <div style={{ display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center", height: "100vh", padding: "0 20vw", textAlign: "center" }}>
                     <p style={{ fontFamily: fontBody, fontSize: "0.9rem", maxWidth: "450px", lineHeight: "1.6" }}>I'm involved in a thin limbo, between design and architecture, the ephemeral, which follows the steps of the continuous changes.<br/><br/>I am fascinated by the studies of spaces and by the infinite possibilities of action, from the research passing through site-specific projects to art installations in a dynamic way of designing, ranging in its different fields.</p>
                     <a href="/CV_Giulia%20Tufariello.pdf" download style={{ marginTop: "2.5vh", fontFamily: fontTitle, fontSize: "0.8rem", textDecoration: "none", cursor: "pointer", background: "linear-gradient(120deg, #5577AA 0%, #8899BB 55%, #BBBDCC 100%)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", backgroundClip: "text" }}>download cv →</a>
-                    <a href="/Projects_foto.pdf" target="_blank" rel="noopener noreferrer" style={{ marginTop: "1vh", fontFamily: fontTitle, fontSize: "0.8rem", textDecoration: "none", cursor: "pointer", background: "linear-gradient(120deg, #5577AA 0%, #8899BB 55%, #BBBDCC 100%)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", backgroundClip: "text" }}>project in photos →</a>
                   </div>
                 </motion.div>
               )}
