@@ -226,10 +226,8 @@ export default function Home() {
   useEffect(() => { setCarouselIndex(0); }, [activeSection]);
 
   // Browser back button support
-  const isPoppingRef = useRef(false);
   useEffect(() => {
     const handlePopState = (e) => {
-      isPoppingRef.current = true;
       const state = e.state;
       if (!state) { setView("home"); setSelectedProject(null); }
       else if (state.view === "projects") { setView("projects"); setSelectedProject(null); }
@@ -243,22 +241,6 @@ export default function Home() {
     window.history.replaceState({ view: "home" }, "");
     return () => window.removeEventListener("popstate", handlePopState);
   }, []);
-
-  useEffect(() => {
-    if (isPoppingRef.current) {
-      isPoppingRef.current = false;
-      return;
-    }
-    if (view === "detail" && selectedProject) {
-      window.history.pushState({ view: "detail", projectId: selectedProject.id }, "");
-    } else if (view === "projects") {
-      window.history.pushState({ view: "projects" }, "");
-    } else if (view === "about") {
-      window.history.pushState({ view: "about" }, "");
-    } else if (view === "home") {
-      window.history.pushState({ view: "home" }, "");
-    }
-  }, [view, selectedProject]);
 
   useEffect(() => {
     const handleKey = (e) => {
@@ -335,6 +317,7 @@ export default function Home() {
   const openProject = (proj) => {
     setSelectedProject(proj);
     setView("detail");
+    window.history.pushState({ view: "detail", projectId: proj.id }, "");
     window.scrollTo({ top: 0, behavior: 'instant' });
   };
 
@@ -408,7 +391,7 @@ export default function Home() {
                     onMouseLeave={() => setLocationHovered(false)}
                   >{locationHovered && selectedProject.info.team ? selectedProject.info.team : selectedProject.info.location}</span>
                   <div style={{ display: "flex", alignItems: "center", gap: "0.4rem", pointerEvents: "auto", cursor: "pointer" }}
-                    onClick={() => { setFilterRole(selectedProject.info.role); setSelectedProject(null); setView("projects"); }}>
+                    onClick={() => { setFilterRole(selectedProject.info.role); setSelectedProject(null); setView("projects"); window.history.pushState({ view: "projects" }, ""); }}>
                     <span>{selectedProject.info.role}</span>
                     <span style={{ fontSize: "0.85rem" }}>↗</span>
                   </div>
@@ -435,15 +418,15 @@ export default function Home() {
               <AnimatePresence>
                 {view === "home" ? (
                   <>
-                    <motion.h1 onClick={() => setView("home")} animate={{ ...navPositions.giulia }} style={{ position: "fixed", fontFamily: fontTitle, fontSize: "0.75rem", textDecoration: "line-through", zIndex: 1000, cursor: "pointer" }}>giulia</motion.h1>
-                    <motion.div onClick={() => setView("projects")} animate={{ ...navPositions.projects }} whileHover={{ color: kleinBlue }} style={{ position: "fixed", fontFamily: fontTitle, fontSize: "0.72rem", zIndex: 1000, cursor: "pointer" }}>projects</motion.div>
-                    <motion.div onClick={() => setView("about")} animate={{ ...navPositions.about }} whileHover={{ color: kleinBlue }} style={{ position: "fixed", fontFamily: fontTitle, fontSize: "0.72rem", zIndex: 1000, cursor: "pointer" }}>about</motion.div>
+                    <motion.h1 onClick={() => { setView("home"); window.history.pushState({ view: "home" }, ""); }} animate={{ ...navPositions.giulia }} style={{ position: "fixed", fontFamily: fontTitle, fontSize: "0.75rem", textDecoration: "line-through", zIndex: 1000, cursor: "pointer" }}>giulia</motion.h1>
+                    <motion.div onClick={() => { setView("projects"); window.history.pushState({ view: "projects" }, ""); }} animate={{ ...navPositions.projects }} whileHover={{ color: kleinBlue }} style={{ position: "fixed", fontFamily: fontTitle, fontSize: "0.72rem", zIndex: 1000, cursor: "pointer" }}>projects</motion.div>
+                    <motion.div onClick={() => { setView("about"); window.history.pushState({ view: "about" }, ""); }} animate={{ ...navPositions.about }} whileHover={{ color: kleinBlue }} style={{ position: "fixed", fontFamily: fontTitle, fontSize: "0.72rem", zIndex: 1000, cursor: "pointer" }}>about</motion.div>
                   </>
                 ) : (
                   <div style={{ fontFamily: fontTitle, fontSize: "0.72rem", textTransform: "lowercase" }}>
-                    <div onClick={() => {setView("projects"); setSelectedProject(null); setFilterRole(null);}} style={{ position: "fixed", bottom: "4vh", left: "4vw", zIndex: 1000, cursor: "pointer", textDecoration: view === "projects" ? "line-through" : "none" }}>projects</div>
-                    <div onClick={() => {setView("home"); setSelectedProject(null);}} style={{ position: "fixed", bottom: "4vh", left: "50%", transform: "translateX(-50%)", zIndex: 1000, cursor: "pointer" }}>giulia</div>
-                    <div onClick={() => {setView("about"); setSelectedProject(null);}} style={{ position: "fixed", bottom: "4vh", right: "4vw", zIndex: 1000, cursor: "pointer", textDecoration: view === "about" ? "line-through" : "none" }}>about</div>
+                    <div onClick={() => { setView("projects"); setSelectedProject(null); setFilterRole(null); window.history.pushState({ view: "projects" }, ""); }} style={{ position: "fixed", bottom: "4vh", left: "4vw", zIndex: 1000, cursor: "pointer", textDecoration: view === "projects" ? "line-through" : "none" }}>projects</div>
+                    <div onClick={() => { setView("home"); setSelectedProject(null); window.history.pushState({ view: "home" }, ""); }} style={{ position: "fixed", bottom: "4vh", left: "50%", transform: "translateX(-50%)", zIndex: 1000, cursor: "pointer" }}>giulia</div>
+                    <div onClick={() => { setView("about"); setSelectedProject(null); window.history.pushState({ view: "about" }, ""); }} style={{ position: "fixed", bottom: "4vh", right: "4vw", zIndex: 1000, cursor: "pointer", textDecoration: view === "about" ? "line-through" : "none" }}>about</div>
                   </div>
                 )}
               </AnimatePresence>
