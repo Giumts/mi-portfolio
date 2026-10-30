@@ -6,7 +6,8 @@ import { motion, AnimatePresence } from "framer-motion";
 
 
 // Versiones optimizadas (WebP) generadas en /public/opt. "full" para ver grande, "thumb" para miniaturas.
-const opt = (url, size = "full") => (/\.(jpe?g|png)$/i.test(url) ? `/opt/${size}${url.replace(/\.[^.]+$/, ".webp")}` : url);
+// conserva la extensión original (04.jpg -> 04.jpg.webp) para que dos fotos con el mismo nombre no se pisen
+const opt = (url, size = "full") => (/\.(jpe?g|png)$/i.test(url) ? `/opt/${size}${url}.webp` : url);
 
 // PDFs del apartado about (páginas renderizadas en /public/pdf_previews)
 const DOCS = [
@@ -523,29 +524,40 @@ export default function Home() {
       });
     }
     if (view === "projects") {
-      const narrow = window.innerWidth <= 900;
-      const cols = narrow ? 3 : 4;
-      const rows = Math.ceil(projects.length / cols);
-      const colW = 84 / cols;
-      // las fotos nunca bajan de esta línea: debajo va el menú
-      const floor = window.innerWidth <= 900 ? 84 : 78;
-      const rowH = (floor - 14) / rows;
-      const positions = projects.map((_, i) => {
-        const col = i % cols;
-        const row = Math.floor(i / cols);
-        const jitterX = (Math.random() - 0.5) * colW * 1.1;
-        const jitterY = (Math.random() - 0.5) * rowH * 1.1;
-        const baseLeft = 8 + col * colW + colW * 0.3;
-        const baseTop = 5 + row * rowH + rowH * 0.25;
-        const w = narrow ? Math.floor(Math.random() * 30 + 62) : Math.floor(Math.random() * 50 + 85);
-        const top = Math.max(baseTop + jitterY, 3);
+      // fotos pequeñas repartidas por toda la pantalla, con mucho blanco; como mucho se tocan un poco
+      const W = window.innerWidth, H = window.innerHeight;
+      const narrow = W <= 900;
+      const floor = narrow ? 84 : 80;            // debajo de esta línea va el menú
+      const top0 = 3, left0 = 2;
+      const placed = [];
+      const positions = projects.map(() => {
+        const w = narrow ? 58 + Math.random() * 28 : 88 + Math.random() * 52;   // ancho en px
+        const h = w * 1.25;                                                     // alto máximo en px
+        const maxX = W * (1 - left0 / 100) - w, maxY = H * floor / 100 - h;
+        let best = null, bestHit = Infinity;
+        // se prueban varios sitios al azar y se queda el que menos pisa a los demás
+        for (let t = 0; t < 60; t++) {
+          const x = W * left0 / 100 + Math.random() * (maxX - W * left0 / 100);
+          const y = H * top0 / 100 + Math.random() * (maxY - H * top0 / 100);
+          let hit = 0;
+          for (const o of placed) {
+            const ox = Math.max(0, Math.min(x + w, o.x + o.w) - Math.max(x, o.x));
+            const oy = Math.max(0, Math.min(y + h * 0.8, o.y + o.h * 0.8) - Math.max(y, o.y));
+            hit = Math.max(hit, (ox * oy) / Math.min(w * h * 0.8, o.w * o.h * 0.8));
+          }
+          if (hit < bestHit) { best = { x, y }; bestHit = hit; }
+          if (hit === 0 && t > 10) break;   // sitio libre: suficiente
+        }
+        const p = { x: best.x, y: best.y, w, h };
+        placed.push(p);
+        const leftVw = (p.x / W) * 100, topVh = (p.y / H) * 100;
         return {
-          // el borde de abajo de la foto (estimado como foto vertical) no pasa de la línea del menú
-          top: `min(${top.toFixed(1)}vh, calc(${floor}vh - ${Math.round(w * 1.5)}px))`,
-          // tampoco se salen por la derecha
-          left: `min(${Math.max(baseLeft + jitterX, 2).toFixed(1)}vw, calc(97vw - ${w}px))`,
+          leftVw, topVh, wVw: (w / W) * 100, hVh: (h / H) * 100, floorVh: floor,
+          left: `${leftVw.toFixed(2)}vw`,
+          top: `${topVh.toFixed(2)}vh`,
           rotation: "0deg",
-          width: w + "px",
+          width: `${Math.round(w)}px`,
+          maxH: `${Math.round(h)}px`,
         };
       });
       setProjectPositions(positions);
@@ -793,20 +805,25 @@ export default function Home() {
                     const isHidden = filterRole && proj.info.role !== filterRole;
                     return (
                       <motion.div
-                        key={proj.id} drag dragConstraints={dragAreaRef} onClick={() => openProject(proj)}
+                        key={proj.id} drag dragMomentum={false} dragConstraints={(() => {
+                          // se puede arrastrar por la pantalla, pero sin salir de ella ni entrar en la franja del menú
+                          const q = projectPositions[index]; if (!q) return undefined;
+                          const vw = window.innerWidth / 100, vh = window.innerHeight / 100;
+                          return { left: -q.leftVw * vw, right: (100 - q.leftVw - q.wVw) * vw, top: -q.topVh * vh, bottom: (q.floorVh - q.topVh - q.hVh) * vh };
+                        })()} onClick={() => openProject(proj)}
                         initial={{ opacity: 0, scale: 0.85 }}
                         animate={{
                           opacity: isHidden ? 0.07 : (hoveredProjectId !== null && hoveredProjectId !== proj.id ? 0.07 : 1),
                           scale: isHidden ? 0.9 : 1,
-                          pointerEvents: isHidden ? "none" : "auto"
+                          pointerEvents: "none" // solo la foto recibe el ratón, no el hueco de su celda
                         }}
                         transition={{ type: "spring", stiffness: 60, damping: 14, delay: index * 0.06, opacity: { duration: 0.35 } }}
                         whileHover={{ scale: 1.13, zIndex: 200 }}
                         onMouseEnter={() => { if (!isHidden) { setHoveredProjectId(proj.id); extractImageColors(opt(proj.img, "thumb"), proj.id); } }}
                         onMouseLeave={() => { setHoveredProjectId(null); setGradientColors(null); }}
-                        style={{ position: "absolute", top: projectPositions[index]?.top, left: projectPositions[index]?.left, width: projectPositions[index]?.width || "200px", cursor: "pointer", zIndex: 10 + index, willChange: "transform" }}
+                        style={{ position: "absolute", top: projectPositions[index]?.top, left: projectPositions[index]?.left, width: projectPositions[index]?.width || "200px", display: "flex", justifyContent: "center", pointerEvents: "none", zIndex: 10 + index, willChange: "transform" }}
                       >
-                        <img src={opt(proj.img, "thumb")} className="proj-thumb" loading="lazy" decoding="async" style={{ width: "100%", display: "block" }} />
+                        <img src={opt(proj.img, "thumb")} className="proj-thumb" loading="lazy" decoding="async" style={{ pointerEvents: isHidden ? "none" : "auto", cursor: "pointer", maxWidth: "100%", maxHeight: projectPositions[index]?.maxH, width: "auto", height: "auto", display: "block" }} />
                       </motion.div>
                     );
                   })}
