@@ -2,6 +2,9 @@ body {
   margin: 0;
   padding: 0;
   background-color: white; /* Esto asegura el fondo blanco */
+  font-family: 'Archivo', 'Helvetica Neue', Arial, sans-serif;
+  font-weight: 300;
+  letter-spacing: 0.01em;
 }
 /* Estilos para el contenedor y el tooltip */
 .contenedor-imagen {
@@ -29,3 +32,83 @@ body {
   border-bottom: 1px solid #444;
   padding: 2px 0;
 }
+/* ---------- About (layout editorial) ---------- */
+.about-info { font-weight: 300; font-size: 12px; line-height: 1.25; letter-spacing: 0.01em; }
+.about-info p { margin: 0; }
+.about-info a { color: inherit; text-decoration: none; }
+.about-grid {
+  position: absolute; top: 48vh; left: 16px; right: 16px;
+  display: grid; grid-template-columns: repeat(12, 1fr); column-gap: 0; row-gap: 2.1em;
+  align-items: start;
+}
+.about-nav { display: flex; gap: 4.5em; font-size: 12px; }
+.about-bio-top { position: absolute; top: 8vh; left: 0; right: 0; display: grid; grid-template-columns: 1fr 1fr; text-align: center; z-index: 2; }
+.about-bio-top p { padding: 0 7vw; }
+.about-list { grid-column: 1 / 3; grid-row: 1; }
+.about-work { grid-column: 3 / 5; grid-row: 1; }
+.about-head { margin-bottom: 1.1em !important; }
+.about-mail { grid-column: 8 / 10; grid-row: 1; }
+.about-phone { grid-column: 10 / 12; grid-row: 1; }
+.about-city { grid-column: 12 / 13; grid-row: 1; text-align: right; }
+.about-footer {
+  position: absolute; left: 16px; right: 16px; bottom: 22px;
+  display: flex; justify-content: space-between; align-items: baseline; font-size: 10px;
+}
+
+.brk { cursor: pointer; white-space: nowrap; }
+.brk-box { display: inline-block; min-width: 1.5em; }
+.brk-dot { opacity: 0; transition: opacity 0.2s; padding: 0 0.15em; position: relative; top: 0.22em; }
+.brk:hover .brk-dot, .brk-on .brk-dot { opacity: 1; }
+.brk-on { cursor: default; }
+.brk-on.brk-link { cursor: pointer; }
+
+@media (max-width: 768px) {
+  .about-info { font-weight: 300; font-size: 12px; }
+  .about-bio-top { position: relative; top: auto; display: flex; flex-direction: column; gap: 0.6em; padding: 14vh 16px 0; }
+  .about-bio-top p { padding: 0; }
+  .about-grid { position: relative; top: auto; padding: 3em 0 14vh; display: flex; flex-direction: column; gap: 2.2em; }
+  .about-nav { gap: 1.6em; font-size: 12px; }
+  .about-list, .about-work { padding-left: 0; }
+  .about-city { text-align: left; }
+  .about-info .about-phone, .about-info .about-city { margin-top: -1.6em; }
+  .about-footer { position: relative; bottom: auto; padding-bottom: 22px; flex-direction: column; gap: 1.4em; }
+}
+
+/* ---------- Home ---------- */
+.home-write { position: absolute; top: 8vh; left: 0; right: 0; text-align: center; z-index: 10; pointer-events: none; }
+.home-line { font-family: 'Archivo', 'Helvetica Neue', Arial, sans-serif; font-style: normal; font-weight: 300; font-size: 11px; letter-spacing: 0; min-height: 1.4em; }
+.type-caret { display: inline-block; width: 0.5px; height: 1em; margin-left: 2px; background: #000; vertical-align: -0.15em; animation: caret-blink 1s steps(1) infinite; }
+@keyframes caret-blink { 50% { opacity: 0; } }
+.home-footer { z-index: 10; }
+@media (max-width: 768px) {
+  .home-write { padding: 0 16px; top: 10vh; }
+  .home-footer { position: absolute; bottom: 22px; padding-bottom: 0; }
+}
+.sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+
+/* ---------- Projects ---------- */
+.proj-cats-list { position: absolute; bottom: calc(100% + 0.9em); left: 0; display: flex; flex-direction: column; gap: 0.35em; white-space: nowrap; }
+.detail-nav { position: fixed; bottom: 4.5vh; left: 50%; transform: translateX(-50%); z-index: 9999; display: flex; gap: 3.5em; color: #000; white-space: nowrap; font-size: 11px; }
+
+/* acentos caligráficos */
+.script { font-family: 'Archivo', 'Helvetica Neue', Arial, sans-serif; font-weight: 300; font-style: normal; font-size: 1em; letter-spacing: 0.01em; line-height: inherit; }
+
+/* bio en Inter */
+.about-bio-top { font-family: 'Archivo', 'Helvetica Neue', Arial, sans-serif; font-weight: 300; font-size: 12px; }
+.about-mail, .about-phone, .about-city { white-space: nowrap; }
+.about-list p.script:not(.about-head) { margin-top: 0.35em; }
+
+/* frase de la home que se descubre rascando (escritorio) */
+.home-scratch { top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 10; padding: 1.2em 1.6em; text-align: center; cursor: crosshair; color: #fff; mix-blend-mode: difference; }
+.home-scratch .home-line { color: #fff; font-size: 11px; font-weight: 300; line-height: 1; letter-spacing: 0.02em; }
+
+
+/* ---------- Moodboard vivo: tres líneas de fotos pequeñitas ---------- */
+.strip { position: absolute; top: 6vh; left: 0; right: 0; height: 76vh; background: white; z-index: 300; overflow: hidden; display: flex; flex-direction: column; justify-content: space-around; }
+.strip-row { height: 15vh; overflow: visible; }
+.strip-track { display: flex; align-items: flex-start; gap: 2.4vw; width: max-content; height: 100%; animation: stripSlide linear infinite; }
+.strip:hover .strip-track { animation-play-state: paused; }
+.strip-item { flex-shrink: 0; cursor: pointer; transition: opacity 0.3s ease; }
+.strip:hover .strip-item { opacity: 0.35; }
+.strip .strip-item:hover { opacity: 1; }
+@keyframes stripSlide { from { transform: translateX(0); } to { transform: translateX(-50%); } }
