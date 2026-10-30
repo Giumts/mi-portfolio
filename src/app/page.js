@@ -5,6 +5,9 @@ import Crosshair from "./Crosshair";
 import { motion, AnimatePresence } from "framer-motion";
 
 
+// Versiones optimizadas (WebP) generadas en /public/opt. "full" para ver grande, "thumb" para miniaturas.
+const opt = (url, size = "full") => (/\.(jpe?g|png)$/i.test(url) ? `/opt/${size}${url.replace(/\.[^.]+$/, ".webp")}` : url);
+
 // PDFs del apartado about (páginas renderizadas en /public/pdf_previews)
 const DOCS = [
   { key: "collective", label: "collective ephemeral", pdf: "/collective%20ephemeral.pdf", pages: 18, start: 2, cover: 3 },
@@ -341,7 +344,12 @@ export default function Home() {
   // --- EFECTOS ---
   useEffect(() => {
     setHasMounted(true);
-    const timer = setTimeout(() => setIsLoading(false), 2500);
+    // mientras se ve la pantalla de carga, se descargan ya las fotos del rastro de la home
+    trailImages.forEach(u => { const im = new window.Image(); im.src = opt(u, "thumb"); });
+    // la pantalla de carga solo sale la primera vez en cada visita, y más corta
+    let seen = false;
+    try { seen = sessionStorage.getItem("loaderSeen") === "1"; sessionStorage.setItem("loaderSeen", "1"); } catch {}
+    const timer = setTimeout(() => setIsLoading(false), seen ? 0 : 1400);
     return () => clearTimeout(timer);
   }, []);
 
@@ -358,7 +366,7 @@ export default function Home() {
   }, []);
 
   useEffect(() => {
-    const check = () => setIsMobile(window.innerWidth < 768);
+    const check = () => setIsMobile(window.innerWidth <= 900);
     check();
     window.addEventListener("resize", check);
     return () => window.removeEventListener("resize", check);
@@ -475,7 +483,7 @@ export default function Home() {
     if (view === "projects") {
       // palabras sueltas en la franja de abajo, debajo de la nube de fotos
       const r = (min, max) => `${(min + Math.random() * (max - min)).toFixed(1)}`;
-      const m = window.innerWidth <= 768;
+      const m = window.innerWidth <= 900;
       const band = m ? [90, 94] : [83, 90];
       setProjNavPos(m ? {
         // móvil: dos filas para que no se junten
@@ -503,7 +511,7 @@ export default function Home() {
       // cada vez que se entra en la home, las palabras caen en un sitio distinto
       const r = (min, max) => min + Math.random() * (max - min);
       const spot = (top, left) => ({ top: `${r(...top).toFixed(1)}vh`, left: `${r(...left).toFixed(1)}vw`, rotate: `${r(-6, 6).toFixed(1)}deg` });
-      const mobile = window.innerWidth <= 768;
+      const mobile = window.innerWidth <= 900;
       setNavPositions(mobile ? {
         giulia: spot([22, 32], [8, 60]),
         about: spot([44, 54], [8, 60]),
@@ -515,11 +523,12 @@ export default function Home() {
       });
     }
     if (view === "projects") {
-      const cols = 4;
+      const narrow = window.innerWidth <= 900;
+      const cols = narrow ? 3 : 4;
       const rows = Math.ceil(projects.length / cols);
       const colW = 84 / cols;
       // las fotos nunca bajan de esta línea: debajo va el menú
-      const floor = window.innerWidth <= 768 ? 84 : 78;
+      const floor = window.innerWidth <= 900 ? 84 : 78;
       const rowH = (floor - 14) / rows;
       const positions = projects.map((_, i) => {
         const col = i % cols;
@@ -528,12 +537,13 @@ export default function Home() {
         const jitterY = (Math.random() - 0.5) * rowH * 1.1;
         const baseLeft = 8 + col * colW + colW * 0.3;
         const baseTop = 5 + row * rowH + rowH * 0.25;
-        const w = Math.floor(Math.random() * 50 + 85);
+        const w = narrow ? Math.floor(Math.random() * 30 + 62) : Math.floor(Math.random() * 50 + 85);
         const top = Math.max(baseTop + jitterY, 3);
         return {
           // el borde de abajo de la foto (estimado como foto vertical) no pasa de la línea del menú
           top: `min(${top.toFixed(1)}vh, calc(${floor}vh - ${Math.round(w * 1.5)}px))`,
-          left: Math.min(Math.max(baseLeft + jitterX, 2), 88) + "vw",
+          // tampoco se salen por la derecha
+          left: `min(${Math.max(baseLeft + jitterX, 2).toFixed(1)}vw, calc(97vw - ${w}px))`,
           rotation: "0deg",
           width: w + "px",
         };
@@ -578,7 +588,7 @@ export default function Home() {
         body, html, * { margin: 0; padding: 0; color: #000; -webkit-font-smoothing: antialiased; cursor: none !important; }
         .lightbox-overlay, .lightbox-overlay * { cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14'%3E%3Cline x1='7' y1='1' x2='7' y2='13' stroke='%23000' stroke-width='1'/%3E%3Cline x1='1' y1='7' x2='13' y2='7' stroke='%23000' stroke-width='1'/%3E%3C/svg%3E") 7 7, crosshair !important; }
         .lightbox-close { cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14'%3E%3Cline x1='2' y1='2' x2='12' y2='12' stroke='%23000' stroke-width='1'/%3E%3Cline x1='12' y1='2' x2='2' y2='12' stroke='%23000' stroke-width='1'/%3E%3C/svg%3E") 7 7, pointer !important; }
-        @media (max-width: 768px) { body, html, * { cursor: auto !important; } }
+        @media (max-width: 900px) { body, html, * { cursor: auto !important; } }
         ::-webkit-scrollbar { display: none; }
         @keyframes wclick { 0%{transform:translateX(0)} 35%{transform:translateX(3px)} 100%{transform:translateX(0)} }
         .wclicked { animation: wclick 0.2s ease-out; }
@@ -661,7 +671,7 @@ export default function Home() {
             <AnimatePresence mode="wait">
               {view === "home" && (
                 <motion.div key="home" className="about-info" style={{ height: "100vh", position: "relative", fontFamily: fontInfo, color: "#000" }}>
-                  <ImageTrail images={trailImages}>
+                  <ImageTrail images={trailImages.map(u => opt(u, "thumb"))}>
                     {/* guiño a la escritura: la frase se teclea letra a letra */}
                     {isMobile ? (
                       <div className="home-write">
@@ -792,11 +802,11 @@ export default function Home() {
                         }}
                         transition={{ type: "spring", stiffness: 60, damping: 14, delay: index * 0.06, opacity: { duration: 0.35 } }}
                         whileHover={{ scale: 1.13, zIndex: 200 }}
-                        onMouseEnter={() => { if (!isHidden) { setHoveredProjectId(proj.id); extractImageColors(proj.img, proj.id); } }}
+                        onMouseEnter={() => { if (!isHidden) { setHoveredProjectId(proj.id); extractImageColors(opt(proj.img, "thumb"), proj.id); } }}
                         onMouseLeave={() => { setHoveredProjectId(null); setGradientColors(null); }}
                         style={{ position: "absolute", top: projectPositions[index]?.top, left: projectPositions[index]?.left, width: projectPositions[index]?.width || "200px", cursor: "pointer", zIndex: 10 + index, willChange: "transform" }}
                       >
-                        <img src={proj.img} className="proj-thumb" loading="lazy" decoding="async" style={{ width: "100%", display: "block" }} />
+                        <img src={opt(proj.img, "thumb")} className="proj-thumb" loading="lazy" decoding="async" style={{ width: "100%", display: "block" }} />
                       </motion.div>
                     );
                   })}
@@ -866,7 +876,7 @@ export default function Home() {
                       {aboutPreview && (
                         <motion.img
                           key={aboutPreview.src}
-                          src={aboutPreview.src}
+                          src={opt(aboutPreview.src, "thumb")}
                           alt=""
                           initial={{ opacity: 0 }}
                           animate={{ opacity: 1 }}
@@ -979,7 +989,7 @@ export default function Home() {
                           <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "4vh", padding: "2vh 4vw 10vh" }}>
                             <motion.img
                               layoutId={`doc-${doc.key}`}
-                              src={docPage(doc, doc.cover)}
+                              src={opt(docPage(doc, doc.cover))}
                               alt={doc.label}
                               onClick={e => e.stopPropagation()}
                               transition={{ type: "spring", stiffness: 120, damping: 20 }}
@@ -988,7 +998,7 @@ export default function Home() {
                             {docRest(doc).map((n) => (
                               <motion.img
                                 key={n}
-                                src={docPage(doc, n)}
+                                src={opt(docPage(doc, n))}
                                 alt=""
                                 loading="lazy"
                                 onClick={e => e.stopPropagation()}
@@ -1052,7 +1062,7 @@ export default function Home() {
                                   {item.url.endsWith(".mp4") ? (
                                     <video src={item.url} autoPlay muted loop playsInline style={{ maxHeight: "100%", maxWidth: "100%", objectFit: "contain", pointerEvents: "none" }} />
                                   ) : (
-                                    <img src={item.url} draggable={false} loading={i === carouselIndex ? "eager" : "lazy"} decoding="async" style={{ maxHeight: "100%", maxWidth: "100%", objectFit: "contain", userSelect: "none" }} />
+                                    <img src={opt(item.url)} draggable={false} loading={Math.abs(i - carouselIndex) <= 1 ? "eager" : "lazy"} decoding="async" style={{ maxHeight: "100%", maxWidth: "100%", objectFit: "contain", userSelect: "none" }} />
                                   )}
                                 </div>
                               ))}
@@ -1168,7 +1178,7 @@ export default function Home() {
                                   {item.url.endsWith(".mp4") ? (
                                     <video src={item.url} autoPlay muted loop playsInline style={{ width: "100%", height: "100%", objectFit: "contain", display: "block", pointerEvents: "none" }} />
                                   ) : (
-                                    <img src={item.url} draggable={false} loading={i === carouselIndex ? "eager" : "lazy"} decoding="async" style={{ width: "100%", height: "100%", objectFit: "contain", display: "block", pointerEvents: "none" }} />
+                                    <img src={opt(item.url)} draggable={false} loading={Math.abs(i - carouselIndex) <= 1 ? "eager" : "lazy"} decoding="async" style={{ width: "100%", height: "100%", objectFit: "contain", display: "block", pointerEvents: "none" }} />
                                   )}
                                 </div>
                               ))}
@@ -1205,9 +1215,9 @@ export default function Home() {
                                         onClick={() => { setActiveSection(sec); setCarouselIndex(idx); setShowGallery(false); }}
                                       >
                                         {item.url.endsWith(".mp4") ? (
-                                          <video src={item.url} muted autoPlay loop playsInline style={{ height: "100%", width: "auto", display: "block" }} />
+                                          <video src={item.url} muted playsInline preload="metadata" style={{ height: "100%", width: "auto", display: "block" }} />
                                         ) : (
-                                          <img src={item.url} loading="lazy" decoding="async" alt="" draggable={false} style={{ height: "100%", width: "auto", display: "block" }} />
+                                          <img src={opt(item.url, "thumb")} loading="lazy" decoding="async" alt="" draggable={false} style={{ height: "100%", width: "auto", display: "block" }} />
                                         )}
                                       </div>
                                     ))}
@@ -1253,7 +1263,7 @@ export default function Home() {
                           {lightboxImage.url.endsWith(".mp4") ? (
                             <video src={lightboxImage.url} autoPlay muted loop playsInline style={{ maxWidth: "62vw", maxHeight: "72vh", objectFit: "contain" }} />
                           ) : (
-                            <img src={lightboxImage.url} style={{ maxWidth: "62vw", maxHeight: "72vh", objectFit: "contain" }} />
+                            <img src={opt(lightboxImage.url)} style={{ maxWidth: "62vw", maxHeight: "72vh", objectFit: "contain" }} />
                           )}
                         </motion.div>
                       )}
