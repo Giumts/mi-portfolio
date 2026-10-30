@@ -246,6 +246,18 @@ export default function Home() {
   const dragAreaRef = useRef(null);
   // tras la entrada escalonada de projects, los cambios de filtro son inmediatos
   const [projectsIntroDone, setProjectsIntroDone] = useState(false);
+  // en projects, cualquier clic fuera de las fotos y del menú quita el filtro y cierra la lista
+  useEffect(() => {
+    if (view !== "projects") return;
+    const onDown = (e) => {
+      const el = e.target instanceof Element ? e.target : null;
+      if (el && el.closest("img.proj-thumb, .brk, .proj-cats-list, nextjs-portal")) return;
+      setFilterRole(null);
+      setShowRoleMenu(false);
+    };
+    window.addEventListener("pointerdown", onDown);
+    return () => window.removeEventListener("pointerdown", onDown);
+  }, [view]);
   useEffect(() => {
     if (view !== "projects") { setProjectsIntroDone(false); return; }
     const t = setTimeout(() => setProjectsIntroDone(true), 1600);
@@ -730,7 +742,7 @@ export default function Home() {
               )}
 
               {view === "projects" && (
-                <motion.div key="projects" ref={containerRef} onClick={(e) => { if (!e.target.closest("img, .brk, .proj-cats-list")) { setFilterRole(null); setShowRoleMenu(false); } }} style={{ position: "relative", width: "100vw", height: "100vh", overflow: "hidden" }}>
+                <motion.div key="projects" ref={containerRef} style={{ position: "relative", width: "100vw", height: "100vh", overflow: "hidden" }}>
 
                   {/* palabras sueltas abajo, cada vez en un sitio distinto */}
                   {[
