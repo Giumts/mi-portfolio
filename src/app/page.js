@@ -244,6 +244,13 @@ export default function Home() {
   const carouselRef = useRef(null);
   const dragStartRef = useRef(0);
   const dragAreaRef = useRef(null);
+  // tras la entrada escalonada de projects, los cambios de filtro son inmediatos
+  const [projectsIntroDone, setProjectsIntroDone] = useState(false);
+  useEffect(() => {
+    if (view !== "projects") { setProjectsIntroDone(false); return; }
+    const t = setTimeout(() => setProjectsIntroDone(true), 1600);
+    return () => clearTimeout(t);
+  }, [view]);
   const dragMovedRef = useRef(false);
   // ventana de texto del proyecto: se abre al rozar la frase de arriba
   const descCloseRef = useRef(null);
@@ -723,7 +730,7 @@ export default function Home() {
               )}
 
               {view === "projects" && (
-                <motion.div key="projects" ref={containerRef} style={{ position: "relative", width: "100vw", height: "100vh", overflow: "hidden" }}>
+                <motion.div key="projects" ref={containerRef} onClick={(e) => { if (!e.target.closest("img, .brk, .proj-cats-list")) { setFilterRole(null); setShowRoleMenu(false); } }} style={{ position: "relative", width: "100vw", height: "100vh", overflow: "hidden" }}>
 
                   {/* palabras sueltas abajo, cada vez en un sitio distinto */}
                   {[
@@ -817,7 +824,7 @@ export default function Home() {
                           scale: isHidden ? 0.9 : 1,
                           pointerEvents: "none" // solo la foto recibe el ratón, no el hueco de su celda
                         }}
-                        transition={{ type: "spring", stiffness: 60, damping: 14, delay: index * 0.06, opacity: { duration: 0.35 } }}
+                        transition={{ type: "spring", stiffness: 60, damping: 14, delay: projectsIntroDone ? 0 : index * 0.06, opacity: { duration: projectsIntroDone ? 0.18 : 0.35 }, scale: { duration: projectsIntroDone ? 0.18 : undefined } }}
                         whileHover={{ scale: 1.13, zIndex: 200 }}
                         onMouseEnter={() => { if (!isHidden) { setHoveredProjectId(proj.id); extractImageColors(opt(proj.img, "thumb"), proj.id); } }}
                         onMouseLeave={() => { setHoveredProjectId(null); setGradientColors(null); }}
