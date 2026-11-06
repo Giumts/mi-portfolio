@@ -13,6 +13,8 @@ const opt = (url, size = "full") => (/\.(jpe?g|png)$/i.test(url) ? `/opt/${size}
 const DOCS = [
   { key: "collective", label: "collective ephemeral", pdf: "/collective%20ephemeral.pdf", pages: 18, start: 2, cover: 3 },
   { key: "photos", label: "project in photos", pdf: "/Projects_foto.pdf", pages: 23, start: 1, cover: 1 },
+  // afterCv: se muestra debajo de "Download CV"; project: id del proyecto al que enlaza desde el visor
+  { key: "eureka", label: "eureka at ca' foscari", pdf: "/eureka_unive.pdf", pages: 33, start: 1, cover: 1, afterCv: true, project: 11 },
 ];
 // páginas del visor: primero la portada, luego el resto en orden
 const docRest = (doc) => Array.from({ length: doc.pages - doc.start + 1 }, (_, k) => doc.start + k).filter(n => n !== doc.cover);
@@ -50,6 +52,7 @@ const PREVIEW_SPOTS = {
   collective: { top: "20vh", left: "21vw" },
   photos: { top: "22vh", left: "64vw" },
   cv: { top: "64vh", left: "69vw" },
+  eureka: { top: "62vh", left: "24vw" },
 };
 
 // Home: texto que se descubre "rascando" con el ratón.
@@ -168,13 +171,15 @@ const TypeLine = ({ text, delay = 0, speed = 55 }) => {
 };
 
 // About: enlace con paréntesis ( ) / (*)
-const Bracket = ({ active, children, onClick, onEnter, onLeave, href, download }) => {
+const Bracket = ({ active, children, onClick, onEnter, onLeave, href, download, target, rel }) => {
   const Tag = href ? "a" : "span";
   return (
     <Tag
       className={`brk${active ? " brk-on" : ""}`}
       href={href}
       download={download}
+      target={target}
+      rel={rel}
       onClick={onClick}
       onMouseEnter={onEnter}
       onMouseLeave={onLeave}
@@ -183,6 +188,23 @@ const Bracket = ({ active, children, onClick, onEnter, onLeave, href, download }
     </Tag>
   );
 };
+
+// estudio + enlaces de prensa en el centro de la página del proyecto (en lugar de las fotos)
+const PressBlock = ({ project, mobile }) => (
+  <div className="about-info" style={{ height: mobile ? "auto" : "100%", padding: mobile ? "8vh 6vw" : 0, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: mobile ? "3.2em" : "4.5em", fontSize: "11px", color: "#000", textAlign: "center" }}>
+    {project.by && <p style={{ opacity: 0.6 }}>by {project.by}</p>}
+    {project.press && (
+      <div style={{ display: "flex", flexDirection: mobile ? "column" : "row", gap: mobile ? "2.4em" : "6vw", alignItems: "center" }}>
+        {project.press.map((pr, k) => (
+          <motion.div key={k} initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, delay: 0.15 + k * 0.12 }} style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "0.5em" }}>
+            <Bracket href={pr.url} target="_blank" rel="noopener">{pr.label} ↗</Bracket>
+            {pr.source && <span style={{ opacity: 0.5 }}>{pr.source}</span>}
+          </motion.div>
+        ))}
+      </div>
+    )}
+  </div>
+);
 
 // --- COMPONENTE LOADER DE PALABRAS ---
 const LoadingScreen = () => {
@@ -339,7 +361,14 @@ export default function Home() {
     { id: 7,  title: "san sadurnì",          img: "/fotos_portadas/Portada_San sadurni.jpg",          galleries: [g7p,  g7t,  g7d ], sections: ["project","technical","development"], tech: ["premiere", "lightroom", "after effects"],    desc: "Design and installation of a versatile event space using the garden –El Pati– at the historic Can Guineu. The installation, featuring multi-purpose platforms, thoughtful landscaping and iconified by nine adjustable flags, will become a focal point for cultural events over the summer months. The flags feature an emotive print taken from the inside patio of Can Guineu bringing the inside out and a mechanism which allows the change of their orientation to suit different uses of the space.", info: { date: "2021", location: "barcelona", role: "ephemeral architecture", team: "meats" } },
     { id: 8,  title: "vora",                 img: "/fotos_portadas/Portada_vora.jpg",                 galleries: [g8p,  g8t,  []  ], sections: ["project","technical","development"], tech: ["figma", "framer", "css"],                    desc: "reducción visual al mínimo exponente. una interfaz construida desde la claridad máxima, eliminando lo superfluo para que cada elemento presente tenga peso y significado.", info: { date: "2024", location: "barcelona", role: "ephemeral architecture" } },
     { id: 9,  title: "space creation set",   img: "/fotos_portadas/Portada_Shoot LAMP.png",           galleries: [[{ url: "/fotos_detalle/sps_01.png", text: "sps 01" }, { url: "/fotos_detalle/sps_02.png", text: "sps 02" }, { url: "/fotos_detalle/sps_03.png", text: "sps 03" }, { url: "/fotos_detalle/sps_04.png", text: "sps 04" }, { url: "/fotos_detalle/sps_05.png", text: "sps 05" }, { url: "/fotos_detalle/sps_06.png", text: "sps 06" }, { url: "/fotos_detalle/sps_07.png", text: "sps 07" }, { url: "/fotos_detalle/sps_08.png", text: "sps 08" }, { url: "/fotos_detalle/sps_09.png", text: "sps 09" }, { url: "/fotos_detalle/sps_11.png", text: "sps 11" }, { url: "/fotos_detalle/sps_12.png", text: "sps 12" }, { url: "/fotos_detalle/sps_13.png", text: "sps 13" }, { url: "/fotos_detalle/sps_14.png", text: "sps 14" }, { url: "/fotos_detalle/sps_15.png", text: "sps 15" }, { url: "/fotos_detalle/sps_16.png", text: "sps 16" }], [], []], sections: ["project","technical","development"], tech: ["cinema 4d", "blender", "lightroom"],         desc: "objetos que definen el espacio que los rodea. una exploración sobre cómo la luz y la forma construyen atmósferas, donde cada pieza existe en diálogo con su entorno.", info: { date: "2024", location: "remote", role: "product design" } },
-    { id: 10, title: "product render",        img: "/fotos_portadas/Portada_product render.jpg",       galleries: [[],   [],   []  ], sections: ["project","technical","development"], tech: ["cinema 4d", "blender", "photoshop"],         desc: "la imagen como argumento de venta y de deseo. renders que trascienden la representación técnica para construir una narrativa visual en torno al objeto y su contexto.", info: { date: "2024", location: "remote", role: "product design" } },
+    { id: 10, title: "product",        img: "/fotos_portadas/Portada_product render.jpg",       galleries: [[],   [],   []  ], sections: ["project","technical","development"], tech: ["cinema 4d", "blender", "photoshop"],         desc: "la imagen como argumento de venta y de deseo. renders que trascienden la representación técnica para construir una narrativa visual en torno al objeto y su contexto.", info: { date: "2024", location: "remote", role: "product design" },
+      by: "artec studio",
+      // prensa: se muestran en el centro de la página del proyecto
+      press: [
+        { label: "ADI-FAD delta awards", source: "poblenou urban district", url: "https://poblenouurbandistrict.com/es/els-dissenys-dartec-guanyen-tres-premis-delta-de-adi-fad/" },
+        { label: "ADI design index", source: "davide groppi", url: "https://www.davidegroppi.com/it/news/adi-design-index-ribbon-davidegroppi" },
+        { label: "ADI · outdoor projector", source: "archiproducts", url: "https://www.archiproducts.com/it/notizie/il-proiettore-da-esterni-davide-groppi-disegnato-da-maurici-gines_101116" },
+      ] },
     { id: 11, title: "eureka",                 img: "/fotos_detalle/eu_1.png",                          galleries: [g11p, g11t, g11d], sections: ["project","technical","development"], tech: [],                                            desc: "The design process was born from the observation of works belonging to the world of art. Not only art, but also psychology studies such as those of the psychologist Metzger have been an object of study, such as the ganzfeld effect. The idea it's dividing spaces only through the use of light, avoiding the creation of visual barriers when it is absent, turned off. Clean geometric shapes have been used to avoid focusing attention on the structure but only on the behavior of light, which relates through the plexiglass loaded with titanium nanoparticles that act as mirrors for it.", info: { date: "2020-going on", location: "italy", role: "product design" } },
     { id: 13, title: "re-discover",             img: "/fotos_detalle/rd_1.png",                          galleries: [g13p, g13t, g13d], sections: ["project","technical","development"], tech: [],                                            desc: "From the history of the excavations of Piazza Kennedy in Ravenna and analyzing the forms of what once filled the square, the idea of wanting to bring to life the main lines that outlined the map below was started. The decision taken was to highlight the main walls, recreating spaces that would leave roads. Its natural simplicity and its discreet shapes allow it to fit into the urban context easily, recreating a suggestive path in history. Taking up the walls, raising them, with past measurements and giving them a natural dynamism which was that of the irregular levels of the walls found, due to deterioration. The chosen material, due to the wide shapes with ups/downs, are castings in architectural concrete, recalling the Istrian stone.", info: { date: "2024", location: "remote", role: "ephemeral architecture" } },
     { id: 12, title: "prometeo",               img: "/fotos_detalle/pr_1.JPG",                          galleries: [g12p, g12t, g12d], sections: ["project","technical","development"], tech: [],                                            desc: "Starting from the rituals of the primitive world, going from ideological attributions to cooking. Crossing the cultures of different continents, from the rudimentary ones to the experimental ones of haute cuisine. The name \"Prometheus\" Greek mythological figure ally of humanity and friend of progress, who in myth sees him challenge the Gods, stealing their fire to give it to humanity. In this case, fire indicates the technical ability to manipulate and transform the world to make it more satisfying for man. The object is covered in soapstone, through the heat of the fire, it heats up and can be cooked on it. The glass acts as a fireplace and allows, thanks to its transparency, the view between those who eat around the table. The fire will be fed with wood.", info: { date: "2024", location: "italy", role: "product design" } },
@@ -506,11 +535,11 @@ export default function Home() {
       const m = window.innerWidth <= 900;
       const band = m ? [90, 94] : [83, 90];
       setProjNavPos(m ? {
-        // móvil: dos filas para que no se junten
-        categories: { top: `${r(87, 89)}vh`, left: `${r(4, 14)}vw` },
-        projects: { top: `${r(87, 89)}vh`, left: `${r(52, 62)}vw` },
-        giulia: { top: `${r(93, 95)}vh`, left: `${r(4, 14)}vw` },
-        about: { top: `${r(93, 95)}vh`, left: `${r(56, 68)}vw` },
+        // móvil: una sola fila ordenada abajo (categories a la izquierda para que su lista quepa)
+        categories: { top: "91vh", left: "6vw" },
+        giulia: { top: "91vh", left: "36vw" },
+        projects: { top: "91vh", left: "56vw" },
+        about: { top: "91vh", left: "80vw" },
       } : {
         giulia: { top: `${r(...band)}vh`, left: `${r(4, 16)}vw` },
         projects: { top: `${r(...band)}vh`, left: `${r(26, 38)}vw` },
@@ -677,6 +706,10 @@ export default function Home() {
                   <Bracket onClick={() => { setFilterRole(selectedProject.info.role); setSelectedProject(null); setView("projects"); window.location.hash = "projects"; }}>
                     {selectedProject.info.role} ↗
                   </Bracket>
+                  {/* PDFs ligados a este proyecto (los mismos del about) */}
+                  {DOCS.filter(d => d.project === selectedProject.id).map(doc => (
+                    <Bracket key={doc.key} onClick={() => setOpenDoc(doc.key)}>{doc.label}</Bracket>
+                  ))}
                 </div>
                 <div style={{ display: "flex", gap: "2.2rem", alignItems: "center", whiteSpace: "nowrap", pointerEvents: "auto" }}>
                   {selectedProject.sections.map((sec, i) => (
@@ -696,6 +729,69 @@ export default function Home() {
                 <Bracket onClick={() => { setView("about"); setSelectedProject(null); window.location.hash = "about"; }}>about</Bracket>
               </nav>
             )}
+
+            {/* visor de PDFs (about y páginas de proyecto) */}
+            <AnimatePresence>
+              {openDoc && (() => {
+                const doc = DOCS.find(d => d.key === openDoc);
+                return (
+                  <motion.div
+                    key="doc-viewer"
+                    initial={{ backgroundColor: "rgba(255,255,255,0)" }}
+                    animate={{ backgroundColor: "rgba(255,255,255,1)" }}
+                    exit={{ backgroundColor: "rgba(255,255,255,0)" }}
+                    transition={{ duration: 0.4 }}
+                    data-lenis-prevent
+                    onClick={() => setOpenDoc(null)}
+                    style={{ position: "fixed", inset: 0, zIndex: 9999, overflowY: "auto", overscrollBehavior: "contain" }}
+                  >
+                    <motion.div
+                      initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+                      style={{ position: "sticky", top: 0, zIndex: 2, display: "flex", justifyContent: "space-between", padding: "3vh 4vw", fontFamily: fontTitle, fontSize: "0.7rem", textTransform: "lowercase", background: "linear-gradient(white 60%, rgba(255,255,255,0))" }}
+                    >
+                      <span style={{ color: "#000" }}>{doc.label}</span>
+                      <span style={{ display: "flex", gap: "2vw" }}>
+                        {doc.project && selectedProject?.id !== doc.project && (() => {
+                          const proj = projects.find(p => p.id === doc.project);
+                          return proj && (
+                            <button
+                              onClick={e => { e.stopPropagation(); setOpenDoc(null); openProject(proj); }}
+                              style={{ all: "unset", cursor: "pointer", color: "#000" }}
+                            >see project {proj.title} →</button>
+                          );
+                        })()}
+                        <a href={doc.pdf} target="_blank" rel="noopener noreferrer" onClick={e => e.stopPropagation()} style={{ color: "#000", textDecoration: "none" }}>open pdf ↗</a>
+                        <button onClick={() => setOpenDoc(null)} style={{ all: "unset", cursor: "pointer", color: "#000" }}>close ✕</button>
+                      </span>
+                    </motion.div>
+                    <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "4vh", padding: "2vh 4vw 10vh" }}>
+                      <motion.img
+                        layoutId={`doc-${doc.key}`}
+                        src={opt(docPage(doc, doc.cover))}
+                        alt={doc.label}
+                        onClick={e => e.stopPropagation()}
+                        transition={{ type: "spring", stiffness: 120, damping: 20 }}
+                        style={{ width: "min(92vw, 1100px)", display: "block", boxShadow: "0 10px 40px rgba(0,0,0,0.12)" }}
+                      />
+                      {docRest(doc).map((n) => (
+                        <motion.img
+                          key={n}
+                          src={opt(docPage(doc, n))}
+                          alt=""
+                          loading="lazy"
+                          onClick={e => e.stopPropagation()}
+                          initial={{ opacity: 0, y: 40 }}
+                          whileInView={{ opacity: 1, y: 0 }}
+                          viewport={{ once: true, margin: "-5% 0px" }}
+                          transition={{ duration: 0.6, ease: "easeOut" }}
+                          style={{ width: "min(92vw, 1100px)", display: "block", boxShadow: "0 10px 40px rgba(0,0,0,0.12)" }}
+                        />
+                      ))}
+                    </div>
+                  </motion.div>
+                );
+              })()}
+            </AnimatePresence>
 
 
 
@@ -943,7 +1039,7 @@ export default function Home() {
 
                     <div className="about-work">
                       <p className="about-head script"><Words text="Work" delay={0.3} /></p>
-                      {DOCS.map((doc, i) => (
+                      {DOCS.filter(d => !d.afterCv).map((doc, i) => (
                         <p key={doc.key}>
                           <Bracket
                             onClick={() => { setAboutPreview(null); setOpenDoc(doc.key); }}
@@ -959,6 +1055,15 @@ export default function Home() {
                           onLeave={() => setAboutPreview(null)}
                         ><Words text="Download CV" delay={0.5} /></Bracket>
                       </p>
+                      {DOCS.filter(d => d.afterCv).map((doc, i) => (
+                        <p key={doc.key}>
+                          <Bracket
+                            onClick={() => { setAboutPreview(null); setOpenDoc(doc.key); }}
+                            onEnter={() => setAboutPreview({ src: docPage(doc, doc.cover), spot: doc.key })}
+                            onLeave={() => setAboutPreview(null)}
+                          ><Words text={doc.label} delay={0.55 + i * 0.05} /></Bracket>
+                        </p>
+                      ))}
                     </div>
 
                     {/* contacto */}
@@ -998,58 +1103,6 @@ export default function Home() {
                     <span>©{new Date().getFullYear()} Giulia Tufariello, All Rights Reserved</span>
                   </div>
 
-                  <AnimatePresence>
-                    {openDoc && (() => {
-                      const doc = DOCS.find(d => d.key === openDoc);
-                      return (
-                        <motion.div
-                          key="doc-viewer"
-                          initial={{ backgroundColor: "rgba(255,255,255,0)" }}
-                          animate={{ backgroundColor: "rgba(255,255,255,1)" }}
-                          exit={{ backgroundColor: "rgba(255,255,255,0)" }}
-                          transition={{ duration: 0.4 }}
-                          data-lenis-prevent
-                          onClick={() => setOpenDoc(null)}
-                          style={{ position: "fixed", inset: 0, zIndex: 9999, overflowY: "auto", overscrollBehavior: "contain" }}
-                        >
-                          <motion.div
-                            initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-                            style={{ position: "sticky", top: 0, zIndex: 2, display: "flex", justifyContent: "space-between", padding: "3vh 4vw", fontFamily: fontTitle, fontSize: "0.7rem", textTransform: "lowercase", background: "linear-gradient(white 60%, rgba(255,255,255,0))" }}
-                          >
-                            <span style={{ color: "#000" }}>{doc.label}</span>
-                            <span style={{ display: "flex", gap: "2vw" }}>
-                              <a href={doc.pdf} target="_blank" rel="noopener noreferrer" onClick={e => e.stopPropagation()} style={{ color: "#000", textDecoration: "none" }}>open pdf ↗</a>
-                              <button onClick={() => setOpenDoc(null)} style={{ all: "unset", cursor: "pointer", color: "#000" }}>close ✕</button>
-                            </span>
-                          </motion.div>
-                          <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "4vh", padding: "2vh 4vw 10vh" }}>
-                            <motion.img
-                              layoutId={`doc-${doc.key}`}
-                              src={opt(docPage(doc, doc.cover))}
-                              alt={doc.label}
-                              onClick={e => e.stopPropagation()}
-                              transition={{ type: "spring", stiffness: 120, damping: 20 }}
-                              style={{ width: "min(92vw, 1100px)", display: "block", boxShadow: "0 10px 40px rgba(0,0,0,0.12)" }}
-                            />
-                            {docRest(doc).map((n) => (
-                              <motion.img
-                                key={n}
-                                src={opt(docPage(doc, n))}
-                                alt=""
-                                loading="lazy"
-                                onClick={e => e.stopPropagation()}
-                                initial={{ opacity: 0, y: 40 }}
-                                whileInView={{ opacity: 1, y: 0 }}
-                                viewport={{ once: true, margin: "-5% 0px" }}
-                                transition={{ duration: 0.6, ease: "easeOut" }}
-                                style={{ width: "min(92vw, 1100px)", display: "block", boxShadow: "0 10px 40px rgba(0,0,0,0.12)" }}
-                              />
-                            ))}
-                          </div>
-                        </motion.div>
-                      );
-                    })()}
-                  </AnimatePresence>
                 </motion.div>
               )}
 
@@ -1058,7 +1111,7 @@ export default function Home() {
                   <motion.div key="detail" style={{ backgroundColor: "white", minHeight: "100vh" }}>
 
                     {/* Header */}
-                    <div style={{ padding: "14vh 6vw 3vh" }}>
+                    <div style={{ padding: "10vh 6vw 2.5vh" }}>
                       {selectedProject.id === 5 && (
                         <p style={{ fontFamily: fontInfo, fontSize: "11px", fontStyle: "italic", color: "#000", opacity: 0.5, marginBottom: "0.6rem" }}>
                           if you want more information to activate nysmm&nbsp;<a href="mailto:giulia@studio.com" style={{ color: "#000", textDecoration: "underline" }}>contact</a>
@@ -1073,9 +1126,12 @@ export default function Home() {
                     </div>
 
                     {/* Section tabs */}
-                    <div className="about-info" style={{ display: "flex", gap: "1.6rem", flexWrap: "wrap", padding: "0 6vw 2vh", fontFamily: fontInfo, color: "#000", fontSize: "11px" }}>
+                    <div className="about-info" style={{ display: "flex", gap: "0.9rem 1.6rem", flexWrap: "wrap", padding: "0 6vw 2.5vh", fontFamily: fontInfo, color: "#000", fontSize: "11px" }}>
                       {selectedProject.sections.map((sec, i) => (
                         <Bracket key={sec} active={activeSection === i} onClick={() => setActiveSection(i)}>{sec}</Bracket>
+                      ))}
+                      {DOCS.filter(d => d.project === selectedProject.id).map(doc => (
+                        <Bracket key={doc.key} onClick={() => setOpenDoc(doc.key)}>{doc.label}</Bracket>
                       ))}
                     </div>
 
@@ -1083,14 +1139,22 @@ export default function Home() {
                     <AnimatePresence mode="wait">
                       <motion.div key={activeSection} initial={{ opacity: 0, x: 30 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -30 }} transition={{ duration: 0.3 }}>
                         {selectedProject.galleries[activeSection].length === 0 ? (
-                          <div style={{ height: "60vw", display: "flex", alignItems: "center", justifyContent: "center", fontFamily: fontInfo, fontSize: "13px", fontStyle: "italic", color: "#aaa" }}>coming soon</div>
+                          (selectedProject.by || selectedProject.press) ? <PressBlock project={selectedProject} mobile /> : <div style={{ height: "60vw", display: "flex", alignItems: "center", justifyContent: "center", fontFamily: fontInfo, fontSize: "13px", fontStyle: "italic", color: "#aaa" }}>coming soon</div>
                         ) : (
-                          <div ref={carouselRef} style={{ width: "100vw", height: "70vw", overflow: "hidden" }}>
+                          <>
+                          <div ref={carouselRef} style={{ width: "100vw", height: "78vw", overflow: "hidden", touchAction: "pan-y" }}>
+                            {/* desliza de una foto en una */}
                             <motion.div
                               drag="x"
-                              dragConstraints={carouselRef}
-                              dragElastic={0.05}
-                              dragTransition={{ bounceStiffness: 300, bounceDamping: 30 }}
+                              dragConstraints={{ left: 0, right: 0 }}
+                              dragElastic={0.25}
+                              onDragEnd={(e, info) => {
+                                const len = selectedProject.galleries[activeSection].length;
+                                if ((info.offset.x < -40 || info.velocity.x < -400) && carouselIndex < len - 1) setCarouselIndex(i => i + 1);
+                                else if ((info.offset.x > 40 || info.velocity.x > 400) && carouselIndex > 0) setCarouselIndex(i => i - 1);
+                              }}
+                              animate={{ x: `${-carouselIndex * (100 / selectedProject.galleries[activeSection].length)}%` }}
+                              transition={{ type: "spring", stiffness: 260, damping: 32 }}
                               style={{ display: "flex", height: "100%", width: `${selectedProject.galleries[activeSection].length * 100}%` }}
                             >
                               {selectedProject.galleries[activeSection].map((item, i) => (
@@ -1104,12 +1168,23 @@ export default function Home() {
                               ))}
                             </motion.div>
                           </div>
+                          {/* contador de fotos */}
+                          {selectedProject.galleries[activeSection].length > 1 && (
+                            <div className="about-info" style={{ display: "flex", justifyContent: "space-between", padding: "1.2vh 6vw 0", fontFamily: fontInfo, fontSize: "11px", color: "#000" }}>
+                              <span style={{ opacity: 0.6 }}>{carouselIndex + 1} / {selectedProject.galleries[activeSection].length}</span>
+                              <span style={{ display: "flex", gap: "1.4em" }}>
+                                <button onClick={() => carouselIndex > 0 && setCarouselIndex(i => i - 1)} style={{ all: "unset", cursor: "pointer", opacity: carouselIndex > 0 ? 1 : 0.25 }}>←</button>
+                                <button onClick={() => carouselIndex < selectedProject.galleries[activeSection].length - 1 && setCarouselIndex(i => i + 1)} style={{ all: "unset", cursor: "pointer", opacity: carouselIndex < selectedProject.galleries[activeSection].length - 1 ? 1 : 0.25 }}>→</button>
+                              </span>
+                            </div>
+                          )}
+                          </>
                         )}
                       </motion.div>
                     </AnimatePresence>
 
                     {/* Desc */}
-                    <p style={{ fontFamily: fontBody, fontSize: "11px", lineHeight: "1.5", color: "#000", opacity: 0.8, padding: "4vh 6vw 14vh" }}>{selectedProject.desc}</p>
+                    <p style={{ fontFamily: fontBody, fontSize: "11px", lineHeight: "1.6", color: "#000", opacity: 0.8, padding: "3vh 6vw 16vh" }}>{selectedProject.desc}</p>
 
                   </motion.div>
                 ) : (
@@ -1202,7 +1277,7 @@ export default function Home() {
                           style={{ position: "absolute", inset: 0 }}
                         >
                           {selectedProject.galleries[activeSection].length === 0 ? (
-                            <div style={{ display: "flex", alignItems: "center", justifyContent: "center", height: "100%", fontFamily: fontInfo, fontSize: "13px", fontStyle: "italic", color: "#aaa" }}>coming soon</div>
+                            (selectedProject.by || selectedProject.press) ? <PressBlock project={selectedProject} /> : <div style={{ display: "flex", alignItems: "center", justifyContent: "center", height: "100%", fontFamily: fontInfo, fontSize: "13px", fontStyle: "italic", color: "#aaa" }}>coming soon</div>
                           ) : (
                             <motion.div
                               animate={{ x: `${-carouselIndex * (100 / selectedProject.galleries[activeSection].length)}%` }}

@@ -44,12 +44,12 @@ body {
 .about-nav { display: flex; gap: 4.5em; font-size: 12px; }
 .about-bio-top { position: absolute; top: 8vh; left: 0; right: 0; display: grid; grid-template-columns: 1fr 1fr; text-align: center; z-index: 2; }
 .about-bio-top p { padding: 0 7vw; }
-.about-list { grid-column: 1 / 3; grid-row: 1; }
-.about-work { grid-column: 3 / 5; grid-row: 1; }
+.about-list { grid-column: 1 / 3; grid-row: 1; padding-left: 3vw; }
+.about-work { grid-column: 3 / 5; grid-row: 1; padding-left: 3vw; }
 .about-head { margin-bottom: 1.1em !important; }
 .about-mail { grid-column: 8 / 10; grid-row: 1; }
 .about-phone { grid-column: 10 / 12; grid-row: 1; }
-.about-city { grid-column: 12 / 13; grid-row: 1; text-align: right; }
+.about-city { grid-column: 12 / 13; grid-row: 1; text-align: right; padding-right: 3vw; }
 .about-footer {
   position: absolute; left: 16px; right: 16px; bottom: 22px;
   display: flex; justify-content: space-between; align-items: baseline; font-size: 10px;
@@ -64,14 +64,14 @@ body {
 
 @media (max-width: 900px) {
   .about-info { font-weight: 300; font-size: 12px; }
-  .about-bio-top { position: relative; top: auto; display: flex; flex-direction: column; gap: 0.6em; padding: 14vh 16px 0; }
+  .about-bio-top { position: relative; top: auto; display: flex; flex-direction: column; gap: 1em; padding: 9vh 6vw 0; text-align: left; line-height: 1.5; }
   .about-bio-top p { padding: 0; }
-  .about-grid { position: relative; top: auto; padding: 3em 0 14vh; display: flex; flex-direction: column; gap: 2.2em; }
+  .about-grid { position: relative; top: auto; left: auto; right: auto; padding: 4.5em 6vw 8vh; display: flex; flex-direction: column; gap: 2.6em; }
   .about-nav { gap: 1.6em; font-size: 12px; }
   .about-list, .about-work { padding-left: 0; }
-  .about-city { text-align: left; }
+  .about-city { text-align: left; padding-right: 0; }
   .about-info .about-phone, .about-info .about-city { margin-top: -1.6em; }
-  .about-footer { position: relative; bottom: auto; padding-bottom: 22px; flex-direction: column; gap: 1.4em; }
+  .about-footer { position: relative; left: auto; right: auto; bottom: auto; padding: 0 6vw 28px; flex-direction: column; gap: 1.4em; }
 }
 
 /* ---------- Home ---------- */
@@ -89,6 +89,10 @@ body {
 /* ---------- Projects ---------- */
 .proj-cats-list { position: absolute; bottom: calc(100% + 0.9em); left: 0; display: flex; flex-direction: column; gap: 0.35em; white-space: nowrap; }
 .detail-nav { position: fixed; bottom: 4.5vh; left: 50%; transform: translateX(-50%); z-index: 9999; display: flex; gap: 3.5em; color: #000; white-space: nowrap; font-size: 11px; }
+@media (max-width: 900px) {
+  /* móvil: barra con fondo blanco para que no tape el texto al hacer scroll */
+  .detail-nav { left: 0; right: 0; bottom: 0; transform: none; justify-content: center; gap: 2.6em; padding: 2.4em 0 calc(1.6em + env(safe-area-inset-bottom)); background: linear-gradient(rgba(255,255,255,0), #fff 45%); }
+}
 
 /* acentos caligráficos */
 .script { font-family: 'Archivo', 'Helvetica Neue', Arial, sans-serif; font-weight: 300; font-style: normal; font-size: 1em; letter-spacing: 0.01em; line-height: inherit; }
